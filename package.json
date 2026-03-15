@@ -1,0 +1,41 @@
+{
+    "name": "agentbox",
+    "version": "0.1.0",
+    "description": "Secure, isolated development environments for AI coding agents",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "type": "module",
+    "bin": {
+        "agentbox": "src/cli.ts"
+    },
+    "scripts": {
+        "build": "bun build src/cli.ts --compile --outfile agentbox",
+        "typecheck": "tsc --noEmit",
+        "test": "bun test",
+        "lint": "oxlint src/",
+        "fmt": "oxfmt --write src/",
+        "fmt:check": "oxfmt --check src/",
+        "release": "bun scripts/release.ts"
+    },
+    "files": [
+        "src/"
+    ],
+    "license": "MIT",
+    "devDependencies": {
+        "@types/bun": "^1.2.0",
+        "oxfmt": "^0.40.0",
+        "oxlint": "^1.55.0"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@clack/prompts": "^1.1.0",
+        "@optique/core": "^0.10.7",
+        "@optique/run": "^0.10.7",
+        "chalk": "^5.6.2",
+        "ts-pattern": "^5.9.0",
+        "zod": "^4.3.6"
+    }
+}
