@@ -3,14 +3,17 @@
     "version": "0.1.0",
     "description": "Secure, isolated development environments for AI coding agents",
     "exports": {
-        ".": "./src/index.ts"
+        ".": {
+            "types": "./src/index.ts",
+            "default": "./dist/index.js"
+        }
     },
     "type": "module",
     "bin": {
-        "agentbox": "src/cli.ts"
+        "agentbox": "dist/cli.js"
     },
     "scripts": {
-        "build": "bun build src/cli.ts --compile --outfile agentbox",
+        "build": "bun build src/cli.ts --outfile dist/cli.js --target node --format esm && bun build src/index.ts --outfile dist/index.js --target node --format esm && sed -i '1i#!/usr/bin/env node' dist/cli.js",
         "typecheck": "tsc --noEmit",
         "test": "bun test",
         "lint": "oxlint src/",
@@ -19,7 +22,8 @@
         "release": "bun scripts/release.ts"
     },
     "files": [
-        "src/"
+        "src/",
+        "dist/"
     ],
     "license": "MIT",
     "devDependencies": {

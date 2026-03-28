@@ -102,7 +102,7 @@ await run(["bun", "run", "test"]);
 // 4. Build
 // ---------------------------------------------------------------------------
 
-info("Building binary...");
+info("Building...");
 await run(["bun", "run", "build"]);
 
 // ---------------------------------------------------------------------------
@@ -144,13 +144,15 @@ await run(["git", "push", "--tags"]);
 // 7. GitHub release
 // ---------------------------------------------------------------------------
 
+info("Publishing to npm...");
+await run(["npm", "publish", "--access", "public"]);
+
 info("Creating GitHub release...");
 await run([
     "gh",
     "release",
     "create",
     `v${version}`,
-    "./agentbox",
     "--title",
     `v${version}`,
     "--notes",
