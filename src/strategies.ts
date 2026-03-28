@@ -1,9 +1,10 @@
+import * as childProcess from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 
 import type { DependencyStrategy, HostPrepareContext, VolumeMount } from "./config";
-import { exec, tryExec, shellEscape } from "./exec";
+import { tryExec, shellEscape } from "./exec";
 import type { Result } from "./result";
 import { Ok, Err } from "./result";
 
@@ -91,19 +92,21 @@ export function direnvStrategy(): DependencyStrategy {
 
 let cachedClaudeCliPath: string | null | undefined;
 
-async function resolveClaudeCliPath(): Promise<string | null> {
+function resolveClaudeCliPathSync(): string | null {
     if (cachedClaudeCliPath !== undefined) return cachedClaudeCliPath;
     try {
-        const result = await exec("which claude", {
-            captureOutput: true,
-            rejectOnNonZeroExit: false,
-        });
-        cachedClaudeCliPath =
-            result.code === 0 && result.stdout.trim() ? result.stdout.trim() : null;
+        const out = childProcess.execFileSync("which", ["claude"], { encoding: "utf-8" }).trim();
+        // Resolve symlinks so Kata HostPath mounts point to the real file
+        cachedClaudeCliPath = out ? fs.realpathSync(out) : null;
     } catch {
         cachedClaudeCliPath = null;
     }
     return cachedClaudeCliPath;
+}
+
+async function resolveClaudeCliPath(): Promise<string | null> {
+    if (cachedClaudeCliPath !== undefined) return cachedClaudeCliPath;
+    return resolveClaudeCliPathSync();
 }
 
 export function claudeStrategy(): DependencyStrategy {
@@ -122,10 +125,11 @@ export function claudeStrategy(): DependencyStrategy {
                 { hostPath: path.join(hostHome, ".claude"), containerPath: "/home/agent/.claude" },
             ];
 
-            // CLI binary
-            if (cachedClaudeCliPath != null) {
+            // CLI binary — resolve eagerly if not yet cached
+            const cliPath = resolveClaudeCliPathSync();
+            if (cliPath != null) {
                 vols.push({
-                    hostPath: cachedClaudeCliPath,
+                    hostPath: cliPath,
                     containerPath: "/usr/local/bin/claude",
                     readOnly: true,
                 });

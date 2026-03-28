@@ -13603,6 +13603,7 @@ function defineConfig(config2) {
   return config2;
 }
 // src/strategies.ts
+import * as childProcess from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -13734,19 +13735,21 @@ function direnvStrategy() {
   };
 }
 var cachedClaudeCliPath;
-async function resolveClaudeCliPath() {
+function resolveClaudeCliPathSync() {
   if (cachedClaudeCliPath !== undefined)
     return cachedClaudeCliPath;
   try {
-    const result = await exec("which claude", {
-      captureOutput: true,
-      rejectOnNonZeroExit: false
-    });
-    cachedClaudeCliPath = result.code === 0 && result.stdout.trim() ? result.stdout.trim() : null;
+    const out = childProcess.execFileSync("which", ["claude"], { encoding: "utf-8" }).trim();
+    cachedClaudeCliPath = out ? fs.realpathSync(out) : null;
   } catch {
     cachedClaudeCliPath = null;
   }
   return cachedClaudeCliPath;
+}
+async function resolveClaudeCliPath() {
+  if (cachedClaudeCliPath !== undefined)
+    return cachedClaudeCliPath;
+  return resolveClaudeCliPathSync();
 }
 function claudeStrategy() {
   const hostHome = os.homedir();
@@ -13760,9 +13763,10 @@ function claudeStrategy() {
       const vols = [
         { hostPath: path.join(hostHome, ".claude"), containerPath: "/home/agent/.claude" }
       ];
-      if (cachedClaudeCliPath != null) {
+      const cliPath = resolveClaudeCliPathSync();
+      if (cliPath != null) {
         vols.push({
-          hostPath: cachedClaudeCliPath,
+          hostPath: cliPath,
           containerPath: "/usr/local/bin/claude",
           readOnly: true
         });

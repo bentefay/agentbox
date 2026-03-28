@@ -179,8 +179,21 @@ async function readGitIdentity(): Promise<
     return gitName && gitEmail ? { name: gitName, email: gitEmail } : undefined;
 }
 
-async function runContainerInstall(config: AgentboxConfig, execPrefix: string): Promise<void> {
-    const installFns = config.dependencyStrategies
+async function resolveStrategies(ctx: AgentContext): Promise<readonly import("./config").DependencyStrategy[]> {
+    if (ctx.config.dependencyStrategies.length > 0) return ctx.config.dependencyStrategies;
+    const { detectStrategies } = await import("./strategies");
+    const detected = await detectStrategies(ctx.paths.worktree);
+    if (detected.length > 0) {
+        p.log.step(`Detected strategies: ${detected.map((s) => s.name).join(", ")}`);
+    }
+    return detected;
+}
+
+async function runContainerInstall(
+    strategies: readonly import("./config").DependencyStrategy[],
+    execPrefix: string
+): Promise<void> {
+    const installFns = strategies
         .map((s) => s.containerInstall)
         .filter((fn): fn is NonNullable<typeof fn> => fn != null);
 
@@ -306,9 +319,10 @@ export async function ensureAgentPod(ctx: AgentContext): Promise<Result<void, st
     // Ensure Claude bypass permissions are set before mounting .claude.json
     ensureClaudeBypassPermissions(os.homedir());
 
-    // Collect strategy volumes
+    // Resolve and collect strategy volumes
+    const strategies = await resolveStrategies(ctx);
     const { collectStrategyVolumes } = await import("./strategies");
-    const strategyVolumes = collectStrategyVolumes(config.dependencyStrategies);
+    const strategyVolumes = collectStrategyVolumes(strategies);
 
     // Start container
     const startSpinner = p.spinner();
@@ -335,7 +349,7 @@ export async function ensureAgentPod(ctx: AgentContext): Promise<Result<void, st
     await loadCachedImages(backend, imageCachePath);
 
     // Run container install (non-fatal)
-    await runContainerInstall(config, buildExecCommand(backend, "bash -c"));
+    await runContainerInstall(strategies, buildExecCommand(backend, "bash -c"));
 
     return Ok(undefined);
 }
@@ -344,7 +358,7 @@ export async function setupAgentTmux(
     ctx: AgentContext,
     mode: TmuxMode | undefined
 ): Promise<Result<SessionName, string>> {
-    const { name, paths, config, backend } = ctx;
+    const { name, paths, backend } = ctx;
 
     const sessionResult = await ensureSession(name, paths.worktree);
     if (!sessionResult.ok) return sessionResult;
@@ -360,7 +374,8 @@ export async function setupAgentTmux(
     }
 
     if (mode) {
-        const initLines = config.dependencyStrategies.flatMap((s) => s.shellInit?.() ?? []);
+        const strategies = await resolveStrategies(ctx);
+        const initLines = strategies.flatMap((s) => s.shellInit?.() ?? []);
         const initPrefix = initLines.length > 0 ? initLines.join(" && ") + " && " : "";
 
         const wrapCommand = (cmd: string) =>

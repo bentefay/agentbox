@@ -17101,6 +17101,7 @@ __export(exports_strategies, {
   bunStrategy: () => bunStrategy,
   builtInStrategies: () => builtInStrategies
 });
+import * as childProcess from "child_process";
 import * as fs5 from "fs";
 import * as os5 from "os";
 import * as path11 from "path";
@@ -17144,19 +17145,21 @@ function direnvStrategy() {
     }
   };
 }
-async function resolveClaudeCliPath() {
+function resolveClaudeCliPathSync() {
   if (cachedClaudeCliPath !== undefined)
     return cachedClaudeCliPath;
   try {
-    const result = await exec("which claude", {
-      captureOutput: true,
-      rejectOnNonZeroExit: false
-    });
-    cachedClaudeCliPath = result.code === 0 && result.stdout.trim() ? result.stdout.trim() : null;
+    const out = childProcess.execFileSync("which", ["claude"], { encoding: "utf-8" }).trim();
+    cachedClaudeCliPath = out ? fs5.realpathSync(out) : null;
   } catch {
     cachedClaudeCliPath = null;
   }
   return cachedClaudeCliPath;
+}
+async function resolveClaudeCliPath() {
+  if (cachedClaudeCliPath !== undefined)
+    return cachedClaudeCliPath;
+  return resolveClaudeCliPathSync();
 }
 function claudeStrategy() {
   const hostHome = os5.homedir();
@@ -17170,9 +17173,10 @@ function claudeStrategy() {
       const vols = [
         { hostPath: path11.join(hostHome, ".claude"), containerPath: "/home/agent/.claude" }
       ];
-      if (cachedClaudeCliPath != null) {
+      const cliPath = resolveClaudeCliPathSync();
+      if (cliPath != null) {
         vols.push({
-          hostPath: cachedClaudeCliPath,
+          hostPath: cliPath,
           containerPath: "/usr/local/bin/claude",
           readOnly: true
         });
@@ -17329,8 +17333,18 @@ async function readGitIdentity() {
   })).stdout.trim();
   return gitName && gitEmail ? { name: gitName, email: gitEmail } : undefined;
 }
-async function runContainerInstall(config2, execPrefix) {
-  const installFns = config2.dependencyStrategies.map((s2) => s2.containerInstall).filter((fn) => fn != null);
+async function resolveStrategies(ctx) {
+  if (ctx.config.dependencyStrategies.length > 0)
+    return ctx.config.dependencyStrategies;
+  const { detectStrategies: detectStrategies2 } = await Promise.resolve().then(() => (init_strategies(), exports_strategies));
+  const detected = await detectStrategies2(ctx.paths.worktree);
+  if (detected.length > 0) {
+    R3.step(`Detected strategies: ${detected.map((s2) => s2.name).join(", ")}`);
+  }
+  return detected;
+}
+async function runContainerInstall(strategies, execPrefix) {
+  const installFns = strategies.map((s2) => s2.containerInstall).filter((fn) => fn != null);
   for (const install of installFns) {
     const commands = await install("/workspace");
     for (const cmd of commands) {
@@ -17408,8 +17422,9 @@ async function ensureAgentPod(ctx) {
   const imageCachePath = cacheResult.value ?? undefined;
   const gitUser = await readGitIdentity();
   ensureClaudeBypassPermissions(os6.homedir());
+  const strategies = await resolveStrategies(ctx);
   const { collectStrategyVolumes: collectStrategyVolumes2 } = await Promise.resolve().then(() => (init_strategies(), exports_strategies));
-  const strategyVolumes = collectStrategyVolumes2(config2.dependencyStrategies);
+  const strategyVolumes = collectStrategyVolumes2(strategies);
   const startSpinner = be();
   startSpinner.start(backend.kind === "k3s" ? "Starting agent pod..." : "Starting Docker container...");
   const startResult = await startBackend(backend, {
@@ -17428,11 +17443,11 @@ async function ensureAgentPod(ctx) {
   }
   startSpinner.stop(backend.kind === "k3s" ? "Agent pod started" : "Docker container started");
   await loadCachedImages(backend, imageCachePath);
-  await runContainerInstall(config2, buildExecCommand(backend, "bash -c"));
+  await runContainerInstall(strategies, buildExecCommand(backend, "bash -c"));
   return Ok(undefined);
 }
 async function setupAgentTmux(ctx, mode) {
-  const { name, paths, config: config2, backend } = ctx;
+  const { name, paths, backend } = ctx;
   const sessionResult = await ensureSession(name, paths.worktree);
   if (!sessionResult.ok)
     return sessionResult;
@@ -17447,7 +17462,8 @@ async function setupAgentTmux(ctx, mode) {
       return execResult;
   }
   if (mode) {
-    const initLines = config2.dependencyStrategies.flatMap((s2) => s2.shellInit?.() ?? []);
+    const strategies = await resolveStrategies(ctx);
+    const initLines = strategies.flatMap((s2) => s2.shellInit?.() ?? []);
     const initPrefix = initLines.length > 0 ? initLines.join(" && ") + " && " : "";
     const wrapCommand = (cmd) => buildExecCommand(backend, `bash -c ${shellEscape(`${initPrefix}${cmd}`)}`);
     const modeResult = await setupMode(session, mode, wrapCommand);

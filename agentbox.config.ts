@@ -1,4 +1,4 @@
-import { bunStrategy, claudeStrategy, defineConfig } from "agentbox";
+import { defineConfig } from "agentbox";
 
 export default defineConfig({
     tmuxModes: [
@@ -36,9 +36,11 @@ export default defineConfig({
         },
     ],
 
-    dependencyStrategies: [claudeStrategy(), bunStrategy()],
+    dependencyStrategies: [],
 
     resources: { memoryGi: 8, cpuLimit: 4 },
 
     servicePorts: [{ name: "devtools", port: 3456 }],
+
+    cacheImages: ["node:20-slim"],
 });
