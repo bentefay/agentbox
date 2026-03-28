@@ -193,15 +193,21 @@ async function runContainerInstall(
     strategies: readonly import("./config").DependencyStrategy[],
     execPrefix: string
 ): Promise<void> {
-    const installFns = strategies
-        .map((s) => s.containerInstall)
-        .filter((fn): fn is NonNullable<typeof fn> => fn != null);
+    let initPrefix = "";
 
-    for (const install of installFns) {
-        const commands = await install("/workspace");
-        for (const cmd of commands) {
-            p.log.step(`Installing: ${cmd}`);
-            await exec(`${execPrefix} ${shellEscape(cmd)}`, { rejectOnNonZeroExit: false });
+    for (const strategy of strategies) {
+        if (strategy.containerInstall) {
+            const commands = await strategy.containerInstall("/workspace");
+            for (const cmd of commands) {
+                const fullCmd = initPrefix ? `${initPrefix}${cmd}` : cmd;
+                p.log.step(`Installing: ${cmd}`);
+                await exec(`${execPrefix} ${shellEscape(fullCmd)}`, { rejectOnNonZeroExit: false });
+            }
+        }
+
+        const inits = strategy.shellInit?.() ?? [];
+        if (inits.length > 0) {
+            initPrefix += inits.join(" && ") + " && ";
         }
     }
 }

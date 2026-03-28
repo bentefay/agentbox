@@ -17344,12 +17344,19 @@ async function resolveStrategies(ctx) {
   return detected;
 }
 async function runContainerInstall(strategies, execPrefix) {
-  const installFns = strategies.map((s2) => s2.containerInstall).filter((fn) => fn != null);
-  for (const install of installFns) {
-    const commands = await install("/workspace");
-    for (const cmd of commands) {
-      R3.step(`Installing: ${cmd}`);
-      await exec(`${execPrefix} ${shellEscape(cmd)}`, { rejectOnNonZeroExit: false });
+  let initPrefix = "";
+  for (const strategy of strategies) {
+    if (strategy.containerInstall) {
+      const commands = await strategy.containerInstall("/workspace");
+      for (const cmd of commands) {
+        const fullCmd = initPrefix ? `${initPrefix}${cmd}` : cmd;
+        R3.step(`Installing: ${cmd}`);
+        await exec(`${execPrefix} ${shellEscape(fullCmd)}`, { rejectOnNonZeroExit: false });
+      }
+    }
+    const inits = strategy.shellInit?.() ?? [];
+    if (inits.length > 0) {
+      initPrefix += inits.join(" && ") + " && ";
     }
   }
 }
