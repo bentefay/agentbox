@@ -9,7 +9,7 @@ import { buildReinvokeArgs, resolveMode } from "./resolve-new";
 // ============================================================================
 
 const testAgent = "my-agent" as AgentName;
-const selfPath = "/usr/local/bin/agentbox";
+const selfCommand = ["/usr/bin/node", "/usr/local/lib/agentbox/dist/cli.js"];
 
 function minimalTmuxMode(name: string): TmuxMode {
     return { name, windows: [] };
@@ -28,36 +28,36 @@ function minimalConfig(tmuxModes: readonly TmuxMode[] = []): AgentboxConfig {
 
 describe("buildReinvokeArgs", () => {
     it("produces base args with --trust when trusted", () => {
-        const args = buildReinvokeArgs(selfPath, testAgent, undefined, undefined, false, true);
-        expect(args).toEqual([selfPath, "new", "my-agent", "--trust"]);
+        const args = buildReinvokeArgs(selfCommand, testAgent, undefined, undefined, false, true);
+        expect(args).toEqual([...selfCommand, "new", "my-agent", "--trust"]);
     });
 
     it("produces base args with --untrusted when not trusted", () => {
-        const args = buildReinvokeArgs(selfPath, testAgent, undefined, undefined, false, false);
-        expect(args).toEqual([selfPath, "new", "my-agent", "--untrusted"]);
+        const args = buildReinvokeArgs(selfCommand, testAgent, undefined, undefined, false, false);
+        expect(args).toEqual([...selfCommand, "new", "my-agent", "--untrusted"]);
     });
 
     it("includes baseBranch as positional arg after agentName", () => {
-        const args = buildReinvokeArgs(selfPath, testAgent, "main", undefined, false, true);
-        expect(args).toEqual([selfPath, "new", "my-agent", "main", "--trust"]);
+        const args = buildReinvokeArgs(selfCommand, testAgent, "main", undefined, false, true);
+        expect(args).toEqual([...selfCommand, "new", "my-agent", "main", "--trust"]);
     });
 
     it("includes -m flag when tmuxMode is provided", () => {
         const mode = minimalTmuxMode("core");
-        const args = buildReinvokeArgs(selfPath, testAgent, undefined, mode, false, true);
-        expect(args).toEqual([selfPath, "new", "my-agent", "-m", "core", "--trust"]);
+        const args = buildReinvokeArgs(selfCommand, testAgent, undefined, mode, false, true);
+        expect(args).toEqual([...selfCommand, "new", "my-agent", "-m", "core", "--trust"]);
     });
 
     it("includes --use-local-branch when useLocalBranch is true", () => {
-        const args = buildReinvokeArgs(selfPath, testAgent, undefined, undefined, true, true);
-        expect(args).toEqual([selfPath, "new", "my-agent", "--use-local-branch", "--trust"]);
+        const args = buildReinvokeArgs(selfCommand, testAgent, undefined, undefined, true, true);
+        expect(args).toEqual([...selfCommand, "new", "my-agent", "--use-local-branch", "--trust"]);
     });
 
     it("includes all options in correct order when combined", () => {
         const mode = minimalTmuxMode("full");
-        const args = buildReinvokeArgs(selfPath, testAgent, "develop", mode, true, true);
+        const args = buildReinvokeArgs(selfCommand, testAgent, "develop", mode, true, true);
         expect(args).toEqual([
-            selfPath,
+            ...selfCommand,
             "new",
             "my-agent",
             "develop",
@@ -70,11 +70,18 @@ describe("buildReinvokeArgs", () => {
 
     it("always includes trust flag as the last argument", () => {
         const cases = [
-            buildReinvokeArgs(selfPath, testAgent, undefined, undefined, false, true),
-            buildReinvokeArgs(selfPath, testAgent, "main", undefined, false, true),
-            buildReinvokeArgs(selfPath, testAgent, undefined, minimalTmuxMode("x"), false, false),
-            buildReinvokeArgs(selfPath, testAgent, undefined, undefined, true, true),
-            buildReinvokeArgs(selfPath, testAgent, "main", minimalTmuxMode("x"), true, false),
+            buildReinvokeArgs(selfCommand, testAgent, undefined, undefined, false, true),
+            buildReinvokeArgs(selfCommand, testAgent, "main", undefined, false, true),
+            buildReinvokeArgs(
+                selfCommand,
+                testAgent,
+                undefined,
+                minimalTmuxMode("x"),
+                false,
+                false
+            ),
+            buildReinvokeArgs(selfCommand, testAgent, undefined, undefined, true, true),
+            buildReinvokeArgs(selfCommand, testAgent, "main", minimalTmuxMode("x"), true, false),
         ];
         for (const args of cases) {
             const last = args[args.length - 1];
@@ -82,16 +89,17 @@ describe("buildReinvokeArgs", () => {
         }
     });
 
-    it("uses the selfPath verbatim as the first element", () => {
-        const customPath = "/some/other/path/agentbox";
-        const args = buildReinvokeArgs(customPath, testAgent, undefined, undefined, false, true);
-        expect(args[0]).toBe(customPath);
+    it("spreads selfCommand as the leading elements", () => {
+        const customCommand = ["/usr/bin/bun", "/some/path/cli.ts"];
+        const args = buildReinvokeArgs(customCommand, testAgent, undefined, undefined, false, true);
+        expect(args[0]).toBe(customCommand[0]);
+        expect(args[1]).toBe(customCommand[1]);
     });
 
     it("uses the agentName string directly as the branch argument", () => {
         const agent = "feature-branch-123" as AgentName;
-        const args = buildReinvokeArgs(selfPath, agent, undefined, undefined, false, true);
-        expect(args[2]).toBe("feature-branch-123");
+        const args = buildReinvokeArgs(selfCommand, agent, undefined, undefined, false, true);
+        expect(args[selfCommand.length + 1]).toBe("feature-branch-123");
     });
 });
 

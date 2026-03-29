@@ -183,9 +183,9 @@ async function executeNew(
         return 1;
     }
     const session = sessionResult.value;
-    const selfPath = path.resolve(process.argv[1]);
+    const selfCommand = [process.argv[0], path.resolve(process.argv[1])];
     const reinvokeArgs = buildReinvokeArgs(
-        selfPath,
+        selfCommand,
         agentName,
         baseBranch,
         tmuxMode,

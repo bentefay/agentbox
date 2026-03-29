@@ -163,9 +163,12 @@ async function resolveTmuxMode(
 
 /**
  * Pure function to build the reinvoke command arguments for tmux re-entry.
+ * Uses both the runtime (argv[0]) and script path (argv[1]) so the command
+ * works regardless of how the CLI was invoked (e.g. `bun src/cli.ts` or
+ * the installed `agentbox` bin).
  */
 export function buildReinvokeArgs(
-    selfPath: string,
+    selfCommand: readonly string[],
     agentName: AgentName,
     baseBranch: string | undefined,
     tmuxMode: TmuxMode | undefined,
@@ -173,7 +176,7 @@ export function buildReinvokeArgs(
     trusted: boolean
 ): readonly string[] {
     return [
-        selfPath,
+        ...selfCommand,
         "new",
         agentName,
         ...(baseBranch ? [baseBranch] : []),
