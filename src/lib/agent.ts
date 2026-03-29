@@ -356,9 +356,6 @@ export async function ensureAgentPod(ctx: AgentContext): Promise<Result<void, st
     // Load cached docker images (non-fatal)
     await loadCachedImages(backend, imageCachePath);
 
-    // Run container install (non-fatal)
-    await runContainerInstall(strategies, buildExecCommand(backend, "bash -c"));
-
     return Ok(undefined);
 }
 
@@ -367,6 +364,11 @@ export async function setupAgentTmux(
     mode: TmuxMode | undefined
 ): Promise<Result<SessionName, string>> {
     const { name, paths, backend } = ctx;
+
+    // Always run container install before setting up mode windows.
+    // Idempotent and non-fatal — safe to re-run on reattach.
+    const strategies = await resolveStrategies(ctx);
+    await runContainerInstall(strategies, buildExecCommand(backend, "bash -c"));
 
     const sessionResult = await ensureSession(name, paths.worktree);
     if (!sessionResult.ok) return sessionResult;
@@ -382,7 +384,6 @@ export async function setupAgentTmux(
     }
 
     if (mode) {
-        const strategies = await resolveStrategies(ctx);
         const initLines = strategies.flatMap((s) => s.shellInit?.() ?? []);
         const initPrefix = initLines.length > 0 ? initLines.join(" && ") + " && " : "";
 

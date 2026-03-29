@@ -7,7 +7,8 @@ Secure, isolated development environments for AI coding agents.
 1. **Challenge assumptions** - Push back; don't just accept requests
 2. **Ask before guessing** - If a decision isn't documented, ask first but always propose an answer
 3. **Match existing patterns** - Before writing new code, find and follow codebase conventions
-4. **Curate agent memory** - Continuously refine CLAUDE.md, rules, skills, and commands; right-size detail for
+4. **Verify before concluding** - Never present a theory as fact; gather evidence (logs, commands, code reads) first
+5. **Curate agent memory** - Continuously refine CLAUDE.md, rules, skills, and commands; right-size detail for
    progressive disclosure
 
 ## Technology Stack
