@@ -45,6 +45,7 @@ export async function cmdNew(opts: {
     readonly trust: boolean;
     readonly untrusted: boolean;
     readonly useLocalBranch: boolean;
+    readonly noFocus: boolean;
 }): Promise<number> {
     const resolved = await resolveConfig();
     if (resolved == null) return 1;
@@ -76,6 +77,7 @@ async function executeNew(
         readonly untrusted: boolean;
         readonly noTmux: boolean;
         readonly useLocalBranch: boolean;
+        readonly noFocus: boolean;
     },
     config: import("../lib/config").AgentboxConfig,
     repoPath: RepoPath
@@ -211,6 +213,10 @@ async function executeNew(
             p.outro("Aborted");
             return 1;
         }
+    }
+    if (opts.noFocus) {
+        p.log.success("Session ready (--no-focus)");
+        return 0;
     }
     p.log.step("Attaching to session \u2014 setup continues inside");
     const attachResult = await switchOrAttach(session);

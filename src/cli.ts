@@ -35,6 +35,9 @@ const newCmd = command(
         useLocalBranch: option("--use-local-branch", {
             description: message`Auto-select local branch version when versions differ`,
         }),
+        noFocus: option("--no-focus", {
+            description: message`Don't switch tmux session after setup`,
+        }),
     }),
     { description: message`Create a new agent (worktree + container + tmux)` }
 );
@@ -52,6 +55,9 @@ const attachCmd = command(
         }),
         untrusted: option("--untrusted", {
             description: message`Skip host-side operations like direnv`,
+        }),
+        noFocus: option("--no-focus", {
+            description: message`Don't switch tmux session after setup`,
         }),
     }),
     { description: message`Attach to an existing agent's tmux session` }
@@ -169,9 +175,12 @@ async function dispatch(): Promise<number> {
                 trust: r.trust,
                 untrusted: r.untrusted,
                 useLocalBranch: r.useLocalBranch,
+                noFocus: r.noFocus,
             })
         )
-        .with({ cmd: "attach" }, (r) => cmd.cmdAttach(r.name, r.mode, r.trust, r.untrusted))
+        .with({ cmd: "attach" }, (r) =>
+            cmd.cmdAttach(r.name, r.mode, r.trust, r.untrusted, r.noFocus)
+        )
         .with({ cmd: "stop" }, (r) => cmd.cmdStop(r.name))
         .with({ cmd: "rm" }, (r) => cmd.cmdRm(r.names, r.force))
         .with({ cmd: "list" }, () => cmd.cmdList())

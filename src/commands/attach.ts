@@ -18,9 +18,20 @@ export async function cmdAttach(
     name?: string,
     modeName?: string,
     trust = false,
-    untrusted = false
+    untrusted = false,
+    noFocus = false
 ): Promise<number> {
     const resolved = await resolveAttachArgs(name, modeName, trust, untrusted);
+
+    const focus = async (session: import("../lib/tmux").SessionName): Promise<number> => {
+        if (noFocus) return 0;
+        const attachResult = await switchOrAttach(session);
+        if (!attachResult.ok) {
+            p.log.error(attachResult.error);
+            return 1;
+        }
+        return 0;
+    };
 
     return match(resolved)
         .with({ kind: "reattach" }, async (r) => {
@@ -31,19 +42,9 @@ export async function cmdAttach(
                     p.log.error(tmuxResult.error);
                     return 1;
                 }
-                const attachResult = await switchOrAttach(tmuxResult.value);
-                if (!attachResult.ok) {
-                    p.log.error(attachResult.error);
-                    return 1;
-                }
-                return 0;
+                return focus(tmuxResult.value);
             }
-            const attachResult = await switchOrAttach(sanitizeSessionName(r.agentName));
-            if (!attachResult.ok) {
-                p.log.error(attachResult.error);
-                return 1;
-            }
-            return 0;
+            return focus(sanitizeSessionName(r.agentName));
         })
         .with({ kind: "restore" }, async (r) => {
             p.intro(`agent · attach · ${r.agentName}`);
@@ -70,12 +71,7 @@ export async function cmdAttach(
             const result = await startAndSetupAgent(ctx, r.mode);
             if (!result.ok) return handleLifecycleError(result.error);
 
-            const attachResult = await switchOrAttach(result.value);
-            if (!attachResult.ok) {
-                p.log.error(attachResult.error);
-                return 1;
-            }
-            return 0;
+            return focus(result.value);
         })
         .with({ kind: "cancelled" }, () => {
             p.outro("Aborted");
