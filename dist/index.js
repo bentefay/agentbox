@@ -13562,7 +13562,7 @@ function date4(params) {
 
 // node_modules/zod/v4/classic/external.js
 config(en_default());
-// src/config.ts
+// src/lib/config.ts
 var TmuxPaneSchema = exports_external.object({
   command: exports_external.string(),
   sleepSeconds: exports_external.number().optional()
@@ -13602,16 +13602,16 @@ var AgentboxConfigSchema = exports_external.object({
 function defineConfig(config2) {
   return config2;
 }
-// src/strategies.ts
+// src/lib/strategies.ts
 import * as childProcess from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 
-// src/exec.ts
+// src/lib/exec.ts
 import { spawn } from "child_process";
 
-// src/result.ts
+// src/lib/result.ts
 function Ok(value) {
   return { ok: true, value };
 }
@@ -13619,7 +13619,7 @@ function Err(error48) {
   return { ok: false, error: error48 };
 }
 
-// src/exec.ts
+// src/lib/exec.ts
 async function exec(command, options = {}) {
   const { cwd, captureOutput = false, rejectOnNonZeroExit = true, env, timeout } = options;
   const mergedEnv = env ? { ...process.env, ...env } : undefined;
@@ -13693,7 +13693,7 @@ function shellEscape(s) {
   return `'${s.replace(/'/g, "'\\''")}'`;
 }
 
-// src/strategies.ts
+// src/lib/strategies.ts
 function fileExists(repoRoot, filename) {
   return fs.existsSync(path.join(repoRoot, filename));
 }

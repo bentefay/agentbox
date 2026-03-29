@@ -210,7 +210,7 @@ var init_dist = __esm(() => {
   L = { matched: false, value: undefined };
 });
 
-// src/result.ts
+// src/lib/result.ts
 function Ok(value2) {
   return { ok: true, value: value2 };
 }
@@ -227,7 +227,7 @@ function collectResults(results) {
   return Ok(values2);
 }
 
-// src/exec.ts
+// src/lib/exec.ts
 import { spawn } from "child_process";
 import * as os from "os";
 import * as path2 from "path";
@@ -15390,7 +15390,7 @@ var init_zod = __esm(() => {
   init_external();
 });
 
-// src/config.ts
+// src/lib/config.ts
 async function resolveCacheImages(cacheImages) {
   return typeof cacheImages === "function" ? cacheImages() : cacheImages;
 }
@@ -15435,7 +15435,7 @@ var init_config = __esm(() => {
   });
 });
 
-// src/container-spec.ts
+// src/lib/container-spec.ts
 import * as path3 from "path";
 function buildContainerSpec(spec) {
   const userVolumes = spec.config.volumes ?? [];
@@ -15479,7 +15479,7 @@ var init_container_spec = __esm(() => {
   init_exec();
 });
 
-// src/image.ts
+// src/lib/image.ts
 import * as crypto from "crypto";
 import * as fs from "fs";
 import * as os2 from "os";
@@ -15546,7 +15546,7 @@ var init_image = __esm(() => {
   TAGGED_IMAGE_NAME = `${DEFAULT_IMAGE_NAME}-${DOCKERFILE_HASH}`;
 });
 
-// src/yaml.ts
+// src/lib/yaml.ts
 function isArray(value2) {
   return Array.isArray(value2);
 }
@@ -15634,7 +15634,7 @@ function toYamlDocuments(docs) {
 `);
 }
 
-// src/k8s.ts
+// src/lib/k8s.ts
 import * as os3 from "os";
 import * as path5 from "path";
 function kubectl(cmd) {
@@ -15876,7 +15876,7 @@ var init_k8s = __esm(() => {
   });
 });
 
-// src/backend.ts
+// src/lib/backend.ts
 function createBackend(agentName, kind) {
   return M(kind).with("k3s", () => ({ kind: "k3s", podName: podName(agentName), agentName })).with("docker", () => ({
     kind: "docker",
@@ -16037,7 +16037,7 @@ var init_backend = __esm(() => {
   init_container_spec();
 });
 
-// src/cache.ts
+// src/lib/cache.ts
 var exports_cache = {};
 __export(exports_cache, {
   stripDigest: () => stripDigest,
@@ -16111,7 +16111,7 @@ var init_cache = __esm(() => {
   init_exec();
 });
 
-// src/git/agent-name.ts
+// src/lib/git/agent-name.ts
 function parseAgentName(raw) {
   if (!/^[a-zA-Z0-9-]{1,63}$/.test(raw)) {
     return Err(`Invalid agent name '${raw}': must be 1-63 characters, alphanumeric and hyphens only`);
@@ -16121,7 +16121,7 @@ function parseAgentName(raw) {
 var init_agent_name = () => {
 };
 
-// src/git/paths.ts
+// src/lib/git/paths.ts
 import * as path7 from "path";
 function getAgentsDirPaths(repoPath) {
   const repoName = path7.basename(repoPath);
@@ -16143,7 +16143,7 @@ var BARE_REPO_DIR = ".bare";
 var init_paths = () => {
 };
 
-// src/git/branches.ts
+// src/lib/git/branches.ts
 async function fetchLatestRefs(repoPath, bareRepoPath) {
   const fetchBareRepo = async () => {
     if (!bareRepoPath)
@@ -16241,7 +16241,7 @@ var init_branches = __esm(() => {
   init_exec();
 });
 
-// src/git/resolve.ts
+// src/lib/git/resolve.ts
 import * as path8 from "path";
 function classifyBranchSources(shas) {
   const present = [shas.originSha, shas.localSha, shas.bareSha].filter((s2) => s2 != null);
@@ -16381,7 +16381,7 @@ var init_resolve = __esm(() => {
   init_exec();
 });
 
-// src/git/worktree.ts
+// src/lib/git/worktree.ts
 import * as fs3 from "fs";
 import * as path9 from "path";
 async function ensureBareRepo(repoPath) {
@@ -16534,7 +16534,7 @@ var init_worktree = __esm(() => {
   init_resolve();
 });
 
-// src/git/index.ts
+// src/lib/git/index.ts
 var init_git = __esm(() => {
   init_agent_name();
   init_paths();
@@ -16543,7 +16543,7 @@ var init_git = __esm(() => {
   init_worktree();
 });
 
-// src/tmux.ts
+// src/lib/tmux.ts
 function isInsideTmux() {
   return !!process.env.TMUX;
 }
@@ -16736,7 +16736,7 @@ var init_tmux = __esm(() => {
   });
 });
 
-// src/vm.ts
+// src/lib/vm.ts
 import * as fs4 from "fs";
 import * as os4 from "os";
 import * as path10 from "path";
@@ -17086,7 +17086,7 @@ var init_vm = __esm(() => {
   };
 });
 
-// src/strategies.ts
+// src/lib/strategies.ts
 var exports_strategies = {};
 __export(exports_strategies, {
   yarnStrategy: () => yarnStrategy,
@@ -17267,7 +17267,7 @@ var init_strategies = __esm(() => {
   ];
 });
 
-// src/agent.ts
+// src/lib/agent.ts
 import * as fs6 from "fs";
 import * as os6 from "os";
 import * as path12 from "path";
@@ -17559,7 +17559,7 @@ var init_agent = __esm(() => {
   ClaudeJsonSchema = exports_external.object({ bypassPermissionsModeAccepted: exports_external.boolean().optional() }).passthrough();
 });
 
-// src/loader.ts
+// src/lib/loader.ts
 import * as fs7 from "fs";
 import * as path13 from "path";
 async function loadConfig(repoPath) {
@@ -24670,7 +24670,7 @@ var package_default = {
   description: "Secure, isolated development environments for AI coding agents",
   exports: {
     ".": {
-      types: "./src/index.ts",
+      types: "./dist/index.d.ts",
       default: "./dist/index.js"
     }
   },
@@ -24679,7 +24679,7 @@ var package_default = {
     agentbox: "dist/cli.js"
   },
   scripts: {
-    build: "bun build src/cli.ts --outfile dist/cli.js --target node --format esm && bun build src/index.ts --outfile dist/index.js --target node --format esm && sed -i '1i#!/usr/bin/env node' dist/cli.js",
+    build: "bun build src/cli.ts --outfile dist/cli.js --target node --format esm && bun build src/index.ts --outfile dist/index.js --target node --format esm && sed -i '1i#!/usr/bin/env node' dist/cli.js && tsc -p tsconfig.build.json",
     typecheck: "tsc --noEmit",
     test: "bun test",
     lint: "oxlint src/",
@@ -24688,7 +24688,6 @@ var package_default = {
     release: "bun scripts/release.ts"
   },
   files: [
-    "src/",
     "dist/"
   ],
   license: "MIT",
