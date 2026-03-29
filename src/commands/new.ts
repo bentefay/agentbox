@@ -10,7 +10,7 @@ import {
     handleLifecycleError,
     getAgentPorts,
     logBackendFallback,
-} from "../agent";
+} from "../lib/agent";
 import {
     getAgentPaths,
     getAgentsDirPaths,
@@ -20,8 +20,8 @@ import {
     branchExists,
     getMainBranch,
     CANCELLED,
-} from "../git";
-import type { AgentName, BareRepoPath, RepoPath } from "../git";
+} from "../lib/git";
+import type { AgentName, BareRepoPath, RepoPath } from "../lib/git";
 import {
     isInsideTmux,
     isTmuxInstalled,
@@ -32,7 +32,7 @@ import {
     createWindow,
     getCurrentSessionName,
     sanitizeSessionName,
-} from "../tmux";
+} from "../lib/tmux";
 import { resolveConfig } from "./resolve-config";
 import { resolveNewArgs, buildReinvokeArgs, ensureHostPreparation } from "./resolve-new";
 import type { ResolvedNewArgs } from "./resolve-new";
@@ -77,7 +77,7 @@ async function executeNew(
         readonly noTmux: boolean;
         readonly useLocalBranch: boolean;
     },
-    config: import("../config").AgentboxConfig,
+    config: import("../lib/config").AgentboxConfig,
     repoPath: RepoPath
 ): Promise<number> {
     const { agentName, baseBranch, tmuxMode } = resolved;
@@ -225,8 +225,8 @@ async function executeNew(
 async function executeInsideSession(
     agentName: AgentName,
     repoPath: RepoPath,
-    config: import("../config").AgentboxConfig,
-    tmuxMode: import("../config").TmuxMode | undefined
+    config: import("../lib/config").AgentboxConfig,
+    tmuxMode: import("../lib/config").TmuxMode | undefined
 ): Promise<number> {
     p.intro(`agent \u00b7 new \u00b7 ${agentName}`);
     await logBackendFallback();

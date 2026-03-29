@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
-import type { AgentboxConfig, TmuxMode } from "../config";
-import type { AgentName, RepoPath } from "../git";
+import type { AgentboxConfig, TmuxMode } from "../lib/config";
+import type { AgentName, RepoPath } from "../lib/git";
 import type { AttachState } from "./resolve-attach";
 import { determineAttachAction } from "./resolve-attach";
 

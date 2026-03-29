@@ -1,4 +1,4 @@
-export { defineConfig } from "./config";
+export { defineConfig } from "./lib/config";
 export type {
     AgentboxConfig,
     CacheImages,
@@ -10,7 +10,7 @@ export type {
     VolumeMount,
     ServicePort,
     ResourceLimits,
-} from "./config";
+} from "./lib/config";
 export {
     nixStrategy,
     direnvStrategy,
@@ -20,11 +20,11 @@ export {
     pnpmStrategy,
     npmStrategy,
     builtInStrategies,
-} from "./strategies";
+} from "./lib/strategies";
 export type {
     NixStrategyOptions,
     BunStrategyOptions,
     YarnStrategyOptions,
     PnpmStrategyOptions,
     NpmStrategyOptions,
-} from "./strategies";
+} from "./lib/strategies";

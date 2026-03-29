@@ -2,15 +2,15 @@ import * as fs from "fs";
 
 import * as p from "@clack/prompts";
 
-import { resolveCacheImages } from "../config";
-import { getAgentsDirPaths } from "../git";
+import { resolveCacheImages } from "../lib/config";
+import { getAgentsDirPaths } from "../lib/git";
 import { resolveConfig } from "./resolve-config";
 
 export async function cmdCache(): Promise<number> {
     const resolved = await resolveConfig();
     if (resolved == null) return 1;
     const { config, repoPath } = resolved;
-    const { ensureImageCache } = await import("../cache");
+    const { ensureImageCache } = await import("../lib/cache");
     const paths = getAgentsDirPaths(repoPath);
 
     if (!config.cacheImages) {

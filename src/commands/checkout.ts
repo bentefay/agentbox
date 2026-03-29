@@ -3,8 +3,8 @@ import * as fs from "fs";
 import * as p from "@clack/prompts";
 import { match } from "ts-pattern";
 
-import { getAgentPaths, checkoutAgentBranch } from "../git";
-import type { CheckoutError } from "../git";
+import { getAgentPaths, checkoutAgentBranch } from "../lib/git";
+import type { CheckoutError } from "../lib/git";
 import { withResolvedAgent } from "./resolve-agent";
 
 export async function cmdCheckout(name?: string): Promise<number> {

@@ -1,11 +1,11 @@
 import * as p from "@clack/prompts";
 import { match } from "ts-pattern";
 
-import type { AgentName, RepoPath } from "../git";
-import { parseAgentName } from "../git";
-import { getRepoPath } from "../loader";
-import type { Result } from "../result";
-import { Ok, Err, collectResults } from "../result";
+import type { AgentName, RepoPath } from "../lib/git";
+import { parseAgentName } from "../lib/git";
+import { getRepoPath } from "../lib/loader";
+import type { Result } from "../lib/result";
+import { Ok, Err, collectResults } from "../lib/result";
 import type { AgentInfo } from "./agent-info";
 import { listAgentsWithState, agentStatusHint } from "./agent-info";
 

@@ -179,7 +179,9 @@ async function readGitIdentity(): Promise<
     return gitName && gitEmail ? { name: gitName, email: gitEmail } : undefined;
 }
 
-async function resolveStrategies(ctx: AgentContext): Promise<readonly import("./config").DependencyStrategy[]> {
+async function resolveStrategies(
+    ctx: AgentContext
+): Promise<readonly import("./config").DependencyStrategy[]> {
     if (ctx.config.dependencyStrategies.length > 0) return ctx.config.dependencyStrategies;
     const { detectStrategies } = await import("./strategies");
     const detected = await detectStrategies(ctx.paths.worktree);

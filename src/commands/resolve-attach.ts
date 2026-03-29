@@ -2,12 +2,12 @@ import * as fs from "fs";
 
 import { match } from "ts-pattern";
 
-import type { AgentboxConfig, TmuxMode } from "../config";
-import type { AgentName, RepoPath } from "../git";
-import { getAgentPaths } from "../git";
-import { getRepoPath } from "../loader";
-import type { Result } from "../result";
-import { isTmuxInstalled, sessionExists, sanitizeSessionName } from "../tmux";
+import type { AgentboxConfig, TmuxMode } from "../lib/config";
+import type { AgentName, RepoPath } from "../lib/git";
+import { getAgentPaths } from "../lib/git";
+import { getRepoPath } from "../lib/loader";
+import type { Result } from "../lib/result";
+import { isTmuxInstalled, sessionExists, sanitizeSessionName } from "../lib/tmux";
 import { resolveAgentName } from "./resolve-agent";
 import { resolveConfig } from "./resolve-config";
 import { resolveMode } from "./resolve-new";

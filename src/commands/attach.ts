@@ -8,9 +8,9 @@ import {
     handleLifecycleError,
     getAgentState,
     logBackendFallback,
-} from "../agent";
-import { getAgentPaths } from "../git";
-import { switchOrAttach, sanitizeSessionName } from "../tmux";
+} from "../lib/agent";
+import { getAgentPaths } from "../lib/git";
+import { switchOrAttach, sanitizeSessionName } from "../lib/tmux";
 import { resolveAttachArgs } from "./resolve-attach";
 import { ensureHostPreparation } from "./resolve-new";
 

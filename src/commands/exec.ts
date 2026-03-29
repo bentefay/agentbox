@@ -1,6 +1,6 @@
 import * as p from "@clack/prompts";
 
-import { execInAgent, getAgentState } from "../agent";
+import { execInAgent, getAgentState } from "../lib/agent";
 import { withResolvedAgent } from "./resolve-agent";
 
 export async function cmdExec(name?: string, command?: readonly string[]): Promise<number> {

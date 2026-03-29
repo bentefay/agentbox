@@ -1,6 +1,6 @@
 import * as p from "@clack/prompts";
 
-import { getAgentLogs, getAgentState } from "../agent";
+import { getAgentLogs, getAgentState } from "../lib/agent";
 import { withResolvedAgent } from "./resolve-agent";
 
 export async function cmdLogs(name?: string, follow?: boolean, init?: boolean): Promise<number> {

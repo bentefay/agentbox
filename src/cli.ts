@@ -8,7 +8,7 @@ import { run } from "@optique/run";
 import { match } from "ts-pattern";
 
 import pkg from "../package.json";
-import { errorMessage } from "./exec";
+import { errorMessage } from "./lib/exec";
 
 const VERSION = pkg.version;
 

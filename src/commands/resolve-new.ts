@@ -1,11 +1,11 @@
 import * as p from "@clack/prompts";
 
-import type { AgentboxConfig, TmuxMode } from "../config";
-import type { AgentName, BareRepoPath, RepoPath } from "../git";
-import { parseAgentName, fetchLatestRefs } from "../git";
-import type { Result } from "../result";
-import { Ok, Err } from "../result";
-import { detectStrategies, runHostPrepare } from "../strategies";
+import type { AgentboxConfig, TmuxMode } from "../lib/config";
+import type { AgentName, BareRepoPath, RepoPath } from "../lib/git";
+import { parseAgentName, fetchLatestRefs } from "../lib/git";
+import type { Result } from "../lib/result";
+import { Ok, Err } from "../lib/result";
+import { detectStrategies, runHostPrepare } from "../lib/strategies";
 import { promptForAgentBranch, promptForBaseBranch } from "./branch-prompts";
 
 /**

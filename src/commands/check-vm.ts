@@ -4,7 +4,7 @@ import * as path from "path";
 
 import * as p from "@clack/prompts";
 
-import { checkVm, smokeTest } from "../vm";
+import { checkVm, smokeTest } from "../lib/vm";
 
 export async function cmdCheckVm(): Promise<number> {
     p.intro("agent \u00b7 check-vm");

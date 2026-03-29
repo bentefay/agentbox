@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
-import type { AgentboxConfig, TmuxMode } from "../config";
-import type { AgentName } from "../git";
+import type { AgentboxConfig, TmuxMode } from "../lib/config";
+import type { AgentName } from "../lib/git";
 import { buildReinvokeArgs, resolveMode } from "./resolve-new";
 
 // ============================================================================

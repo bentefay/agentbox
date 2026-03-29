@@ -1,8 +1,8 @@
 import * as p from "@clack/prompts";
 
-import type { AgentboxConfig } from "../config";
-import type { RepoPath } from "../loader";
-import { loadConfig, getRepoPath } from "../loader";
+import type { AgentboxConfig } from "../lib/config";
+import type { RepoPath } from "../lib/loader";
+import { loadConfig, getRepoPath } from "../lib/loader";
 
 export async function resolveConfig(): Promise<{
     readonly config: AgentboxConfig;

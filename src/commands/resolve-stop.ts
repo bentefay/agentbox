@@ -1,5 +1,5 @@
-import type { AgentState } from "../agent";
-import type { AgentName } from "../git";
+import type { AgentState } from "../lib/agent";
+import type { AgentName } from "../lib/git";
 
 /**
  * Pre-fetched state gathered by the orchestrator before calling the pure decision function.

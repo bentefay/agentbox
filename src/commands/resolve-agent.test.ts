@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
-import type { AgentName } from "../git";
-import { parseAgentName } from "../git";
+import type { AgentName } from "../lib/git";
+import { parseAgentName } from "../lib/git";
 import type { AgentInfo } from "./agent-info";
 import type { ResolveError } from "./resolve-agent";
 import { parseAgentNames, agentsWithValidNames, handleResolveError } from "./resolve-agent";

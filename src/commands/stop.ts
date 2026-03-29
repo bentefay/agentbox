@@ -1,9 +1,9 @@
 import * as p from "@clack/prompts";
 import { match } from "ts-pattern";
 
-import { detectAgentPresence, stopAgent } from "../agent";
-import { getAgentPaths } from "../git";
-import { gracefullyKillSession, sanitizeSessionName } from "../tmux";
+import { detectAgentPresence, stopAgent } from "../lib/agent";
+import { getAgentPaths } from "../lib/git";
+import { gracefullyKillSession, sanitizeSessionName } from "../lib/tmux";
 import { withResolvedAgent } from "./resolve-agent";
 import { determineStopAction } from "./resolve-stop";
 

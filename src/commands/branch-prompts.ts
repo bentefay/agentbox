@@ -1,7 +1,7 @@
 import * as p from "@clack/prompts";
 
-import { getAgentState } from "../agent";
-import type { AnnotatedBranch, BareRepoPath, RepoPath } from "../git";
+import { getAgentState } from "../lib/agent";
+import type { AnnotatedBranch, BareRepoPath, RepoPath } from "../lib/git";
 import {
     parseAgentName,
     listWorktrees,
@@ -10,7 +10,7 @@ import {
     mergeBranches,
     getMainBranch,
     branchHint,
-} from "../git";
+} from "../lib/git";
 
 export interface BranchSelection {
     readonly branch: string;

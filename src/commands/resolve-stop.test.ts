@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 
-import type { AgentName } from "../git";
+import type { AgentName } from "../lib/git";
 import type { StopState } from "./resolve-stop";
 import { determineStopAction } from "./resolve-stop";
 

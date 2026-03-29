@@ -1,7 +1,7 @@
 import * as p from "@clack/prompts";
 
-import { detectAgentPresence, removeAgent } from "../agent";
-import { getAgentPaths } from "../git";
+import { detectAgentPresence, removeAgent } from "../lib/agent";
+import { getAgentPaths } from "../lib/git";
 import { withResolvedAgentNames } from "./resolve-agent";
 
 export async function cmdRm(names: readonly string[], force: boolean): Promise<number> {

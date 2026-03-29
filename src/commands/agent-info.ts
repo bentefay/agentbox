@@ -2,12 +2,12 @@ import * as fs from "fs";
 
 import { match } from "ts-pattern";
 
-import { getAgentState, getAgentPorts } from "../agent";
-import type { AgentState } from "../agent";
-import type { AgentName, RepoPath } from "../git";
-import { getAgentsDirPaths, parseAgentName, listWorktrees } from "../git";
-import type { AllocatedPort } from "../k8s";
-import { isTmuxInstalled, sessionExists, sanitizeSessionName } from "../tmux";
+import { getAgentState, getAgentPorts } from "../lib/agent";
+import type { AgentState } from "../lib/agent";
+import type { AgentName, RepoPath } from "../lib/git";
+import { getAgentsDirPaths, parseAgentName, listWorktrees } from "../lib/git";
+import type { AllocatedPort } from "../lib/k8s";
+import { isTmuxInstalled, sessionExists, sanitizeSessionName } from "../lib/tmux";
 
 const NO_PORTS: readonly AllocatedPort[] = [];
 
