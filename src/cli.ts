@@ -17,11 +17,19 @@ const newCmd = command(
     object({
         cmd: constant("new" as const),
         branch: optional(
-            argument(string(), { description: message`Branch name or existing branch` })
+            argument(string({ metavar: "BRANCH" }), {
+                description: message`Branch name or existing branch`,
+            })
         ),
-        base: optional(argument(string(), { description: message`Base branch to create from` })),
+        base: optional(
+            argument(string({ metavar: "BASE" }), {
+                description: message`Base branch to create from`,
+            })
+        ),
         mode: optional(
-            option("-m", "--mode", string(), { description: message`tmux mode to launch` })
+            option("-m", "--mode", string({ metavar: "MODE" }), {
+                description: message`tmux mode to launch`,
+            })
         ),
         noTmux: option("--no-tmux", {
             description: message`Create worktree without starting tmux`,
@@ -46,9 +54,11 @@ const attachCmd = command(
     "attach",
     object({
         cmd: constant("attach" as const),
-        name: optional(argument(string(), { description: message`Agent name` })),
+        name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
         mode: optional(
-            option("-m", "--mode", string(), { description: message`tmux mode to launch` })
+            option("-m", "--mode", string({ metavar: "MODE" }), {
+                description: message`tmux mode to launch`,
+            })
         ),
         trust: option("--trust", {
             description: message`Trust environment (run host-side operations)`,
@@ -67,7 +77,7 @@ const stopCmd = command(
     "stop",
     object({
         cmd: constant("stop" as const),
-        name: optional(argument(string(), { description: message`Agent name` })),
+        name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
     }),
     { description: message`Stop agent container, preserve worktree` }
 );
@@ -76,7 +86,9 @@ const rmCmd = command(
     "rm",
     object({
         cmd: constant("rm" as const),
-        names: multiple(argument(string(), { description: message`Agent name(s)` })),
+        names: multiple(
+            argument(string({ metavar: "NAME" }), { description: message`Agent name(s)` })
+        ),
         force: option("-f", "--force", { description: message`Skip confirmation` }),
     }),
     { description: message`Remove agent entirely (container + worktree)` }
@@ -94,7 +106,7 @@ const checkoutCmd = command(
     "checkout",
     object({
         cmd: constant("checkout" as const),
-        name: optional(argument(string(), { description: message`Agent name` })),
+        name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
     }),
     { description: message`Fetch agent's branch into main repo` }
 );
@@ -119,7 +131,7 @@ const logsCmd = command(
     "logs",
     object({
         cmd: constant("logs" as const),
-        name: optional(argument(string(), { description: message`Agent name` })),
+        name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
         follow: option("-f", "--follow", { description: message`Follow log output` }),
         init: option("--init", { description: message`Show init container logs (k3s only)` }),
     }),
@@ -130,8 +142,12 @@ const execCmd = command(
     "exec",
     object({
         cmd: constant("exec" as const),
-        name: optional(argument(string(), { description: message`Agent name` })),
-        command: multiple(argument(string(), { description: message`Command to run (after --)` })),
+        name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
+        command: multiple(
+            argument(string({ metavar: "CMD" }), {
+                description: message`Command to run (after --)`,
+            })
+        ),
     }),
     { description: message`Execute a command inside an agent container` }
 );
