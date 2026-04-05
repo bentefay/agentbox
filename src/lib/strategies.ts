@@ -58,7 +58,7 @@ export function nixStrategy(opts?: NixStrategyOptions): DependencyStrategy {
             "[ -f /workspace/.nix-dev-env.sh ] || nix print-dev-env --store local --offline /workspace > /workspace/.nix-dev-env.sh",
         ],
 
-        shellInit: () => ["source /workspace/.nix-dev-env.sh"],
+        shellInit: () => ["[ -f /workspace/.nix-dev-env.sh ] && source /workspace/.nix-dev-env.sh"],
 
         volumes: () =>
             fs.existsSync(nixPath)

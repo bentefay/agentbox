@@ -135,11 +135,19 @@ async function preflightVmCheck(): Promise<Result<void, string>> {
 // Claude bypass permissions
 // ============================================================================
 
-const ClaudeJsonSchema = z
-    .object({ bypassPermissionsModeAccepted: z.boolean().optional() })
+const ClaudeProjectSchema = z
+    .object({ hasTrustDialogAccepted: z.boolean().optional() })
     .passthrough();
 
-function ensureClaudeBypassPermissions(hostHome: string): void {
+const ClaudeJsonSchema = z
+    .object({
+        bypassPermissionsModeAccepted: z.boolean().optional(),
+        projects: z.record(z.string(), ClaudeProjectSchema).optional(),
+    })
+    .passthrough();
+
+/** @internal */
+export function ensureClaudeBypassPermissions(hostHome: string): void {
     const claudeJsonPath = path.join(hostHome, ".claude.json");
     try {
         if (!fs.existsSync(claudeJsonPath)) return;
@@ -148,10 +156,32 @@ function ensureClaudeBypassPermissions(hostHome: string): void {
         const parsed: unknown = JSON.parse(raw);
         const result = ClaudeJsonSchema.safeParse(parsed);
         if (!result.success) return;
-        if (result.data.bypassPermissionsModeAccepted === true) return;
 
-        const updated = { ...result.data, bypassPermissionsModeAccepted: true as const };
-        fs.writeFileSync(claudeJsonPath, JSON.stringify(updated, null, 2) + "\n");
+        let needsWrite = false;
+        const data = { ...result.data };
+
+        // Ensure bypass-permissions mode is accepted
+        if (data.bypassPermissionsModeAccepted !== true) {
+            data.bypassPermissionsModeAccepted = true as const;
+            needsWrite = true;
+        }
+
+        // Ensure /workspace is trusted so the Claude CLI skips the
+        // "trust this folder" interactive prompt inside the container.
+        const projects = { ...data.projects };
+        const workspaceProject = projects["/workspace"];
+        if (workspaceProject == null || workspaceProject.hasTrustDialogAccepted !== true) {
+            projects["/workspace"] = {
+                ...workspaceProject,
+                hasTrustDialogAccepted: true as const,
+            };
+            data.projects = projects;
+            needsWrite = true;
+        }
+
+        if (needsWrite) {
+            fs.writeFileSync(claudeJsonPath, JSON.stringify(data, null, 2) + "\n");
+        }
     } catch {
         // File may be missing, malformed, or unwritable — skip silently
     }
