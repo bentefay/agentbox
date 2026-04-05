@@ -1,0 +1,9 @@
+{
+    "phase": "baseline",
+    "consecutivePasses": 0,
+    "totalRuns": 0,
+    "lastRunTimestamp": null,
+    "lastFailureReason": null,
+    "blocked": false,
+    "blockedReason": null
+}
