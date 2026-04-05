@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 var __create = Object.create;
 var __getProtoOf = Object.getPrototypeOf;
 var __defProp = Object.defineProperty;
@@ -24713,9 +24712,15 @@ init_exec();
 var VERSION = package_default.version;
 var newCmd = command("new", object({
   cmd: constant("new"),
-  branch: optional(argument(string(), { description: message`Branch name or existing branch` })),
-  base: optional(argument(string(), { description: message`Base branch to create from` })),
-  mode: optional(option("-m", "--mode", string(), { description: message`tmux mode to launch` })),
+  branch: optional(argument(string({ metavar: "BRANCH" }), {
+    description: message`Branch name or existing branch`
+  })),
+  base: optional(argument(string({ metavar: "BASE" }), {
+    description: message`Base branch to create from`
+  })),
+  mode: optional(option("-m", "--mode", string({ metavar: "MODE" }), {
+    description: message`tmux mode to launch`
+  })),
   noTmux: option("--no-tmux", {
     description: message`Create worktree without starting tmux`
   }),
@@ -24734,8 +24739,10 @@ var newCmd = command("new", object({
 }), { description: message`Create a new agent (worktree + container + tmux)` });
 var attachCmd = command("attach", object({
   cmd: constant("attach"),
-  name: optional(argument(string(), { description: message`Agent name` })),
-  mode: optional(option("-m", "--mode", string(), { description: message`tmux mode to launch` })),
+  name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
+  mode: optional(option("-m", "--mode", string({ metavar: "MODE" }), {
+    description: message`tmux mode to launch`
+  })),
   trust: option("--trust", {
     description: message`Trust environment (run host-side operations)`
   }),
@@ -24748,11 +24755,11 @@ var attachCmd = command("attach", object({
 }), { description: message`Attach to an existing agent's tmux session` });
 var stopCmd = command("stop", object({
   cmd: constant("stop"),
-  name: optional(argument(string(), { description: message`Agent name` }))
+  name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` }))
 }), { description: message`Stop agent container, preserve worktree` });
 var rmCmd = command("rm", object({
   cmd: constant("rm"),
-  names: multiple(argument(string(), { description: message`Agent name(s)` })),
+  names: multiple(argument(string({ metavar: "NAME" }), { description: message`Agent name(s)` })),
   force: option("-f", "--force", { description: message`Skip confirmation` })
 }), { description: message`Remove agent entirely (container + worktree)` });
 var listCmd = command("list", object({
@@ -24760,7 +24767,7 @@ var listCmd = command("list", object({
 }), { description: message`List all agents with status` });
 var checkoutCmd = command("checkout", object({
   cmd: constant("checkout"),
-  name: optional(argument(string(), { description: message`Agent name` }))
+  name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` }))
 }), { description: message`Fetch agent's branch into main repo` });
 var checkVmCmd = command("check-vm", object({
   cmd: constant("check-vm")
@@ -24770,14 +24777,16 @@ var cacheCmd = command("cache", object({
 }), { description: message`Pre-cache docker images for fast startup` });
 var logsCmd = command("logs", object({
   cmd: constant("logs"),
-  name: optional(argument(string(), { description: message`Agent name` })),
+  name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
   follow: option("-f", "--follow", { description: message`Follow log output` }),
   init: option("--init", { description: message`Show init container logs (k3s only)` })
 }), { description: message`Display agent container logs` });
 var execCmd = command("exec", object({
   cmd: constant("exec"),
-  name: optional(argument(string(), { description: message`Agent name` })),
-  command: multiple(argument(string(), { description: message`Command to run (after --)` }))
+  name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
+  command: multiple(argument(string({ metavar: "CMD" }), {
+    description: message`Command to run (after --)`
+  }))
 }), { description: message`Execute a command inside an agent container` });
 var parser = or(newCmd, attachCmd, stopCmd, rmCmd, listCmd, checkoutCmd, checkVmCmd, cacheCmd, logsCmd, execCmd);
 var program = defineProgram({
