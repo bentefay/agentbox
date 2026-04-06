@@ -1,9 +1,9 @@
 import * as p from "@clack/prompts";
 import { match } from "ts-pattern";
 
-import type { AgentName, RepoPath } from "../lib/git";
+import type { AgentName, GitContext } from "../lib/git";
 import { parseAgentName } from "../lib/git";
-import { getRepoPath } from "../lib/loader";
+import { detectGitContext } from "../lib/loader";
 import type { Result } from "../lib/result";
 import { Ok, Err, collectResults } from "../lib/result";
 import type { AgentInfo } from "./agent-info";
@@ -36,8 +36,8 @@ export function agentsWithValidNames(
     );
 }
 
-export async function pickAgent(repoPath: RepoPath, message: string): Promise<PickAgentResult> {
-    const allAgents = await listAgentsWithState(repoPath);
+export async function pickAgent(gitContext: GitContext, message: string): Promise<PickAgentResult> {
+    const allAgents = await listAgentsWithState(gitContext);
     const agents = agentsWithValidNames(allAgents);
     if (agents.length === 0) return Err({ kind: "no-agents" });
 
@@ -58,14 +58,14 @@ export async function pickAgent(repoPath: RepoPath, message: string): Promise<Pi
  */
 export async function resolveAgentName(
     rawName: string | undefined,
-    repoPath: RepoPath,
+    gitContext: GitContext,
     promptMessage: string
 ): Promise<ResolveResult> {
     if (rawName != null) {
         const parsed = parseAgentName(rawName);
         return parsed.ok ? Ok(parsed.value) : Err({ kind: "error", message: parsed.error });
     }
-    return pickAgent(repoPath, promptMessage);
+    return pickAgent(gitContext, promptMessage);
 }
 
 /**
@@ -74,13 +74,13 @@ export async function resolveAgentName(
  */
 export async function resolveAgentNames(
     rawNames: readonly string[],
-    repoPath: RepoPath
+    gitContext: GitContext
 ): Promise<ResolveNamesResult> {
     if (rawNames.length > 0) {
         return parseAgentNames(rawNames);
     }
 
-    const allAgents = await listAgentsWithState(repoPath);
+    const allAgents = await listAgentsWithState(gitContext);
     const agents = agentsWithValidNames(allAgents);
     if (agents.length === 0) return Err({ kind: "no-agents" });
 
@@ -121,57 +121,59 @@ export function handleResolveError(error: ResolveError, noAgentsMessage: string)
 }
 
 /**
- * Resolve the repo path, displaying an error and returning exit code 1 on failure.
- * Convenience wrapper for commands that only need the repo path (e.g. list, cache).
+ * Resolve the git context, displaying an error and returning exit code 1 on failure.
+ * Convenience wrapper for commands that only need the git context (e.g. list, cache).
  */
-export async function withRepoPath(onOk: (repoPath: RepoPath) => Promise<number>): Promise<number> {
-    const repoPathResult = await getRepoPath();
-    if (!repoPathResult.ok) {
-        p.log.error(repoPathResult.error);
+export async function withGitContext(
+    onOk: (gitContext: GitContext) => Promise<number>
+): Promise<number> {
+    const ctxResult = await detectGitContext();
+    if (!ctxResult.ok) {
+        p.log.error(ctxResult.error);
         return 1;
     }
-    return onOk(repoPathResult.value);
+    return onOk(ctxResult.value);
 }
 
 /**
  * Higher-order helper that resolves a single agent name (from CLI arg or interactive picker),
  * handles the common error/cancel/no-agents cases, and delegates the `ok` branch to the caller.
- * Internally resolves the repo path so callers don't need to.
+ * Internally resolves the git context so callers don't need to.
  */
 export async function withResolvedAgent(
     rawName: string | undefined,
     promptMessage: string,
-    onOk: (name: AgentName, repoPath: RepoPath) => Promise<number>,
+    onOk: (name: AgentName, gitContext: GitContext) => Promise<number>,
     noAgentsMessage = "No agents available"
 ): Promise<number> {
-    const repoPathResult = await getRepoPath();
-    if (!repoPathResult.ok) {
-        p.log.error(repoPathResult.error);
+    const ctxResult = await detectGitContext();
+    if (!ctxResult.ok) {
+        p.log.error(ctxResult.error);
         return 1;
     }
-    const repoPath = repoPathResult.value;
-    const resolved = await resolveAgentName(rawName, repoPath, promptMessage);
-    if (resolved.ok) return onOk(resolved.value, repoPath);
+    const gitContext = ctxResult.value;
+    const resolved = await resolveAgentName(rawName, gitContext, promptMessage);
+    if (resolved.ok) return onOk(resolved.value, gitContext);
     return handleResolveError(resolved.error, noAgentsMessage);
 }
 
 /**
  * Higher-order helper that resolves multiple agent names (from CLI args or interactive multi-select),
  * handles the common error/cancel/no-agents cases, and delegates the `ok` branch to the caller.
- * Internally resolves the repo path so callers don't need to.
+ * Internally resolves the git context so callers don't need to.
  */
 export async function withResolvedAgentNames(
     rawNames: readonly string[],
-    onOk: (names: readonly AgentName[], repoPath: RepoPath) => Promise<number>,
+    onOk: (names: readonly AgentName[], gitContext: GitContext) => Promise<number>,
     noAgentsMessage = "No agents to remove"
 ): Promise<number> {
-    const repoPathResult = await getRepoPath();
-    if (!repoPathResult.ok) {
-        p.log.error(repoPathResult.error);
+    const ctxResult = await detectGitContext();
+    if (!ctxResult.ok) {
+        p.log.error(ctxResult.error);
         return 1;
     }
-    const repoPath = repoPathResult.value;
-    const resolved = await resolveAgentNames(rawNames, repoPath);
-    if (resolved.ok) return onOk(resolved.value, repoPath);
+    const gitContext = ctxResult.value;
+    const resolved = await resolveAgentNames(rawNames, gitContext);
+    if (resolved.ok) return onOk(resolved.value, gitContext);
     return handleResolveError(resolved.error, noAgentsMessage);
 }

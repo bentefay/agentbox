@@ -17,7 +17,7 @@ export interface SyncResult {
 }
 
 export async function ensureBareRepo(repoPath: RepoPath): Promise<Result<BareRepoPath, string>> {
-    const { agentsDir, bareRepo } = getAgentsDirPaths(repoPath);
+    const { agentsDir, bareRepo } = getAgentsDirPaths({ kind: "repo", root: repoPath });
 
     const checkResult = await exec(
         `git -C ${shellEscape(bareRepo)} rev-parse --is-bare-repository`,

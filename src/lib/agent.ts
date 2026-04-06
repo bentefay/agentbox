@@ -25,7 +25,7 @@ import {
 } from "./backend";
 import type { BackendLogsOptions } from "./backend";
 import { ensureImageCache } from "./cache";
-import type { AgentName, AgentPaths, RepoPath } from "./git";
+import type { AgentName, AgentPaths, GitContext } from "./git";
 import { getAgentPaths, removeWorktree } from "./git";
 import { buildAgentImage } from "./image";
 import { Ok, Err } from "./result";
@@ -100,10 +100,10 @@ export async function logBackendFallback(): Promise<void> {
 
 export async function createAgentContext(
     name: AgentName,
-    repoPath: RepoPath,
+    gitContext: GitContext,
     config: AgentboxConfig
 ): Promise<AgentContext> {
-    const paths = getAgentPaths(repoPath, name);
+    const paths = getAgentPaths(gitContext, name);
     const backend = await resolveBackend(name);
     return { name, paths, config, backend };
 }

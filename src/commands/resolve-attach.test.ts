@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
 import type { AgentboxConfig, TmuxMode } from "../lib/config";
-import type { AgentName, RepoPath } from "../lib/git";
+import type { AgentName, RepoPath, GitContext } from "../lib/git";
 import type { AttachState } from "./resolve-attach";
 import { determineAttachAction } from "./resolve-attach";
 
@@ -10,7 +10,7 @@ import { determineAttachAction } from "./resolve-attach";
 // ============================================================================
 
 const testAgent = "my-agent" as AgentName;
-const testRepoPath = "/tmp/test-repo" as RepoPath;
+const testGitContext: GitContext = { kind: "repo", root: "/tmp/test-repo" as RepoPath };
 
 function minimalTmuxMode(name: string): TmuxMode {
     return { name, windows: [] };
@@ -31,7 +31,7 @@ function baseState(overrides: Partial<AttachState> = {}): AttachState {
         configResult: minimalConfig(),
         modeResult: { ok: true, value: undefined },
         agentName: testAgent,
-        repoPath: testRepoPath,
+        gitContext: testGitContext,
         trust: false,
         untrusted: false,
         modeName: undefined,
@@ -60,7 +60,7 @@ describe("determineAttachAction", () => {
                 agentName: testAgent,
                 mode: undefined,
                 config: undefined,
-                repoPath: testRepoPath,
+                gitContext: testGitContext,
             });
         });
 
@@ -80,7 +80,7 @@ describe("determineAttachAction", () => {
                 agentName: testAgent,
                 mode,
                 config,
-                repoPath: testRepoPath,
+                gitContext: testGitContext,
             });
         });
 
@@ -140,7 +140,7 @@ describe("determineAttachAction", () => {
                 kind: "restore",
                 agentName: testAgent,
                 config,
-                repoPath: testRepoPath,
+                gitContext: testGitContext,
                 mode: undefined,
                 trust: true,
                 untrusted: false,
@@ -164,7 +164,7 @@ describe("determineAttachAction", () => {
                 kind: "restore",
                 agentName: testAgent,
                 config,
-                repoPath: testRepoPath,
+                gitContext: testGitContext,
                 mode,
                 trust: false,
                 untrusted: false,

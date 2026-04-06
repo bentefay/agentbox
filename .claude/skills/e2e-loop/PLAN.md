@@ -4,8 +4,15 @@ Stabilize `agentbox new --mode dev` so it works correctly 5 consecutive times.
 
 ## Command Under Test
 
+Alternate between trusted and untrusted on each run to exercise both code paths.
+Use `totalRuns` from `STATUS.json` to determine: even runs → untrusted, odd runs → trusted.
+
 ```bash
-bun run src/cli.ts new --mode dev --untrusted --use-local-branch test
+# Untrusted (even runs: 0, 2, 4, ...)
+bun run src/cli.ts new --mode dev --untrusted --use-local-branch --no-focus test
+
+# Trusted (odd runs: 1, 3, 5, ...)
+bun run src/cli.ts new --mode dev --use-local-branch --no-focus test
 ```
 
 Teardown between runs:
@@ -160,7 +167,7 @@ A recurring cron job runs the validation cycle. Each cycle:
     - If it does, check if all panes have reached their ready signals
     - If a run is still in progress (panes not ready yet), skip this cycle and wait for the next one
 3. **Tear down** — `bun run src/cli.ts rm --force test`
-4. **Spin up** — `bun run src/cli.ts new --mode dev --untrusted --use-local-branch test`
+4. **Spin up** — `bun run src/cli.ts new --mode dev --untrusted --use-local-branch --no-focus test`
 5. **Wait for readiness** — actively poll panes for ready signals:
     - Poll `agent:0` until claude prompt visible
     - Poll `test:0` until test results appear

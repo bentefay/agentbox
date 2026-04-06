@@ -3,11 +3,11 @@ import chalk from "chalk";
 import { match } from "ts-pattern";
 
 import { listAgentsWithState } from "./agent-info";
-import { withRepoPath } from "./resolve-agent";
+import { withGitContext } from "./resolve-agent";
 
 export async function cmdList(): Promise<number> {
-    return withRepoPath(async (repoPath) => {
-        const agents = await listAgentsWithState(repoPath);
+    return withGitContext(async (gitContext) => {
+        const agents = await listAgentsWithState(gitContext);
 
         if (agents.length === 0) {
             p.log.info("No agents found");

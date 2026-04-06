@@ -4,7 +4,7 @@ import { match } from "ts-pattern";
 
 import { getAgentState, getAgentPorts } from "../lib/agent";
 import type { AgentState } from "../lib/agent";
-import type { AgentName, RepoPath } from "../lib/git";
+import type { AgentName, GitContext } from "../lib/git";
 import { getAgentsDirPaths, parseAgentName, listWorktrees } from "../lib/git";
 import type { AllocatedPort } from "../lib/k8s";
 import { isTmuxInstalled, sessionExists, sanitizeSessionName } from "../lib/tmux";
@@ -35,8 +35,8 @@ export function agentStatusHint(agent: AgentInfo): string {
     return parts.length > 0 ? parts.join(", ") : agent.branch;
 }
 
-export async function listAgentsWithState(repoPath: RepoPath): Promise<readonly AgentInfo[]> {
-    const paths = getAgentsDirPaths(repoPath);
+export async function listAgentsWithState(gitContext: GitContext): Promise<readonly AgentInfo[]> {
+    const paths = getAgentsDirPaths(gitContext);
 
     if (!fs.existsSync(paths.bareRepo)) return [];
 

@@ -20,10 +20,14 @@ consecutive times. You do not write code — you delegate to the implementor and
 
 ## Commands
 
+Alternate between trusted and untrusted on each run to exercise both code paths.
+Use `totalRuns` from `STATUS.json` to determine: even runs → untrusted, odd runs → trusted.
+
 ```
-Spin up:   bun run src/cli.ts new --mode dev --untrusted --use-local-branch test
-Tear down: bun run src/cli.ts rm --force test
-List:      bun run src/cli.ts list
+Spin up (untrusted): bun run src/cli.ts new --mode dev --untrusted --use-local-branch --no-focus test
+Spin up (trusted):   bun run src/cli.ts new --mode dev --use-local-branch --no-focus test
+Tear down:           bun run src/cli.ts rm --force test
+List:                bun run src/cli.ts list
 ```
 
 ## Your principles
@@ -66,10 +70,8 @@ If `.claude/skills/e2e-loop/STATUS.json` shows `phase: "fixing"`:
           Build:     n/a
           Test:      bun test
         ```
-5. When implementor reports done, tell the reviewer to:
-    - Tear down and spin up fresh
-    - Run the full checklist
-    - Check the diagnosis quality gate
+5. When implementor reports done, spawn the reviewer with the appropriate spin-up command (trusted/untrusted).
+   The reviewer handles: teardown, spin-up, readiness polling, full checklist, diagnosis quality gate, and result recording.
 6. If reviewer finds issues: send them back to implementor with evidence.
 7. Max 3 cycles per issue. If stuck, escalate to user.
 8. When all issues resolved, update `.claude/skills/e2e-loop/STATUS.json` to `phase: "validating"`.
@@ -79,16 +81,12 @@ If `.claude/skills/e2e-loop/STATUS.json` shows `phase: "fixing"`:
 If `.claude/skills/e2e-loop/STATUS.json` shows `phase: "validating"`:
 
 1. Read `.claude/skills/e2e-loop/STATUS.json`. If `consecutivePasses >= 5`, update phase to `"complete"` and stop.
-2. Check if a previous run is still in progress:
-    - `tmux has-session -t test` — if session exists, check if panes are ready
-    - If still starting up, skip this cycle
-3. If previous run is complete or no session exists:
-    - Tear down, then spin up fresh
-4. Wait for readiness by polling panes (see PLAN.md Phase 3 step 5). Global timeout: 10 minutes.
-5. Spawn reviewer to run full checklist.
-6. Record result in `.claude/skills/e2e-loop/runs.jsonl` and update `.claude/skills/e2e-loop/STATUS.json`.
-7. On failure: set `phase: "fixing"`, `consecutivePasses: 0`, and failure reason.
-8. On pass: increment `consecutivePasses`. If now >= 5, set `phase: "complete"`.
+2. Determine trusted/untrusted: if `totalRuns % 2 === 0` → untrusted, else → trusted.
+3. Spawn the reviewer with the appropriate spin-up command. The reviewer handles: teardown, spin-up, readiness
+   polling, checklist verification, result recording in `runs.jsonl` and `STATUS.json`.
+4. When reviewer reports back:
+    - On failure: verify `STATUS.json` shows `phase: "fixing"`, `consecutivePasses: 0`. Report to user.
+    - On pass: verify `STATUS.json` shows incremented `consecutivePasses`. If now >= 5, set `phase: "complete"`.
 
 ## Phase: Complete
 
@@ -115,9 +113,27 @@ subagent_type: "reviewer"
 name: "reviewer"
 ```
 
-Provide: the full CHECKLIST.md content, `git diff origin/main...HEAD` for the diff command, pane capture commands
-(`tmux capture-pane -t test:<window>.<pane> -p -S -1000`), `.claude/skills/e2e-loop/runs.jsonl` format for recording, `.claude/skills/e2e-loop/STATUS.json` path, and
-the port discovery command (`bun run src/cli.ts list` — parse devtools port for Playwright MCP verification).
+The reviewer owns the **full run lifecycle**: teardown, spin-up, readiness polling, checklist verification, and result
+recording. The orchestrator tells the reviewer to run; the reviewer reports back with a structured result.
+
+Provide:
+- The spin-up command (trusted or untrusted based on `totalRuns % 2`)
+- The teardown command
+- The full CHECKLIST.md content
+- `git diff origin/main...HEAD` for the diff command
+- Pane capture commands (`tmux capture-pane -t test:<window>.<pane> -p -S -1000`)
+- `.claude/skills/e2e-loop/runs.jsonl` format for recording
+- `.claude/skills/e2e-loop/STATUS.json` path
+- The port discovery command (`bun run src/cli.ts list` — parse devtools port for Playwright MCP verification)
+- Readiness polling instructions: poll each pane every 10s for its ready signal (see PLAN.md), global timeout 10 minutes
+
+The reviewer must:
+1. Tear down any existing session (`rm --force test`, then `tmux kill-session -t test` if leftover)
+2. Spin up fresh
+3. Poll panes for readiness (global 10 min timeout)
+4. Run the full checklist with evidence
+5. Record result in `runs.jsonl` and update `STATUS.json`
+6. Report structured result back to orchestrator
 
 ---
 

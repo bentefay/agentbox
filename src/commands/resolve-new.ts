@@ -1,8 +1,9 @@
 import * as p from "@clack/prompts";
 
 import type { AgentboxConfig, TmuxMode } from "../lib/config";
-import type { AgentName, BareRepoPath, RepoPath } from "../lib/git";
+import type { AgentName, BareRepoPath, GitContext } from "../lib/git";
 import { parseAgentName, fetchLatestRefs } from "../lib/git";
+import type { RepoPath } from "../lib/loader";
 import type { Result } from "../lib/result";
 import { Ok, Err } from "../lib/result";
 import { detectStrategies, runHostPrepare } from "../lib/strategies";
@@ -49,11 +50,16 @@ export async function resolveNewArgs(
         readonly noTmux: boolean;
     },
     config: AgentboxConfig,
-    repoPath: RepoPath,
+    gitContext: GitContext,
     bareRepoPath: BareRepoPath | null
 ): Promise<ResolvedNewArgs> {
     // Step 1: Resolve branch name and base branch (interactive if not provided)
-    const branchStep = await resolveBranchAndBase(opts.branch, opts.base, repoPath, bareRepoPath);
+    const branchStep = await resolveBranchAndBase(
+        opts.branch,
+        opts.base,
+        gitContext.root,
+        bareRepoPath
+    );
     if (branchStep.kind !== "resolved") return branchStep;
 
     // Step 2: Parse and validate the agent name

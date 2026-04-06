@@ -1,4 +1,4 @@
-export { type RepoPath } from "../loader";
+export { type RepoPath, type GitContext } from "../loader";
 export { type AgentName, parseAgentName } from "./agent-name";
 export {
     type BareRepoPath,

@@ -8,8 +8,8 @@ import { withResolvedAgent } from "./resolve-agent";
 import { determineStopAction } from "./resolve-stop";
 
 export async function cmdStop(name?: string): Promise<number> {
-    return withResolvedAgent(name, "Select agent to stop", async (agentName, repoPath) => {
-        const paths = getAgentPaths(repoPath, agentName);
+    return withResolvedAgent(name, "Select agent to stop", async (agentName, gitContext) => {
+        const paths = getAgentPaths(gitContext, agentName);
         const presence = await detectAgentPresence(agentName, paths);
         const action = determineStopAction({ agentName, ...presence });
 

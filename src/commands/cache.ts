@@ -9,9 +9,9 @@ import { resolveConfig } from "./resolve-config";
 export async function cmdCache(): Promise<number> {
     const resolved = await resolveConfig();
     if (resolved == null) return 1;
-    const { config, repoPath } = resolved;
+    const { config, gitContext } = resolved;
     const { ensureImageCache } = await import("../lib/cache");
-    const paths = getAgentsDirPaths(repoPath);
+    const paths = getAgentsDirPaths(gitContext);
 
     if (!config.cacheImages) {
         p.log.info("No cache images configured");

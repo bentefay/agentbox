@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 
-import { getRepoPath } from "./loader";
+import { getRepoPath, detectGitContext } from "./loader";
 import type { RepoPath } from "./loader";
 
 describe("getRepoPath", () => {
@@ -14,6 +14,17 @@ describe("getRepoPath", () => {
             // The value should be usable as a string (branded type is transparent)
             const str: string = result.value;
             expect(str).toBe(result.value);
+        }
+    });
+});
+
+describe("detectGitContext", () => {
+    test("returns repo context when run inside a normal git repo", async () => {
+        const result = await detectGitContext();
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            expect(result.value.kind).toBe("repo");
+            expect(result.value.root.length).toBeGreaterThan(0);
         }
     });
 });

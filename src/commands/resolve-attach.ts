@@ -3,9 +3,9 @@ import * as fs from "fs";
 import { match } from "ts-pattern";
 
 import type { AgentboxConfig, TmuxMode } from "../lib/config";
-import type { AgentName, RepoPath } from "../lib/git";
+import type { AgentName, GitContext } from "../lib/git";
 import { getAgentPaths } from "../lib/git";
-import { getRepoPath } from "../lib/loader";
+import { detectGitContext } from "../lib/loader";
 import type { Result } from "../lib/result";
 import { isTmuxInstalled, sessionExists, sanitizeSessionName } from "../lib/tmux";
 import { resolveAgentName } from "./resolve-agent";
@@ -18,13 +18,13 @@ export type ResolvedAttachArgs =
           readonly agentName: AgentName;
           readonly mode: TmuxMode | undefined;
           readonly config: AgentboxConfig | undefined;
-          readonly repoPath: RepoPath;
+          readonly gitContext: GitContext;
       }
     | {
           readonly kind: "restore";
           readonly agentName: AgentName;
           readonly config: AgentboxConfig;
-          readonly repoPath: RepoPath;
+          readonly gitContext: GitContext;
           readonly mode: TmuxMode | undefined;
           readonly trust: boolean;
           readonly untrusted: boolean;
@@ -44,7 +44,7 @@ export interface AttachState {
     readonly configResult: AgentboxConfig | null;
     readonly modeResult: Result<TmuxMode | undefined, string>;
     readonly agentName: AgentName;
-    readonly repoPath: RepoPath;
+    readonly gitContext: GitContext;
     readonly trust: boolean;
     readonly untrusted: boolean;
     readonly modeName: string | undefined;
@@ -73,7 +73,7 @@ export function determineAttachAction(state: AttachState): ResolvedAttachArgs {
                 agentName: state.agentName,
                 mode: state.modeResult.value,
                 config: state.configResult,
-                repoPath: state.repoPath,
+                gitContext: state.gitContext,
             };
         }
         return {
@@ -81,7 +81,7 @@ export function determineAttachAction(state: AttachState): ResolvedAttachArgs {
             agentName: state.agentName,
             mode: undefined,
             config: undefined,
-            repoPath: state.repoPath,
+            gitContext: state.gitContext,
         };
     }
 
@@ -105,7 +105,7 @@ export function determineAttachAction(state: AttachState): ResolvedAttachArgs {
         kind: "restore",
         agentName: state.agentName,
         config: state.configResult,
-        repoPath: state.repoPath,
+        gitContext: state.gitContext,
         mode: state.modeResult.value,
         trust: state.trust,
         untrusted: state.untrusted,
@@ -122,13 +122,13 @@ export async function resolveAttachArgs(
     trust: boolean,
     untrusted: boolean
 ): Promise<ResolvedAttachArgs> {
-    const repoPathResult = await getRepoPath();
-    if (!repoPathResult.ok) {
-        return { kind: "error", message: repoPathResult.error };
+    const ctxResult = await detectGitContext();
+    if (!ctxResult.ok) {
+        return { kind: "error", message: ctxResult.error };
     }
-    const repoPath = repoPathResult.value;
+    const gitContext = ctxResult.value;
 
-    const agentResult = await resolveAgentName(name, repoPath, "Select agent to attach");
+    const agentResult = await resolveAgentName(name, gitContext, "Select agent to attach");
     if (!agentResult.ok) {
         return match(agentResult.error)
             .with({ kind: "no-agents" }, () => ({
@@ -144,7 +144,7 @@ export async function resolveAttachArgs(
     const tmuxAvailable = await isTmuxInstalled();
     const hasSession = tmuxAvailable ? await sessionExists(sanitizeSessionName(agentName)) : false;
 
-    const paths = getAgentPaths(repoPath, agentName);
+    const paths = getAgentPaths(gitContext, agentName);
     const worktreeExists = fs.existsSync(paths.worktree);
 
     // Load config only when needed (mode specified or restore path)
@@ -161,7 +161,7 @@ export async function resolveAttachArgs(
         configResult,
         modeResult,
         agentName,
-        repoPath,
+        gitContext,
         trust,
         untrusted,
         modeName,

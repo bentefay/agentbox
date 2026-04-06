@@ -9,7 +9,15 @@ import {
     groupSourcesBySha,
     classifyBranchSources,
 } from "./git";
-import type { AgentName, RepoPath, BranchInfo, AnnotatedBranch, BranchSource } from "./git";
+import type {
+    AgentName,
+    RepoPath,
+    GitContext,
+    BranchInfo,
+    AnnotatedBranch,
+    BranchSource,
+} from "./git";
+import type { BareRepoPath } from "./git/paths";
 
 /** Helper to create a valid AgentName for tests that need one. */
 function testAgentName(raw: string): AgentName {
@@ -18,9 +26,9 @@ function testAgentName(raw: string): AgentName {
     return result.value;
 }
 
-/** Helper to create a RepoPath for tests. */
-function testRepoPath(raw: string): RepoPath {
-    return raw as RepoPath;
+/** Helper to create a GitContext for the common repo case in tests. */
+function testRepoContext(root: string): GitContext {
+    return { kind: "repo", root: root as RepoPath };
 }
 
 describe("parseAgentName", () => {
@@ -108,32 +116,47 @@ describe("parseAgentName", () => {
 });
 
 describe("getAgentPaths", () => {
-    test("derives correct paths from repo path and agent name", () => {
-        const paths = getAgentPaths(testRepoPath("/home/user/my-repo"), testAgentName("agent-1"));
+    test("derives correct paths from repo context and agent name", () => {
+        const paths = getAgentPaths(
+            testRepoContext("/home/user/my-repo"),
+            testAgentName("agent-1")
+        );
         expect(paths.agentsDir).toBe("/home/user/my-repo-agents");
         expect(`${paths.bareRepo}`).toBe("/home/user/my-repo-agents/.bare");
         expect(paths.worktree).toBe("/home/user/my-repo-agents/agent-1");
     });
 
     test("handles nested repo paths", () => {
-        const paths = getAgentPaths(testRepoPath("/a/b/c/repo"), testAgentName("test"));
+        const paths = getAgentPaths(testRepoContext("/a/b/c/repo"), testAgentName("test"));
         expect(paths.agentsDir).toBe("/a/b/c/repo-agents");
         expect(`${paths.bareRepo}`).toBe("/a/b/c/repo-agents/.bare");
         expect(paths.worktree).toBe("/a/b/c/repo-agents/test");
     });
 
     test("uses repo basename, not full path, for agents dir", () => {
-        const paths = getAgentPaths(testRepoPath("/workspace/cosmos"), testAgentName("dev"));
+        const paths = getAgentPaths(testRepoContext("/workspace/cosmos"), testAgentName("dev"));
         expect(paths.agentsDir).toEndWith("cosmos-agents");
         expect(paths.agentsDir).not.toContain("workspace-agents");
     });
 });
 
 describe("getAgentsDirPaths", () => {
-    test("derives agents directory and bare repo paths without agent name", () => {
-        const paths = getAgentsDirPaths(testRepoPath("/home/user/my-repo"));
+    test("derives agents directory and bare repo paths for repo context", () => {
+        const paths = getAgentsDirPaths(testRepoContext("/home/user/my-repo"));
         expect(paths.agentsDir).toBe("/home/user/my-repo-agents");
         expect(`${paths.bareRepo}`).toBe("/home/user/my-repo-agents/.bare");
+    });
+
+    test("returns provided paths for bare-worktree context", () => {
+        const ctx: GitContext = {
+            kind: "bare-worktree",
+            root: "/tmp/agents/my-agent" as RepoPath,
+            bareRepo: "/tmp/agents/.bare" as BareRepoPath,
+            agentsDir: "/tmp/agents",
+        };
+        const paths = getAgentsDirPaths(ctx);
+        expect(paths.agentsDir).toBe("/tmp/agents");
+        expect(`${paths.bareRepo}`).toBe("/tmp/agents/.bare");
     });
 });
 

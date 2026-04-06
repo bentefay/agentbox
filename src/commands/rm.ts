@@ -5,9 +5,9 @@ import { getAgentPaths } from "../lib/git";
 import { withResolvedAgentNames } from "./resolve-agent";
 
 export async function cmdRm(names: readonly string[], force: boolean): Promise<number> {
-    return withResolvedAgentNames(names, async (agentNames, repoPath) => {
+    return withResolvedAgentNames(names, async (agentNames, gitContext) => {
         for (const agentName of agentNames) {
-            const paths = getAgentPaths(repoPath, agentName);
+            const paths = getAgentPaths(gitContext, agentName);
             const presence = await detectAgentPresence(agentName, paths);
 
             if (

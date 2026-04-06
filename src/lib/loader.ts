@@ -4,10 +4,20 @@ import * as path from "path";
 import { AgentboxConfigSchema } from "./config";
 import type { AgentboxConfig } from "./config";
 import { exec, errorMessage } from "./exec";
+import type { BareRepoPath } from "./git/paths";
 import { Ok, Err } from "./result";
 import type { Result } from "./result";
 
 export type RepoPath = string & { readonly __brand: "RepoPath" };
+
+export type GitContext =
+    | { readonly kind: "repo"; readonly root: RepoPath }
+    | {
+          readonly kind: "bare-worktree";
+          readonly root: RepoPath;
+          readonly bareRepo: BareRepoPath;
+          readonly agentsDir: string;
+      };
 
 const CONFIG_FILENAMES = ["agentbox.config.ts", "agentbox.config.js"];
 
@@ -65,4 +75,51 @@ export async function getRepoPath(): Promise<Result<RepoPath, string>> {
         return Ok(result.stdout.trim() as RepoPath);
     }
     return Err("Not inside a git repository. Run agentbox from your project root.");
+}
+
+export async function detectGitContext(): Promise<Result<GitContext, string>> {
+    const repoPathResult = await getRepoPath();
+    if (!repoPathResult.ok) return repoPathResult;
+    const root = repoPathResult.value;
+
+    const gitPath = path.join(root, ".git");
+    let stat: fs.Stats;
+    try {
+        stat = fs.statSync(gitPath);
+    } catch {
+        return Err("Cannot stat .git in repository root.");
+    }
+
+    if (stat.isDirectory()) {
+        return Ok({ kind: "repo", root });
+    }
+
+    // .git is a file → this is a worktree
+    const commonDirResult = await exec(`git -C ${root} rev-parse --git-common-dir`, {
+        captureOutput: true,
+        rejectOnNonZeroExit: false,
+    });
+    if (commonDirResult.code !== 0 || !commonDirResult.stdout.trim()) {
+        return Err("Failed to determine git common dir for worktree.");
+    }
+    const commonDir = path.resolve(root, commonDirResult.stdout.trim());
+
+    const isBareResult = await exec(`git -C ${commonDir} rev-parse --is-bare-repository`, {
+        captureOutput: true,
+        rejectOnNonZeroExit: false,
+    });
+    if (isBareResult.code !== 0) {
+        return Err("Failed to determine if parent repository is bare.");
+    }
+
+    if (isBareResult.stdout.trim() === "true") {
+        return Ok({
+            kind: "bare-worktree",
+            root,
+            bareRepo: commonDir as BareRepoPath,
+            agentsDir: path.dirname(commonDir),
+        });
+    }
+
+    return Err("agentbox cannot run from a git worktree. Run from the project root instead.");
 }

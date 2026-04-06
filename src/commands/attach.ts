@@ -36,7 +36,7 @@ export async function cmdAttach(
     return match(resolved)
         .with({ kind: "reattach" }, async (r) => {
             if (r.mode != null && r.config != null) {
-                const ctx = await createAgentContext(r.agentName, r.repoPath, r.config);
+                const ctx = await createAgentContext(r.agentName, r.gitContext, r.config);
                 const tmuxResult = await setupAgentTmux(ctx, r.mode);
                 if (!tmuxResult.ok) {
                     p.log.error(tmuxResult.error);
@@ -51,10 +51,10 @@ export async function cmdAttach(
 
             const agentState = await getAgentState(r.agentName);
             if (agentState.kind !== "running") {
-                const paths = getAgentPaths(r.repoPath, r.agentName);
+                const paths = getAgentPaths(r.gitContext, r.agentName);
                 const prepResult = await ensureHostPreparation(
                     r.config,
-                    r.repoPath,
+                    r.gitContext.root,
                     paths.worktree,
                     r.trust,
                     r.untrusted
@@ -66,7 +66,7 @@ export async function cmdAttach(
             }
 
             await logBackendFallback();
-            const ctx = await createAgentContext(r.agentName, r.repoPath, r.config);
+            const ctx = await createAgentContext(r.agentName, r.gitContext, r.config);
 
             const result = await startAndSetupAgent(ctx, r.mode);
             if (!result.ok) return handleLifecycleError(result.error);

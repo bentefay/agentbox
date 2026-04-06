@@ -1,6 +1,8 @@
 import * as path from "path";
 
-import type { RepoPath } from "../loader";
+import { match } from "ts-pattern";
+
+import type { GitContext } from "../loader";
 import type { AgentName } from "./agent-name";
 
 export type BareRepoPath = string & { readonly __brand: "BareRepoPath" };
@@ -19,18 +21,26 @@ export interface AgentsDirPaths {
 }
 
 /** Get the agents directory and bare repo paths (for listing/discovery, no specific agent). */
-export function getAgentsDirPaths(repoPath: RepoPath): AgentsDirPaths {
-    const repoName = path.basename(repoPath);
-    const agentsDir = path.resolve(repoPath, "..", `${repoName}-agents`);
-    return {
-        agentsDir,
-        // This is the ONE allowed cast — the branded type smart constructor pattern
-        bareRepo: path.join(agentsDir, BARE_REPO_DIR) as BareRepoPath,
-    };
+export function getAgentsDirPaths(ctx: GitContext): AgentsDirPaths {
+    return match(ctx)
+        .with({ kind: "repo" }, ({ root }) => {
+            const repoName = path.basename(root);
+            const agentsDir = path.resolve(root, "..", `${repoName}-agents`);
+            return {
+                agentsDir,
+                // This is the ONE allowed cast — the branded type smart constructor pattern
+                bareRepo: path.join(agentsDir, BARE_REPO_DIR) as BareRepoPath,
+            };
+        })
+        .with({ kind: "bare-worktree" }, ({ agentsDir, bareRepo }) => ({
+            agentsDir,
+            bareRepo,
+        }))
+        .exhaustive();
 }
 
-export function getAgentPaths(repoPath: RepoPath, agentName: AgentName): AgentPaths {
-    const { agentsDir, bareRepo } = getAgentsDirPaths(repoPath);
+export function getAgentPaths(ctx: GitContext, agentName: AgentName): AgentPaths {
+    const { agentsDir, bareRepo } = getAgentsDirPaths(ctx);
     return {
         agentsDir,
         bareRepo,

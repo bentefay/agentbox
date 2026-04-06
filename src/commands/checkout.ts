@@ -8,8 +8,8 @@ import type { CheckoutError } from "../lib/git";
 import { withResolvedAgent } from "./resolve-agent";
 
 export async function cmdCheckout(name?: string): Promise<number> {
-    return withResolvedAgent(name, "Select agent to checkout", async (agentName, repoPath) => {
-        const paths = getAgentPaths(repoPath, agentName);
+    return withResolvedAgent(name, "Select agent to checkout", async (agentName, gitContext) => {
+        const paths = getAgentPaths(gitContext, agentName);
 
         if (!fs.existsSync(paths.bareRepo)) {
             p.log.error("No agents directory found");
@@ -20,7 +20,7 @@ export async function cmdCheckout(name?: string): Promise<number> {
 
         const fetchSpinner = p.spinner();
         fetchSpinner.start("Fetching agent branch...");
-        const result = await checkoutAgentBranch(paths.bareRepo, repoPath, agentName);
+        const result = await checkoutAgentBranch(paths.bareRepo, gitContext.root, agentName);
 
         if (!result.ok) {
             fetchSpinner.stop("Failed");
