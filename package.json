@@ -18,8 +18,7 @@
         "test": "bun test",
         "lint": "oxlint src/",
         "fmt": "oxfmt --write src/",
-        "fmt:check": "oxfmt --check src/",
-        "release": "bun scripts/release.ts"
+        "fmt:check": "oxfmt --check src/"
     },
     "files": [
         "dist/"
