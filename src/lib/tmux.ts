@@ -1,4 +1,4 @@
-import type { TmuxMode, TmuxWindow } from "./config";
+import type { TmuxMode, TmuxPane, TmuxWindow } from "./config";
 import { exec, tryExec, shellEscape, once, errorMessage } from "./exec";
 import type { Result } from "./result";
 import { Ok, Err } from "./result";
@@ -8,7 +8,7 @@ export type SessionName = string & { readonly __brand: "SessionName" };
 export const isTmuxInstalled: () => Promise<boolean> = once(async () => {
     const result = await exec("which tmux", {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     return result.code === 0;
 });
@@ -21,7 +21,7 @@ export async function getCurrentSessionName(): Promise<string | null> {
     if (!isInsideTmux()) return null;
     const result = await exec("tmux display-message -p '#S'", {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (result.code !== 0) return null;
     return result.stdout.trim();
@@ -35,7 +35,7 @@ export function sanitizeSessionName(name: string): SessionName {
 export async function sessionExists(name: SessionName): Promise<boolean> {
     const result = await exec(`tmux has-session -t ${shellEscape(name)} 2>/dev/null`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     return result.code === 0;
 }
@@ -43,7 +43,7 @@ export async function sessionExists(name: SessionName): Promise<boolean> {
 export async function windowExists(session: SessionName, window: string): Promise<boolean> {
     const result = await exec(`tmux list-windows -t ${shellEscape(session)} -F '#{window_name}'`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (result.code !== 0) return false;
     return result.stdout.trim().split("\n").includes(window);
@@ -116,7 +116,7 @@ export async function switchOrAttach(session: SessionName): Promise<Result<void,
             if (!result.ok) return result;
         } else {
             await exec(`tmux attach-session -t ${shellEscape(session)}`, {
-                captureOutput: false,
+                captureOutput: false
             });
         }
         return Ok(undefined);
@@ -127,7 +127,7 @@ export async function switchOrAttach(session: SessionName): Promise<Result<void,
 
 export async function killSession(name: SessionName): Promise<void> {
     await exec(`tmux kill-session -t ${shellEscape(name)}`, {
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
 }
 
@@ -138,7 +138,7 @@ export async function gracefullyKillSession(name: SessionName): Promise<void> {
         `tmux list-panes -s -t ${shellEscape(name)} -F '#{pane_id} #{pane_pid}'`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
 
@@ -154,26 +154,68 @@ export async function gracefullyKillSession(name: SessionName): Promise<void> {
             .filter((p) => p.id !== "");
 
         const otherPanes = panes.filter((p) => p.id !== currentPane);
+        const validPanes = otherPanes.filter((p) => !isNaN(p.pid) && p.pid > 1);
 
-        // Send Ctrl+C to other panes
+        // Step 1: Send Ctrl+C to each pane (graceful SIGINT to foreground command)
         for (const pane of otherPanes) {
-            await exec(`tmux send-keys -t ${shellEscape(name)}:${pane.id} C-c`, {
-                rejectOnNonZeroExit: false,
-            });
+            try {
+                await exec(`tmux send-keys -t ${shellEscape(name)}:${pane.id} C-c`, {
+                    rejectOnNonZeroExit: false
+                });
+            } catch {
+                // Pane may already be gone — continue
+            }
         }
 
         if (otherPanes.length > 0) {
             await new Promise((r) => setTimeout(r, 2000));
         }
 
-        // SIGKILL remaining
-        for (const pane of otherPanes) {
-            if (!isNaN(pane.pid) && pane.pid > 1) {
-                await exec(`kill -9 ${pane.pid}`, { rejectOnNonZeroExit: false });
+        // Step 2: SIGTERM pane processes and their children
+        for (const pane of validPanes) {
+            try {
+                await exec(`pkill -P ${pane.pid}`, {
+                    rejectOnNonZeroExit: false,
+                    captureOutput: true
+                });
+            } catch {
+                /* already exited */
+            }
+            try {
+                await exec(`kill -15 ${pane.pid}`, {
+                    rejectOnNonZeroExit: false,
+                    captureOutput: true
+                });
+            } catch {
+                /* already exited */
             }
         }
 
-        if (otherPanes.length > 0) {
+        if (validPanes.length > 0) {
+            await new Promise((r) => setTimeout(r, 2000));
+        }
+
+        // Step 3: Escalate to SIGKILL for any remaining processes
+        for (const pane of validPanes) {
+            try {
+                await exec(`pkill -P ${pane.pid} -KILL`, {
+                    rejectOnNonZeroExit: false,
+                    captureOutput: true
+                });
+            } catch {
+                /* already exited */
+            }
+            try {
+                await exec(`kill -9 ${pane.pid}`, {
+                    rejectOnNonZeroExit: false,
+                    captureOutput: true
+                });
+            } catch {
+                /* already exited */
+            }
+        }
+
+        if (validPanes.length > 0) {
             await new Promise((r) => setTimeout(r, 500));
         }
     }
@@ -184,7 +226,7 @@ export async function gracefullyKillSession(name: SessionName): Promise<void> {
 async function getLastWindowName(session: SessionName): Promise<string | null> {
     const result = await exec(`tmux list-windows -t ${shellEscape(session)} -F '#{window_name}'`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (result.code !== 0) return null;
     const windows = result.stdout.trim().split("\n").filter(Boolean);
@@ -192,6 +234,25 @@ async function getLastWindowName(session: SessionName): Promise<string | null> {
 }
 
 export type CommandWrapper = (cmd: string) => string;
+
+async function sendPaneCommands(
+    target: string,
+    panes: readonly TmuxPane[],
+    wrapCommand?: CommandWrapper
+): Promise<Result<void, string>> {
+    for (const [i, pane] of panes.entries()) {
+        if (!pane.command) continue;
+        const paneTarget = `${target}.${i}`;
+        if (pane.sleepSeconds && pane.sleepSeconds > 0) {
+            const sleepResult = await sendKeys(paneTarget, `sleep ${pane.sleepSeconds}`);
+            if (!sleepResult.ok) return sleepResult;
+        }
+        const cmd = wrapCommand ? wrapCommand(pane.command) : pane.command;
+        const cmdResult = await sendKeys(paneTarget, cmd);
+        if (!cmdResult.ok) return cmdResult;
+    }
+    return Ok(undefined);
+}
 
 async function createWindowWithPanes(
     session: SessionName,
@@ -213,19 +274,7 @@ async function createWindowWithPanes(
         if (!layoutResult.ok) return layoutResult;
     }
 
-    for (const [i, pane] of window.panes.entries()) {
-        if (!pane.command) continue;
-        const paneTarget = `${target}.${i}`;
-        if (pane.sleepSeconds && pane.sleepSeconds > 0) {
-            const sleepResult = await sendKeys(paneTarget, `sleep ${pane.sleepSeconds}`);
-            if (!sleepResult.ok) return sleepResult;
-        }
-        const cmd = wrapCommand ? wrapCommand(pane.command) : pane.command;
-        const cmdResult = await sendKeys(paneTarget, cmd);
-        if (!cmdResult.ok) return cmdResult;
-    }
-
-    return Ok(undefined);
+    return sendPaneCommands(target, window.panes, wrapCommand);
 }
 
 export async function setupMode(
@@ -234,9 +283,15 @@ export async function setupMode(
     wrapCommand?: CommandWrapper
 ): Promise<Result<void, string>> {
     for (const window of mode.windows) {
-        if (await windowExists(session, window.name)) continue;
-        const result = await createWindowWithPanes(session, window, wrapCommand);
-        if (!result.ok) return result;
+        if (await windowExists(session, window.name)) {
+            // Window exists — re-send pane commands (e.g. session reuse)
+            const target = `${session}:${window.name}`;
+            const result = await sendPaneCommands(target, window.panes, wrapCommand);
+            if (!result.ok) return result;
+        } else {
+            const result = await createWindowWithPanes(session, window, wrapCommand);
+            if (!result.ok) return result;
+        }
     }
     return Ok(undefined);
 }

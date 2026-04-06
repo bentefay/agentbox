@@ -21,7 +21,7 @@ import {
     stopBackend,
     buildExecCommand,
     getBackendServicePorts,
-    getBackendLogs,
+    getBackendLogs
 } from "./backend";
 import type { BackendLogsOptions } from "./backend";
 import { ensureImageCache } from "./cache";
@@ -40,7 +40,7 @@ import {
     isTmuxInstalled,
     sessionExists,
     gracefullyKillSession,
-    sanitizeSessionName,
+    sanitizeSessionName
 } from "./tmux";
 import { checkVm } from "./vm";
 
@@ -142,7 +142,7 @@ const ClaudeProjectSchema = z
 const ClaudeJsonSchema = z
     .object({
         bypassPermissionsModeAccepted: z.boolean().optional(),
-        projects: z.record(z.string(), ClaudeProjectSchema).optional(),
+        projects: z.record(z.string(), ClaudeProjectSchema).optional()
     })
     .passthrough();
 
@@ -173,7 +173,7 @@ export function ensureClaudeBypassPermissions(hostHome: string): void {
         if (workspaceProject == null || workspaceProject.hasTrustDialogAccepted !== true) {
             projects["/workspace"] = {
                 ...workspaceProject,
-                hasTrustDialogAccepted: true as const,
+                hasTrustDialogAccepted: true as const
             };
             data.projects = projects;
             needsWrite = true;
@@ -197,13 +197,13 @@ async function readGitIdentity(): Promise<
     const gitName = (
         await exec("git config --global user.name", {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         })
     ).stdout.trim();
     const gitEmail = (
         await exec("git config --global user.email", {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         })
     ).stdout.trim();
     return gitName && gitEmail ? { name: gitName, email: gitEmail } : undefined;
@@ -375,7 +375,7 @@ export async function ensureAgentPod(ctx: AgentContext): Promise<Result<void, st
         imageName,
         imageCachePath,
         gitUser,
-        strategyVolumes,
+        strategyVolumes
     });
     if (!startResult.ok) {
         startSpinner.stop("Failed");
@@ -404,7 +404,11 @@ export async function setupAgentTmux(
     if (!sessionResult.ok) return sessionResult;
     const session = sessionResult.value;
 
-    if (!(await windowExists(session, "main"))) {
+    if (await windowExists(session, "main")) {
+        // Window exists — re-send exec command (e.g. session reuse)
+        const execResult = await sendKeys(`${session}:main`, buildExecCommand(backend));
+        if (!execResult.ok) return execResult;
+    } else {
         const windowResult = await createWindow(session, "main");
         if (!windowResult.ok) return windowResult;
         const mainTarget = windowResult.value;
@@ -529,6 +533,6 @@ export async function removeAgent(
     return Ok({
         warnings: [containerWarning.value, worktreeWarning.value].filter(
             (w): w is string => w != null
-        ),
+        )
     });
 }
