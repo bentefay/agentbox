@@ -65,9 +65,9 @@ All communication goes through the orchestrator. Use `team-lead` as the target f
 - **Stay in scope.** If you notice something that should be fixed but isn't in your plan, report it — don't fix it.
 - **Be honest.** If a test fails, report the failure. If you're not sure something is right, say so. The orchestrator
   will verify independently anyway.
-- **Distinguish your failures from pre-existing ones.** If a build or test fails, check whether the failure is in code
-  you changed. If it's pre-existing or in an unrelated area, report it to the orchestrator rather than trying to fix it.
-  If a test is flaky (passes on re-run), note it.
+- **Own every failure.** If a build or test fails during your run, it is your responsibility to fix — regardless of
+  whether you caused it. Never stash, revert, or undo your changes to check if a failure is "pre-existing". Never
+  dismiss a failure as someone else's problem. Fix it and move on. If a test is flaky (passes on re-run), note it.
 
 ---
 
@@ -96,3 +96,4 @@ NEVER do any of these:
 - Delete branches
 - Edit agent config files (CLAUDE.md, .claude/rules/, .claude/skills/, .claude/commands/, .claude/agents/)
 - Modify secrets or encrypted files
+- Run `git stash`, `git checkout .`, `git restore`, or any revert to check if a failure is "pre-existing"

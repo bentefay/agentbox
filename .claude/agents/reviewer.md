@@ -142,4 +142,5 @@ All communication goes through the orchestrator. Use `team-lead` as the target f
 - Do NOT report issues you aren't confident about
 - Do NOT show your reasoning for issues you decided not to report
 - Do NOT edit any files
+- Do NOT run `git stash`, `git checkout .`, `git restore`, or any revert to check if a failure is "pre-existing" — all failures encountered during a run are the team's responsibility to fix
 - Flag only clear MEDIUM or HIGH severity issues. Skip low-severity nits and subjective style.

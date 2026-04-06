@@ -50,6 +50,10 @@ host system config.
 Never assume a problem is pre-existing or someone else's responsibility. Every failing pane, every test error, every
 crash is yours to fix. If it was broken before your changes, fix it anyway and report it.
 
+**Never stash, revert, or undo your changes to check whether a failure is "pre-existing".** This wastes time and creates
+a false sense that some failures aren't your problem. They are. If something fails during your run, fix it — regardless
+of when it was introduced.
+
 ### 4. Preserve intent, fix bugs
 
 Fix bugs and make things work, but don't change intended behavior. If you're unsure whether a fix changes behavior or

@@ -1,9 +1,0 @@
-{
-    "phase": "baseline",
-    "consecutivePasses": 0,
-    "totalRuns": 1,
-    "lastRunTimestamp": "2026-04-05T17:00:00+10:00",
-    "lastFailureReason": "agentbox new stuck at Starting agent pod — k3s kubeconfig /etc/rancher/k3s/k3s.yaml not readable by current user (root-owned, mode 0600)",
-    "blocked": false,
-    "blockedReason": null
-}

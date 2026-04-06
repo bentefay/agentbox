@@ -2,11 +2,14 @@
     "permissions": {
         "allow": [
             "mcp__playwright__*",
-            "Write(.claude/skills/e2e-loop/**)",
-            "Edit(.claude/skills/e2e-loop/**)",
+            "Write(.agent-memory/**)",
+            "Edit(.agent-memory/**)",
             "Skill(e2e-loop)"
         ]
     },
     "enableAllProjectMcpServers": true,
-    "enabledMcpjsonServers": ["playwright"]
+    "enabledMcpjsonServers": ["playwright"],
+    "env": {
+        "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "true"
+    }
 }

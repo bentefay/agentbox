@@ -50,7 +50,7 @@ Use `tmux capture-pane -t test:<window>.<pane> -p -S -1000` to capture pane outp
 - [ ] Navigate to `http://localhost:<port>` via Playwright MCP
 - [ ] Page loads without connection error
 - [ ] Page renders correctly (not blank, not error page)
-- [ ] Screenshot captured as evidence (save to `.claude/skills/e2e-loop/` directory)
+- [ ] Screenshot captured as evidence (save to `.agent-memory/e2e-loop/` directory)
 
 ## Diagnosis Quality Gate
 
@@ -60,6 +60,7 @@ The reviewer checks that the implementor followed the principles:
 - [ ] No changes were made based on guesses (check the implementor's reasoning)
 - [ ] No behavioral changes were made without orchestrator/user approval
 - [ ] No failures were dismissed as "pre-existing"
+- [ ] No `git stash`, `git checkout .`, or revert was used to test whether a failure is "pre-existing" — all failures are owned
 - [ ] The implementor flagged ambiguous behavioral questions rather than guessing
 
 ---

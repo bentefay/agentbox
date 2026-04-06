@@ -1,0 +1,9 @@
+{
+    "phase": "complete",
+    "consecutivePasses": 5,
+    "totalRuns": 10,
+    "lastRunTimestamp": "2026-04-06T07:30:00Z",
+    "lastFailureReason": null,
+    "blocked": false,
+    "blockedReason": null
+}
