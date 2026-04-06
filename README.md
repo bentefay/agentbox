@@ -40,6 +40,17 @@ npm run build
 
 This produces a standalone `./agentbox` binary.
 
+### As an npm dependency
+
+Install from GitHub in another repo:
+
+```bash
+npm install github:bentefay/agentbox
+# or: pnpm add github:bentefay/agentbox
+```
+
+This makes `agentbox` available as `node_modules/.bin/agentbox` (runnable via `npx agentbox`, `pnpx agentbox`, etc).
+
 ### Development
 
 A Nix flake is provided for a reproducible dev environment:
@@ -47,6 +58,8 @@ A Nix flake is provided for a reproducible dev environment:
 ```bash
 nix develop
 ```
+
+This adds `agentbox` to your PATH via `bin/agentbox`, which runs the TypeScript source directly with Bun.
 
 Or install dependencies manually and run directly:
 

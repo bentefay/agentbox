@@ -9,7 +9,7 @@ Use `tmux capture-pane -t test:<window>.<pane> -p -S -1000` to capture pane outp
 ## Infrastructure
 
 - [ ] Agent container is running: `kubectl get pod agent-test -n agents` (k3s) or `docker ps --filter name=agent-test` (Docker)
-- [ ] Container is ready and accepting exec: `bun run src/cli.ts exec test -- echo ok`
+- [ ] Container is ready and accepting exec: `agentbox exec test -- echo ok`
 - [ ] All expected tmux windows exist: `tmux list-windows -t test` should show: agent, test, devtools, shell
 - [ ] All expected panes exist:
     - `tmux list-panes -t test:agent` — 1 pane
@@ -46,7 +46,7 @@ Use `tmux capture-pane -t test:<window>.<pane> -p -S -1000` to capture pane outp
 
 ## Playwright Verification
 
-- [ ] Discover devtools port from `bun run src/cli.ts list` output (parse `devtools: localhost:<port>`)
+- [ ] Discover devtools port from `agentbox list` output (parse `devtools: localhost:<port>`)
 - [ ] Navigate to `http://localhost:<port>` via Playwright MCP
 - [ ] Page loads without connection error
 - [ ] Page renders correctly (not blank, not error page)

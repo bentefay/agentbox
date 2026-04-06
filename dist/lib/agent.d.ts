@@ -4,7 +4,7 @@ import type { AgentboxConfig, TmuxMode } from "./config";
 import type { AllocatedPort } from "./k8s";
 export type { AgentState } from "./backend";
 import type { BackendLogsOptions } from "./backend";
-import type { AgentName, AgentPaths, RepoPath } from "./git";
+import type { AgentName, AgentPaths, GitContext } from "./git";
 import type { Result } from "./result";
 import type { SessionName } from "./tmux";
 export interface AgentContext {
@@ -16,7 +16,9 @@ export interface AgentContext {
 export declare const isK3sAvailable: () => Promise<boolean>;
 export declare function selectBackendKind(k3sAvailable: boolean): "k3s" | "docker";
 export declare function logBackendFallback(): Promise<void>;
-export declare function createAgentContext(name: AgentName, repoPath: RepoPath, config: AgentboxConfig): Promise<AgentContext>;
+export declare function createAgentContext(name: AgentName, gitContext: GitContext, config: AgentboxConfig): Promise<AgentContext>;
+/** @internal */
+export declare function ensureClaudeBypassPermissions(hostHome: string): void;
 export declare function getAgentState(nameOrCtx: AgentName | AgentContext): Promise<AgentState>;
 export declare function isAgentRunning(nameOrCtx: AgentName | AgentContext): Promise<boolean>;
 export declare function getAgentPorts(nameOrCtx: AgentName | AgentContext): Promise<readonly AllocatedPort[]>;

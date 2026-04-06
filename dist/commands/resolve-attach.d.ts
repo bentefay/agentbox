@@ -1,17 +1,17 @@
 import type { AgentboxConfig, TmuxMode } from "../lib/config";
-import type { AgentName, RepoPath } from "../lib/git";
+import type { AgentName, GitContext } from "../lib/git";
 import type { Result } from "../lib/result";
 export type ResolvedAttachArgs = {
     readonly kind: "reattach";
     readonly agentName: AgentName;
     readonly mode: TmuxMode | undefined;
     readonly config: AgentboxConfig | undefined;
-    readonly repoPath: RepoPath;
+    readonly gitContext: GitContext;
 } | {
     readonly kind: "restore";
     readonly agentName: AgentName;
     readonly config: AgentboxConfig;
-    readonly repoPath: RepoPath;
+    readonly gitContext: GitContext;
     readonly mode: TmuxMode | undefined;
     readonly trust: boolean;
     readonly untrusted: boolean;
@@ -35,7 +35,7 @@ export interface AttachState {
     readonly configResult: AgentboxConfig | null;
     readonly modeResult: Result<TmuxMode | undefined, string>;
     readonly agentName: AgentName;
-    readonly repoPath: RepoPath;
+    readonly gitContext: GitContext;
     readonly trust: boolean;
     readonly untrusted: boolean;
     readonly modeName: string | undefined;

@@ -24,10 +24,10 @@ Alternate between trusted and untrusted on each run to exercise both code paths.
 Use `totalRuns` from `STATUS.json` to determine: even runs → untrusted, odd runs → trusted.
 
 ```
-Spin up (untrusted): bun run src/cli.ts new --mode dev --untrusted --use-local-branch --no-focus test
-Spin up (trusted):   bun run src/cli.ts new --mode dev --use-local-branch --no-focus test
-Tear down:           bun run src/cli.ts rm --force test
-List:                bun run src/cli.ts list
+Spin up (untrusted): agentbox new --mode dev --untrusted --use-local-branch --no-focus test
+Spin up (trusted):   agentbox new --mode dev --use-local-branch --no-focus test
+Tear down:           agentbox rm --force test
+List:                agentbox list
 ```
 
 ## Your principles
@@ -133,7 +133,7 @@ Provide:
 - Pane capture commands (`tmux capture-pane -t test:<window>.<pane> -p -S -1000`)
 - `.agent-memory/e2e-loop/runs.jsonl` format for recording
 - `.agent-memory/e2e-loop/STATUS.json` path
-- The port discovery command (`bun run src/cli.ts list` — parse devtools port for Playwright MCP verification)
+- The port discovery command (`agentbox list` — parse devtools port for Playwright MCP verification)
 - Readiness polling instructions: poll each pane every 10s for its ready signal (see PLAN.md), global timeout 10 minutes
 
 The reviewer must:

@@ -1,11 +1,15 @@
 var __defProp = Object.defineProperty;
+var __returnValue = (v) => v;
+function __exportSetter(name, newValue) {
+  this[name] = __returnValue.bind(null, newValue);
+}
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, {
       get: all[name],
       enumerable: true,
       configurable: true,
-      set: (newValue) => all[name] = () => newValue
+      set: __exportSetter.bind(all, name)
     });
 };
 
@@ -676,13 +680,11 @@ function assertEqual(val) {
 function assertNotEqual(val) {
   return val;
 }
-function assertIs(_arg) {
-}
+function assertIs(_arg) {}
 function assertNever(_x) {
   throw new Error("Unexpected value in exhaustive check");
 }
-function assert(_) {
-}
+function assert(_) {}
 function getEnumValues(entries) {
   const numericValues = Object.values(entries).filter((v) => typeof v === "number");
   const values = Object.entries(entries).filter(([k, _]) => numericValues.indexOf(+k) === -1).map(([_, v]) => v);
@@ -806,8 +808,7 @@ function esc(str) {
 function slugify(input) {
   return input.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
 }
-var captureStackTrace = "captureStackTrace" in Error ? Error.captureStackTrace : (..._args) => {
-};
+var captureStackTrace = "captureStackTrace" in Error ? Error.captureStackTrace : (..._args) => {};
 function isObject(data) {
   return typeof data === "object" && data !== null && !Array.isArray(data);
 }
@@ -1278,8 +1279,7 @@ function uint8ArrayToHex(bytes) {
 }
 
 class Class {
-  constructor(..._args) {
-  }
+  constructor(..._args) {}
 }
 
 // node_modules/zod/v4/core/errors.js
@@ -2069,8 +2069,7 @@ var $ZodCheckStringFormat = /* @__PURE__ */ $constructor("$ZodCheckStringFormat"
       });
     });
   else
-    (_b = inst._zod).check ?? (_b.check = () => {
-    });
+    (_b = inst._zod).check ?? (_b.check = () => {});
 });
 var $ZodCheckRegex = /* @__PURE__ */ $constructor("$ZodCheckRegex", (inst, def) => {
   $ZodCheckStringFormat.init(inst, def);
@@ -2373,8 +2372,7 @@ var $ZodString = /* @__PURE__ */ $constructor("$ZodString", (inst, def) => {
     if (def.coerce)
       try {
         payload.value = String(payload.value);
-      } catch (_2) {
-      }
+      } catch (_2) {}
     if (typeof payload.value === "string")
       return payload;
     payload.issues.push({
@@ -2683,8 +2681,7 @@ var $ZodNumber = /* @__PURE__ */ $constructor("$ZodNumber", (inst, def) => {
     if (def.coerce)
       try {
         payload.value = Number(payload.value);
-      } catch (_) {
-      }
+      } catch (_) {}
     const input = payload.value;
     if (typeof input === "number" && !Number.isNaN(input) && Number.isFinite(input)) {
       return payload;
@@ -2711,8 +2708,7 @@ var $ZodBoolean = /* @__PURE__ */ $constructor("$ZodBoolean", (inst, def) => {
     if (def.coerce)
       try {
         payload.value = Boolean(payload.value);
-      } catch (_) {
-      }
+      } catch (_) {}
     const input = payload.value;
     if (typeof input === "boolean")
       return payload;
@@ -2732,8 +2728,7 @@ var $ZodBigInt = /* @__PURE__ */ $constructor("$ZodBigInt", (inst, def) => {
     if (def.coerce)
       try {
         payload.value = BigInt(payload.value);
-      } catch (_) {
-      }
+      } catch (_) {}
     if (typeof payload.value === "bigint")
       return payload;
     payload.issues.push({
@@ -2841,8 +2836,7 @@ var $ZodDate = /* @__PURE__ */ $constructor("$ZodDate", (inst, def) => {
     if (def.coerce) {
       try {
         payload.value = new Date(payload.value);
-      } catch (_err) {
-      }
+      } catch (_err) {}
     }
     const input = payload.value;
     const isDate = input instanceof Date;
@@ -10639,8 +10633,7 @@ function describe(description) {
       globalRegistry.add(inst, { ...existing, description });
     }
   ];
-  ch._zod.check = () => {
-  };
+  ch._zod.check = () => {};
   return ch;
 }
 function meta(metadata) {
@@ -10651,8 +10644,7 @@ function meta(metadata) {
       globalRegistry.add(inst, { ...existing, ...metadata });
     }
   ];
-  ch._zod.check = () => {
-  };
+  ch._zod.check = () => {};
   return ch;
 }
 function _stringbool(Classes, _params) {
@@ -10733,8 +10725,7 @@ function initializeContext(params) {
     metadataRegistry: params?.metadata ?? globalRegistry,
     target,
     unrepresentable: params?.unrepresentable ?? "throw",
-    override: params?.override ?? (() => {
-    }),
+    override: params?.override ?? (() => {}),
     io: params?.io ?? "output",
     counter: 0,
     seen: new Map,
@@ -10961,9 +10952,7 @@ function finalize(ctx, schema) {
     result.$schema = "http://json-schema.org/draft-07/schema#";
   } else if (ctx.target === "draft-04") {
     result.$schema = "http://json-schema.org/draft-04/schema#";
-  } else if (ctx.target === "openapi-3.0") {
-  } else {
-  }
+  } else if (ctx.target === "openapi-3.0") {} else {}
   if (ctx.external?.uri) {
     const id = ctx.external.registry.get(schema)?.id;
     if (!id)
@@ -10978,8 +10967,7 @@ function finalize(ctx, schema) {
       defs[seen.defId] = seen.def;
     }
   }
-  if (ctx.external) {
-  } else {
+  if (ctx.external) {} else {
     if (Object.keys(defs).length > 0) {
       if (ctx.target === "draft-2020-12") {
         result.$defs = defs;
@@ -11189,10 +11177,8 @@ var voidProcessor = (_schema, ctx, _json, _params) => {
 var neverProcessor = (_schema, _ctx, json, _params) => {
   json.not = {};
 };
-var anyProcessor = (_schema, _ctx, _json, _params) => {
-};
-var unknownProcessor = (_schema, _ctx, _json, _params) => {
-};
+var anyProcessor = (_schema, _ctx, _json, _params) => {};
+var unknownProcessor = (_schema, _ctx, _json, _params) => {};
 var dateProcessor = (_schema, ctx, _json, _params) => {
   if (ctx.unrepresentable === "throw") {
     throw new Error("Date cannot be represented in JSON Schema");
@@ -11214,8 +11200,7 @@ var literalProcessor = (schema, ctx, json, _params) => {
     if (val === undefined) {
       if (ctx.unrepresentable === "throw") {
         throw new Error("Literal `undefined` cannot be represented in JSON Schema");
-      } else {
-      }
+      } else {}
     } else if (typeof val === "bigint") {
       if (ctx.unrepresentable === "throw") {
         throw new Error("BigInt literals cannot be represented in JSON Schema");
@@ -11226,8 +11211,7 @@ var literalProcessor = (schema, ctx, json, _params) => {
       vals.push(val);
     }
   }
-  if (vals.length === 0) {
-  } else if (vals.length === 1) {
+  if (vals.length === 0) {} else if (vals.length === 1) {
     const val = vals[0];
     json.type = val === null ? "null" : typeof val;
     if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
@@ -13072,8 +13056,7 @@ function getErrorMap() {
   return config().customError;
 }
 var ZodFirstPartyTypeKind;
-(function(ZodFirstPartyTypeKind2) {
-})(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
+(function(ZodFirstPartyTypeKind2) {})(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
 // node_modules/zod/v4/classic/from-json-schema.js
 var z = {
   ...exports_schemas2,
@@ -13703,20 +13686,14 @@ function nixStrategy(opts) {
     name: "nix",
     detect: async (repoRoot) => fileExists(repoRoot, "flake.nix"),
     hostPrepare: async (ctx, _repoRoot, worktreePath) => {
-      if (!ctx.trusted) {
-        ctx.logWarning("Skipping nix build (untrusted). If derivations are already cached, the dev environment will be set up inside the container.");
-        return Ok(undefined);
-      }
+      const offline = ctx.trusted ? "" : " --offline";
       const outputPath = path.join(worktreePath, ".nix-dev-env.sh");
-      const result = await tryExec(`nix print-dev-env ${shellEscape(worktreePath)} > ${shellEscape(outputPath)}`, "nix print-dev-env failed", { timeout: 120000 });
+      const result = await tryExec(`nix print-dev-env${offline} ${shellEscape(worktreePath)} > ${shellEscape(outputPath)}`, "nix print-dev-env failed", { timeout: 120000 });
       if (!result.ok)
         return Err(result.error);
       return Ok(undefined);
     },
-    containerInstall: async () => [
-      "[ -f /workspace/.nix-dev-env.sh ] || nix print-dev-env --store local --offline /workspace > /workspace/.nix-dev-env.sh"
-    ],
-    shellInit: () => ["source /workspace/.nix-dev-env.sh"],
+    shellInit: () => ["[ -f /workspace/.nix-dev-env.sh ] && source /workspace/.nix-dev-env.sh"],
     volumes: () => fs.existsSync(nixPath) ? [{ hostPath: nixPath, containerPath: "/nix", readOnly: true }] : []
   };
 }

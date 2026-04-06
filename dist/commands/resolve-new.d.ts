@@ -1,5 +1,6 @@
 import type { AgentboxConfig, TmuxMode } from "../lib/config";
-import type { AgentName, BareRepoPath, RepoPath } from "../lib/git";
+import type { AgentName, BareRepoPath, GitContext } from "../lib/git";
+import type { RepoPath } from "../lib/loader";
 import type { Result } from "../lib/result";
 /**
  * Resolve a tmux mode name to a TmuxMode from config.
@@ -27,7 +28,7 @@ export declare function resolveNewArgs(opts: {
     readonly base?: string;
     readonly mode?: string;
     readonly noTmux: boolean;
-}, config: AgentboxConfig, repoPath: RepoPath, bareRepoPath: BareRepoPath | null): Promise<ResolvedNewArgs>;
+}, config: AgentboxConfig, gitContext: GitContext, bareRepoPath: BareRepoPath | null): Promise<ResolvedNewArgs>;
 /**
  * Pure function to build the reinvoke command arguments for tmux re-entry.
  * Uses both the runtime (argv[0]) and script path (argv[1]) so the command

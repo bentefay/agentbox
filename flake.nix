@@ -145,7 +145,7 @@
 
             shellHook = ''
               REPO=$(git rev-parse --show-toplevel)
-              export PATH="$PATH:$REPO/cli/bin"
+              export PATH="$REPO/bin:$PATH"
 
               export NIX_DEVELOP_READY=1
 

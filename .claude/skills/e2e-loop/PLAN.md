@@ -9,16 +9,16 @@ Use `totalRuns` from `STATUS.json` to determine: even runs → untrusted, odd ru
 
 ```bash
 # Untrusted (even runs: 0, 2, 4, ...)
-bun run src/cli.ts new --mode dev --untrusted --use-local-branch --no-focus test
+agentbox new --mode dev --untrusted --use-local-branch --no-focus test
 
 # Trusted (odd runs: 1, 3, 5, ...)
-bun run src/cli.ts new --mode dev --use-local-branch --no-focus test
+agentbox new --mode dev --use-local-branch --no-focus test
 ```
 
 Teardown between runs:
 
 ```bash
-bun run src/cli.ts rm --force test
+agentbox rm --force test
 ```
 
 ---
@@ -170,8 +170,8 @@ A recurring cron job runs the validation cycle. Each cycle:
     - Check if tmux session `test` exists
     - If it does, check if all panes have reached their ready signals
     - If a run is still in progress (panes not ready yet), skip this cycle and wait for the next one
-3. **Tear down** — `bun run src/cli.ts rm --force test`
-4. **Spin up** — `bun run src/cli.ts new --mode dev --untrusted --use-local-branch --no-focus test`
+3. **Tear down** — `agentbox rm --force test`
+4. **Spin up** — `agentbox new --mode dev --untrusted --use-local-branch --no-focus test`
 5. **Wait for readiness** — actively poll panes for ready signals:
     - Poll `agent:0` until claude prompt visible
     - Poll `test:0` until test results appear
@@ -190,7 +190,7 @@ A recurring cron job runs the validation cycle. Each cycle:
 To find the devtools port for Playwright verification:
 
 ```bash
-bun run src/cli.ts list
+agentbox list
 ```
 
 This outputs port mappings for running agents, e.g.:

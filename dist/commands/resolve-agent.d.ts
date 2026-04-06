@@ -1,4 +1,4 @@
-import type { AgentName, RepoPath } from "../lib/git";
+import type { AgentName, GitContext } from "../lib/git";
 import type { Result } from "../lib/result";
 import type { AgentInfo } from "./agent-info";
 export type ResolveError = {
@@ -22,36 +22,36 @@ export type PickAgentResult = Result<AgentName, PickAgentError>;
 export declare function agentsWithValidNames(agents: readonly AgentInfo[]): readonly (AgentInfo & {
     readonly agentName: AgentName;
 })[];
-export declare function pickAgent(repoPath: RepoPath, message: string): Promise<PickAgentResult>;
+export declare function pickAgent(gitContext: GitContext, message: string): Promise<PickAgentResult>;
 /**
  * Resolve an agent name from a raw CLI argument or interactive picker.
  * Returns a discriminated union so callers can exhaustively handle each case.
  */
-export declare function resolveAgentName(rawName: string | undefined, repoPath: RepoPath, promptMessage: string): Promise<ResolveResult>;
+export declare function resolveAgentName(rawName: string | undefined, gitContext: GitContext, promptMessage: string): Promise<ResolveResult>;
 /**
  * Resolve multiple agent names from CLI arguments or interactive multi-select.
  * Returns a discriminated union so callers can exhaustively handle each case.
  */
-export declare function resolveAgentNames(rawNames: readonly string[], repoPath: RepoPath): Promise<ResolveNamesResult>;
+export declare function resolveAgentNames(rawNames: readonly string[], gitContext: GitContext): Promise<ResolveNamesResult>;
 /**
  * Handle a ResolveError by displaying the appropriate message and returning an exit code.
  * Shared by `withResolvedAgent` and `withResolvedAgentNames` to avoid duplicating the match block.
  */
 export declare function handleResolveError(error: ResolveError, noAgentsMessage: string): number;
 /**
- * Resolve the repo path, displaying an error and returning exit code 1 on failure.
- * Convenience wrapper for commands that only need the repo path (e.g. list, cache).
+ * Resolve the git context, displaying an error and returning exit code 1 on failure.
+ * Convenience wrapper for commands that only need the git context (e.g. list, cache).
  */
-export declare function withRepoPath(onOk: (repoPath: RepoPath) => Promise<number>): Promise<number>;
+export declare function withGitContext(onOk: (gitContext: GitContext) => Promise<number>): Promise<number>;
 /**
  * Higher-order helper that resolves a single agent name (from CLI arg or interactive picker),
  * handles the common error/cancel/no-agents cases, and delegates the `ok` branch to the caller.
- * Internally resolves the repo path so callers don't need to.
+ * Internally resolves the git context so callers don't need to.
  */
-export declare function withResolvedAgent(rawName: string | undefined, promptMessage: string, onOk: (name: AgentName, repoPath: RepoPath) => Promise<number>, noAgentsMessage?: string): Promise<number>;
+export declare function withResolvedAgent(rawName: string | undefined, promptMessage: string, onOk: (name: AgentName, gitContext: GitContext) => Promise<number>, noAgentsMessage?: string): Promise<number>;
 /**
  * Higher-order helper that resolves multiple agent names (from CLI args or interactive multi-select),
  * handles the common error/cancel/no-agents cases, and delegates the `ok` branch to the caller.
- * Internally resolves the repo path so callers don't need to.
+ * Internally resolves the git context so callers don't need to.
  */
-export declare function withResolvedAgentNames(rawNames: readonly string[], onOk: (names: readonly AgentName[], repoPath: RepoPath) => Promise<number>, noAgentsMessage?: string): Promise<number>;
+export declare function withResolvedAgentNames(rawNames: readonly string[], onOk: (names: readonly AgentName[], gitContext: GitContext) => Promise<number>, noAgentsMessage?: string): Promise<number>;

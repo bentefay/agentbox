@@ -5,7 +5,7 @@ export interface NixStrategyOptions {
     /** Path to the host nix store. Defaults to `/nix`. */
     readonly nixPath?: string;
 }
-/** Detect `flake.nix` and mount the nix store. Runs `nix print-dev-env` on the host (trusted) or inside the container. */
+/** Detect `flake.nix` and mount the nix store. Runs `nix print-dev-env` on the host (trusted or untrusted with `--offline`). */
 export declare function nixStrategy(opts?: NixStrategyOptions): DependencyStrategy;
 /** Detect `.envrc` and run `direnv allow` on the host when trusted. */
 export declare function direnvStrategy(): DependencyStrategy;

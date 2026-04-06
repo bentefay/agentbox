@@ -1,27 +1,46 @@
+#!/usr/bin/env node
 var __create = Object.create;
 var __getProtoOf = Object.getPrototypeOf;
 var __defProp = Object.defineProperty;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+function __accessProp(key) {
+  return this[key];
+}
+var __toESMCache_node;
+var __toESMCache_esm;
 var __toESM = (mod, isNodeMode, target) => {
+  var canCache = mod != null && typeof mod === "object";
+  if (canCache) {
+    var cache = isNodeMode ? __toESMCache_node ??= new WeakMap : __toESMCache_esm ??= new WeakMap;
+    var cached = cache.get(mod);
+    if (cached)
+      return cached;
+  }
   target = mod != null ? __create(__getProtoOf(mod)) : {};
   const to = isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target;
   for (let key of __getOwnPropNames(mod))
     if (!__hasOwnProp.call(to, key))
       __defProp(to, key, {
-        get: () => mod[key],
+        get: __accessProp.bind(mod, key),
         enumerable: true
       });
+  if (canCache)
+    cache.set(mod, to);
   return to;
 };
 var __commonJS = (cb, mod) => () => (mod || cb((mod = { exports: {} }).exports, mod), mod.exports);
+var __returnValue = (v) => v;
+function __exportSetter(name, newValue) {
+  this[name] = __returnValue.bind(null, newValue);
+}
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, {
       get: all[name],
       enumerable: true,
       configurable: true,
-      set: (newValue) => all[name] = () => newValue
+      set: __exportSetter.bind(all, name)
     });
 };
 var __esm = (fn, res) => () => (fn && (res = fn(fn = 0)), res);
@@ -229,7 +248,7 @@ function collectResults(results) {
 // src/lib/exec.ts
 import { spawn } from "child_process";
 import * as os from "os";
-import * as path2 from "path";
+import * as path3 from "path";
 async function exec(command2, options = {}) {
   const { cwd, captureOutput = false, rejectOnNonZeroExit = true, env, timeout } = options;
   const mergedEnv = env ? { ...process.env, ...env } : undefined;
@@ -304,7 +323,7 @@ function shellEscape(s2) {
 }
 function expandHome(p2) {
   if (p2.startsWith("~/"))
-    return path2.join(os.homedir(), p2.slice(2));
+    return path3.join(os.homedir(), p2.slice(2));
   return p2;
 }
 function errorMessage(err) {
@@ -318,8 +337,7 @@ function once(fn) {
     return cached;
   };
 }
-var init_exec = () => {
-};
+var init_exec = () => {};
 
 // node_modules/sisteransi/src/index.js
 var require_src = __commonJS((exports, module) => {
@@ -1651,13 +1669,11 @@ function assertEqual(val) {
 function assertNotEqual(val) {
   return val;
 }
-function assertIs(_arg) {
-}
+function assertIs(_arg) {}
 function assertNever(_x) {
   throw new Error("Unexpected value in exhaustive check");
 }
-function assert(_3) {
-}
+function assert(_3) {}
 function getEnumValues(entries) {
   const numericValues = Object.values(entries).filter((v2) => typeof v2 === "number");
   const values2 = Object.entries(entries).filter(([k3, _3]) => numericValues.indexOf(+k3) === -1).map(([_3, v2]) => v2);
@@ -1750,10 +1766,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path3) {
-  if (!path3)
+function getElementAtPath(obj, path4) {
+  if (!path4)
     return obj;
-  return path3.reduce((acc, key) => acc?.[key], obj);
+  return path4.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -2064,11 +2080,11 @@ function aborted(x4, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path3, issues) {
+function prefixIssues(path4, issues) {
   return issues.map((iss) => {
     var _a;
     (_a = iss).path ?? (_a.path = []);
-    iss.path.unshift(path3);
+    iss.path.unshift(path4);
     return iss;
   });
 }
@@ -2181,8 +2197,7 @@ function uint8ArrayToHex(bytes) {
 }
 
 class Class {
-  constructor(..._args) {
-  }
+  constructor(..._args) {}
 }
 var EVALUATING, captureStackTrace, allowsEval, getParsedType = (data) => {
   const t3 = typeof data;
@@ -2230,8 +2245,7 @@ var EVALUATING, captureStackTrace, allowsEval, getParsedType = (data) => {
 }, propertyKeyTypes, primitiveTypes, NUMBER_FORMAT_RANGES, BIGINT_FORMAT_RANGES;
 var init_util = __esm(() => {
   EVALUATING = Symbol("evaluating");
-  captureStackTrace = "captureStackTrace" in Error ? Error.captureStackTrace : (..._args) => {
-  };
+  captureStackTrace = "captureStackTrace" in Error ? Error.captureStackTrace : (..._args) => {};
   allowsEval = cached(() => {
     if (typeof navigator !== "undefined" && navigator?.userAgent?.includes("Cloudflare")) {
       return false;
@@ -2308,7 +2322,7 @@ function formatError(error, mapper = (issue2) => issue2.message) {
 }
 function treeifyError(error, mapper = (issue2) => issue2.message) {
   const result = { errors: [] };
-  const processError = (error2, path3 = []) => {
+  const processError = (error2, path4 = []) => {
     var _a, _b;
     for (const issue2 of error2.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
@@ -2318,7 +2332,7 @@ function treeifyError(error, mapper = (issue2) => issue2.message) {
       } else if (issue2.code === "invalid_element") {
         processError({ issues: issue2.issues }, issue2.path);
       } else {
-        const fullpath = [...path3, ...issue2.path];
+        const fullpath = [...path4, ...issue2.path];
         if (fullpath.length === 0) {
           result.errors.push(mapper(issue2));
           continue;
@@ -2350,8 +2364,8 @@ function treeifyError(error, mapper = (issue2) => issue2.message) {
 }
 function toDotPath(_path) {
   const segs = [];
-  const path3 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
-  for (const seg of path3) {
+  const path4 = _path.map((seg) => typeof seg === "object" ? seg.key : seg);
+  for (const seg of path4) {
     if (typeof seg === "number")
       segs.push(`[${seg}]`);
     else if (typeof seg === "symbol")
@@ -3054,8 +3068,7 @@ var init_checks = __esm(() => {
         });
       });
     else
-      (_b = inst._zod).check ?? (_b.check = () => {
-      });
+      (_b = inst._zod).check ?? (_b.check = () => {});
   });
   $ZodCheckRegex = /* @__PURE__ */ $constructor("$ZodCheckRegex", (inst, def) => {
     $ZodCheckStringFormat.init(inst, def);
@@ -3720,8 +3733,7 @@ var init_schemas = __esm(() => {
       if (def.coerce)
         try {
           payload.value = String(payload.value);
-        } catch (_4) {
-        }
+        } catch (_4) {}
       if (typeof payload.value === "string")
         return payload;
       payload.issues.push({
@@ -3991,8 +4003,7 @@ var init_schemas = __esm(() => {
       if (def.coerce)
         try {
           payload.value = Number(payload.value);
-        } catch (_3) {
-        }
+        } catch (_3) {}
       const input = payload.value;
       if (typeof input === "number" && !Number.isNaN(input) && Number.isFinite(input)) {
         return payload;
@@ -4019,8 +4030,7 @@ var init_schemas = __esm(() => {
       if (def.coerce)
         try {
           payload.value = Boolean(payload.value);
-        } catch (_3) {
-        }
+        } catch (_3) {}
       const input = payload.value;
       if (typeof input === "boolean")
         return payload;
@@ -4040,8 +4050,7 @@ var init_schemas = __esm(() => {
       if (def.coerce)
         try {
           payload.value = BigInt(payload.value);
-        } catch (_3) {
-        }
+        } catch (_3) {}
       if (typeof payload.value === "bigint")
         return payload;
       payload.issues.push({
@@ -4149,8 +4158,7 @@ var init_schemas = __esm(() => {
       if (def.coerce) {
         try {
           payload.value = new Date(payload.value);
-        } catch (_err) {
-        }
+        } catch (_err) {}
       }
       const input = payload.value;
       const isDate = input instanceof Date;
@@ -11873,8 +11881,7 @@ function describe(description) {
       globalRegistry.add(inst, { ...existing, description });
     }
   ];
-  ch._zod.check = () => {
-  };
+  ch._zod.check = () => {};
   return ch;
 }
 function meta(metadata) {
@@ -11885,8 +11892,7 @@ function meta(metadata) {
       globalRegistry.add(inst, { ...existing, ...metadata });
     }
   ];
-  ch._zod.check = () => {
-  };
+  ch._zod.check = () => {};
   return ch;
 }
 function _stringbool(Classes, _params) {
@@ -11982,8 +11988,7 @@ function initializeContext(params) {
     metadataRegistry: params?.metadata ?? globalRegistry,
     target,
     unrepresentable: params?.unrepresentable ?? "throw",
-    override: params?.override ?? (() => {
-    }),
+    override: params?.override ?? (() => {}),
     io: params?.io ?? "output",
     counter: 0,
     seen: new Map,
@@ -12210,9 +12215,7 @@ function finalize(ctx, schema) {
     result.$schema = "http://json-schema.org/draft-07/schema#";
   } else if (ctx.target === "draft-04") {
     result.$schema = "http://json-schema.org/draft-04/schema#";
-  } else if (ctx.target === "openapi-3.0") {
-  } else {
-  }
+  } else if (ctx.target === "openapi-3.0") {} else {}
   if (ctx.external?.uri) {
     const id = ctx.external.registry.get(schema)?.id;
     if (!id)
@@ -12227,8 +12230,7 @@ function finalize(ctx, schema) {
       defs[seen.defId] = seen.def;
     }
   }
-  if (ctx.external) {
-  } else {
+  if (ctx.external) {} else {
     if (Object.keys(defs).length > 0) {
       if (ctx.target === "draft-2020-12") {
         result.$defs = defs;
@@ -12459,9 +12461,7 @@ var formatMap, stringProcessor = (schema, ctx, _json, _params) => {
   }
 }, neverProcessor = (_schema, _ctx, json, _params) => {
   json.not = {};
-}, anyProcessor = (_schema, _ctx, _json, _params) => {
-}, unknownProcessor = (_schema, _ctx, _json, _params) => {
-}, dateProcessor = (_schema, ctx, _json, _params) => {
+}, anyProcessor = (_schema, _ctx, _json, _params) => {}, unknownProcessor = (_schema, _ctx, _json, _params) => {}, dateProcessor = (_schema, ctx, _json, _params) => {
   if (ctx.unrepresentable === "throw") {
     throw new Error("Date cannot be represented in JSON Schema");
   }
@@ -12480,8 +12480,7 @@ var formatMap, stringProcessor = (schema, ctx, _json, _params) => {
     if (val === undefined) {
       if (ctx.unrepresentable === "throw") {
         throw new Error("Literal `undefined` cannot be represented in JSON Schema");
-      } else {
-      }
+      } else {}
     } else if (typeof val === "bigint") {
       if (ctx.unrepresentable === "throw") {
         throw new Error("BigInt literals cannot be represented in JSON Schema");
@@ -12492,8 +12491,7 @@ var formatMap, stringProcessor = (schema, ctx, _json, _params) => {
       vals.push(val);
     }
   }
-  if (vals.length === 0) {
-  } else if (vals.length === 1) {
+  if (vals.length === 0) {} else if (vals.length === 1) {
     const val = vals[0];
     json.type = val === null ? "null" : typeof val;
     if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
@@ -12904,8 +12902,7 @@ var init_json_schema_generator = __esm(() => {
 
 // node_modules/zod/v4/core/json-schema.js
 var exports_json_schema = {};
-var init_json_schema = () => {
-};
+var init_json_schema = () => {};
 
 // node_modules/zod/v4/core/index.js
 var exports_core2 = {};
@@ -13185,21 +13182,21 @@ __export(exports_core2, {
   $ZodAny: () => $ZodAny
 });
 var init_core2 = __esm(() => {
+  init_util();
+  init_regexes();
+  init_locales();
+  init_json_schema_processors();
+  init_json_schema_generator();
+  init_json_schema();
   init_core();
   init_parse();
   init_errors();
   init_schemas();
   init_checks();
   init_versions();
-  init_util();
-  init_regexes();
-  init_locales();
   init_registries();
   init_api();
   init_to_json_schema();
-  init_json_schema_processors();
-  init_json_schema_generator();
-  init_json_schema();
 });
 
 // node_modules/zod/v4/classic/checks.js
@@ -14622,8 +14619,7 @@ var init_compat = __esm(() => {
     invalid_value: "invalid_value",
     custom: "custom"
   };
-  (function(ZodFirstPartyTypeKind2) {
-  })(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
+  (function(ZodFirstPartyTypeKind2) {})(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
 });
 
 // node_modules/zod/v4/classic/from-json-schema.js
@@ -14644,13 +14640,13 @@ function resolveRef(ref, ctx) {
   if (!ref.startsWith("#")) {
     throw new Error("External $ref is not supported, only local refs (#/...) are allowed");
   }
-  const path3 = ref.slice(1).split("/").filter(Boolean);
-  if (path3.length === 0) {
+  const path4 = ref.slice(1).split("/").filter(Boolean);
+  if (path4.length === 0) {
     return ctx.rootSchema;
   }
   const defsKey = ctx.version === "draft-2020-12" ? "$defs" : "definitions";
-  if (path3[0] === defsKey) {
-    const key = path3[1];
+  if (path4[0] === defsKey) {
+    const key = path4[1];
     if (!key || !ctx.defs[key]) {
       throw new Error(`Reference not found: ${ref}`);
     }
@@ -15366,11 +15362,6 @@ __export(exports_external, {
 });
 var init_external = __esm(() => {
   init_core2();
-  init_schemas2();
-  init_checks2();
-  init_errors2();
-  init_parse2();
-  init_compat();
   init_core2();
   init_en();
   init_core2();
@@ -15380,6 +15371,11 @@ var init_external = __esm(() => {
   init_iso();
   init_iso();
   init_coerce();
+  init_schemas2();
+  init_checks2();
+  init_errors2();
+  init_parse2();
+  init_compat();
   config(en_default());
 });
 
@@ -15435,7 +15431,7 @@ var init_config = __esm(() => {
 });
 
 // src/lib/container-spec.ts
-import * as path3 from "path";
+import * as path4 from "path";
 function buildContainerSpec(spec) {
   const userVolumes = spec.config.volumes ?? [];
   const env = [
@@ -15461,7 +15457,7 @@ function buildContainerSpec(spec) {
     })),
     ...spec.imageCachePath ? [
       {
-        hostPath: path3.dirname(spec.imageCachePath),
+        hostPath: path4.dirname(spec.imageCachePath),
         containerPath: "/cache",
         readOnly: true
       }
@@ -15482,7 +15478,7 @@ var init_container_spec = __esm(() => {
 import * as crypto from "crypto";
 import * as fs from "fs";
 import * as os2 from "os";
-import * as path4 from "path";
+import * as path5 from "path";
 async function imageExistsInContainerd(imageName) {
   const result = await exec(`k3s ctr images check name==${shellEscape(`docker.io/library/${imageName}`)}`, {
     captureOutput: true,
@@ -15504,8 +15500,8 @@ async function buildAgentImage(customImage, backendKind) {
   const alreadyCached = await M(kind).with("k3s", () => imageExistsInContainerd(TAGGED_IMAGE_NAME)).with("docker", () => imageExistsInDocker(TAGGED_IMAGE_NAME)).exhaustive();
   if (alreadyCached)
     return Ok(TAGGED_IMAGE_NAME);
-  const tmpDir = fs.mkdtempSync(path4.join(os2.tmpdir(), "agentbox-"));
-  fs.writeFileSync(path4.join(tmpDir, "Dockerfile"), DEFAULT_DOCKERFILE);
+  const tmpDir = fs.mkdtempSync(path5.join(os2.tmpdir(), "agentbox-"));
+  fs.writeFileSync(path5.join(tmpDir, "Dockerfile"), DEFAULT_DOCKERFILE);
   const buildResult = await tryExec(`docker build -t ${TAGGED_IMAGE_NAME} ${shellEscape(tmpDir)}`, "Docker build failed");
   if (!buildResult.ok) {
     fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -15635,7 +15631,7 @@ function toYamlDocuments(docs) {
 
 // src/lib/k8s.ts
 import * as os3 from "os";
-import * as path5 from "path";
+import * as path6 from "path";
 function kubectl(cmd) {
   return `KUBECONFIG=${KUBECONFIG} kubectl -n ${NAMESPACE} ${cmd}`;
 }
@@ -15680,7 +15676,7 @@ function sanitizeSegment(segment) {
   return segment.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
 }
 function deriveUserVolumeName(containerPath) {
-  const segment = path5.basename(containerPath);
+  const segment = path6.basename(containerPath);
   const sanitized = sanitizeSegment(segment);
   return `user-${sanitized || "vol"}`;
 }
@@ -15730,7 +15726,7 @@ function buildVolumes(namedVolumes) {
 }
 function buildPodYaml(spec, ctx) {
   const name = podName(spec.agentName);
-  const worktreeParent = path5.dirname(spec.worktreePath);
+  const worktreeParent = path6.dirname(spec.worktreePath);
   const memoryGi = spec.config.resources?.memoryGi ?? 16;
   const cpuLimit = spec.config.resources?.cpuLimit ?? ctx.cpuCount;
   const containerImage = spec.config.containerImage ?? DEFAULT_IMAGE_NAME;
@@ -15859,7 +15855,7 @@ var init_k8s = __esm(() => {
   init_container_spec();
   init_exec();
   init_image();
-  KUBECONFIG = path5.join(os3.homedir(), ".kube/config");
+  KUBECONFIG = path6.join(os3.homedir(), ".kube/config");
   KNOWN_VOLUME_MAP = new Map([
     ["/workspace", { name: "workspace", type: "Directory" }],
     ["/home/agent/.claude", { name: "claude-config", type: "DirectoryOrCreate" }],
@@ -16046,13 +16042,13 @@ __export(exports_cache, {
   dedupeAndSort: () => dedupeAndSort
 });
 import * as fs2 from "fs";
-import * as path6 from "path";
+import * as path7 from "path";
 function getCachePaths(agentsDir) {
-  const cacheDir = path6.join(agentsDir, "cache");
+  const cacheDir = path7.join(agentsDir, "cache");
   return {
     cacheDir,
-    tarball: path6.join(cacheDir, "docker-images.tar"),
-    manifest: path6.join(cacheDir, "docker-images.manifest")
+    tarball: path7.join(cacheDir, "docker-images.tar"),
+    manifest: path7.join(cacheDir, "docker-images.manifest")
   };
 }
 function readManifest(manifestPath) {
@@ -16117,30 +16113,35 @@ function parseAgentName(raw) {
   }
   return Ok(raw);
 }
-var init_agent_name = () => {
-};
+var init_agent_name = () => {};
 
 // src/lib/git/paths.ts
-import * as path7 from "path";
-function getAgentsDirPaths(repoPath) {
-  const repoName = path7.basename(repoPath);
-  const agentsDir = path7.resolve(repoPath, "..", `${repoName}-agents`);
-  return {
+import * as path8 from "path";
+function getAgentsDirPaths(ctx) {
+  return M(ctx).with({ kind: "repo" }, ({ root }) => {
+    const repoName = path8.basename(root);
+    const agentsDir = path8.resolve(root, "..", `${repoName}-agents`);
+    return {
+      agentsDir,
+      bareRepo: path8.join(agentsDir, BARE_REPO_DIR)
+    };
+  }).with({ kind: "bare-worktree" }, ({ agentsDir, bareRepo }) => ({
     agentsDir,
-    bareRepo: path7.join(agentsDir, BARE_REPO_DIR)
-  };
+    bareRepo
+  })).exhaustive();
 }
-function getAgentPaths(repoPath, agentName) {
-  const { agentsDir, bareRepo } = getAgentsDirPaths(repoPath);
+function getAgentPaths(ctx, agentName) {
+  const { agentsDir, bareRepo } = getAgentsDirPaths(ctx);
   return {
     agentsDir,
     bareRepo,
-    worktree: path7.join(agentsDir, agentName)
+    worktree: path8.join(agentsDir, agentName)
   };
 }
 var BARE_REPO_DIR = ".bare";
-var init_paths = () => {
-};
+var init_paths = __esm(() => {
+  init_dist();
+});
 
 // src/lib/git/branches.ts
 async function fetchLatestRefs(repoPath, bareRepoPath) {
@@ -16241,7 +16242,7 @@ var init_branches = __esm(() => {
 });
 
 // src/lib/git/resolve.ts
-import * as path8 from "path";
+import * as path9 from "path";
 function classifyBranchSources(shas) {
   const present = [shas.originSha, shas.localSha, shas.bareSha].filter((s2) => s2 != null);
   if (present.length === 0)
@@ -16285,7 +16286,7 @@ async function warnUncommittedChanges(repoPath, branch) {
   return Ok(undefined);
 }
 async function resolveTargetBranch(bareRepoPath, repoPath, branch, options) {
-  const repoName = path8.basename(repoPath);
+  const repoName = path9.basename(repoPath);
   const agentsDirName = `${repoName}-agents`;
   const revParse = async (repo, ref) => {
     const result = await exec(`git -C ${shellEscape(repo)} rev-parse --verify --quiet ${shellEscape(ref)}`, {
@@ -16382,9 +16383,9 @@ var init_resolve = __esm(() => {
 
 // src/lib/git/worktree.ts
 import * as fs3 from "fs";
-import * as path9 from "path";
+import * as path10 from "path";
 async function ensureBareRepo(repoPath) {
-  const { agentsDir, bareRepo } = getAgentsDirPaths(repoPath);
+  const { agentsDir, bareRepo } = getAgentsDirPaths({ kind: "repo", root: repoPath });
   const checkResult = await exec(`git -C ${shellEscape(bareRepo)} rev-parse --is-bare-repository`, {
     captureOutput: true,
     rejectOnNonZeroExit: false
@@ -16464,7 +16465,7 @@ async function setUpstreamTracking(bareRepoPath, branch) {
   await exec(`git -C ${shellEscape(bareRepoPath)} config ${shellEscape(`branch.${branch}.merge`)} ${shellEscape(`refs/heads/${branch}`)}`, { captureOutput: true, rejectOnNonZeroExit: false });
 }
 async function createWorktree(bareRepoPath, worktreePath, branch, repoPath, baseBranch, resolveOptions) {
-  fs3.mkdirSync(path9.dirname(worktreePath), { recursive: true });
+  fs3.mkdirSync(path10.dirname(worktreePath), { recursive: true });
   const hasBranch = await branchExists(bareRepoPath, branch);
   if (hasBranch) {
     const resolved = await resolveTargetBranch(bareRepoPath, repoPath, branch, resolveOptions);
@@ -16506,7 +16507,7 @@ async function listWorktrees(bareRepoPath) {
     const branch = lines.find((l) => l.startsWith("branch "))?.substring("branch ".length).replace("refs/heads/", "") ?? "";
     if (!wtPath || wtPath === bareRepoPath)
       return [];
-    return [{ name: path9.basename(wtPath), path: wtPath, branch: branch || "(detached)" }];
+    return [{ name: path10.basename(wtPath), path: wtPath, branch: branch || "(detached)" }];
   });
 }
 async function checkoutAgentBranch(bareRepoPath, repoPath, agentName) {
@@ -16643,20 +16644,49 @@ async function gracefullyKillSession(name) {
       return { id: id ?? "", pid: parseInt(pidStr ?? "", 10) };
     }).filter((p2) => p2.id !== "");
     const otherPanes = panes.filter((p2) => p2.id !== currentPane);
+    const validPanes = otherPanes.filter((p2) => !isNaN(p2.pid) && p2.pid > 1);
     for (const pane of otherPanes) {
-      await exec(`tmux send-keys -t ${shellEscape(name)}:${pane.id} C-c`, {
-        rejectOnNonZeroExit: false
-      });
+      try {
+        await exec(`tmux send-keys -t ${shellEscape(name)}:${pane.id} C-c`, {
+          rejectOnNonZeroExit: false
+        });
+      } catch {}
     }
     if (otherPanes.length > 0) {
       await new Promise((r2) => setTimeout(r2, 2000));
     }
-    for (const pane of otherPanes) {
-      if (!isNaN(pane.pid) && pane.pid > 1) {
-        await exec(`kill -9 ${pane.pid}`, { rejectOnNonZeroExit: false });
-      }
+    for (const pane of validPanes) {
+      try {
+        await exec(`pkill -P ${pane.pid}`, {
+          rejectOnNonZeroExit: false,
+          captureOutput: true
+        });
+      } catch {}
+      try {
+        await exec(`kill -15 ${pane.pid}`, {
+          rejectOnNonZeroExit: false,
+          captureOutput: true
+        });
+      } catch {}
     }
-    if (otherPanes.length > 0) {
+    if (validPanes.length > 0) {
+      await new Promise((r2) => setTimeout(r2, 2000));
+    }
+    for (const pane of validPanes) {
+      try {
+        await exec(`pkill -P ${pane.pid} -KILL`, {
+          rejectOnNonZeroExit: false,
+          captureOutput: true
+        });
+      } catch {}
+      try {
+        await exec(`kill -9 ${pane.pid}`, {
+          rejectOnNonZeroExit: false,
+          captureOutput: true
+        });
+      } catch {}
+    }
+    if (validPanes.length > 0) {
       await new Promise((r2) => setTimeout(r2, 500));
     }
   }
@@ -16673,22 +16703,8 @@ async function getLastWindowName(session) {
 `).filter(Boolean);
   return windows.at(-1) ?? null;
 }
-async function createWindowWithPanes(session, window, wrapCommand) {
-  const windowResult = await createWindow(session, window.name);
-  if (!windowResult.ok)
-    return windowResult;
-  const target = windowResult.value;
-  for (let i2 = 1;i2 < window.panes.length; i2++) {
-    const splitResult = await splitPane(`${target}.0`);
-    if (!splitResult.ok)
-      return splitResult;
-  }
-  if (window.panes.length > 1) {
-    const layoutResult = await selectLayout(target, "even-vertical");
-    if (!layoutResult.ok)
-      return layoutResult;
-  }
-  for (const [i2, pane] of window.panes.entries()) {
+async function sendPaneCommands(target, panes, wrapCommand) {
+  for (const [i2, pane] of panes.entries()) {
     if (!pane.command)
       continue;
     const paneTarget = `${target}.${i2}`;
@@ -16704,13 +16720,35 @@ async function createWindowWithPanes(session, window, wrapCommand) {
   }
   return Ok(undefined);
 }
+async function createWindowWithPanes(session, window, wrapCommand) {
+  const windowResult = await createWindow(session, window.name);
+  if (!windowResult.ok)
+    return windowResult;
+  const target = windowResult.value;
+  for (let i2 = 1;i2 < window.panes.length; i2++) {
+    const splitResult = await splitPane(`${target}.0`);
+    if (!splitResult.ok)
+      return splitResult;
+  }
+  if (window.panes.length > 1) {
+    const layoutResult = await selectLayout(target, "even-vertical");
+    if (!layoutResult.ok)
+      return layoutResult;
+  }
+  return sendPaneCommands(target, window.panes, wrapCommand);
+}
 async function setupMode(session, mode, wrapCommand) {
   for (const window of mode.windows) {
-    if (await windowExists(session, window.name))
-      continue;
-    const result = await createWindowWithPanes(session, window, wrapCommand);
-    if (!result.ok)
-      return result;
+    if (await windowExists(session, window.name)) {
+      const target = `${session}:${window.name}`;
+      const result = await sendPaneCommands(target, window.panes, wrapCommand);
+      if (!result.ok)
+        return result;
+    } else {
+      const result = await createWindowWithPanes(session, window, wrapCommand);
+      if (!result.ok)
+        return result;
+    }
   }
   return Ok(undefined);
 }
@@ -16738,7 +16776,7 @@ var init_tmux = __esm(() => {
 // src/lib/vm.ts
 import * as fs4 from "fs";
 import * as os4 from "os";
-import * as path10 from "path";
+import * as path11 from "path";
 async function diagnose() {
   const results = await Promise.all(VM_CHECKS.map(async (check2) => ({
     kind: check2.kind,
@@ -17022,7 +17060,7 @@ var init_vm = __esm(() => {
   init_k8s();
   KATA_SHIM_PATH = `${KATA_INSTALL_DIR}/bin/containerd-shim-kata-v2`;
   KATA_CONFIG_PATH = `${KATA_CONFIG_DIR}/configuration.toml`;
-  KUBECONFIG_PATH = path10.join(os4.homedir(), ".kube/config");
+  KUBECONFIG_PATH = path11.join(os4.homedir(), ".kube/config");
   REQUIRED_MODULES = ["vhost_vsock", "vhost"];
   VM_CHECKS = [
     { kind: "kataInstall", name: "Kata Containers installed", detect: () => isKataInstalled() },
@@ -17103,9 +17141,9 @@ __export(exports_strategies, {
 import * as childProcess from "child_process";
 import * as fs5 from "fs";
 import * as os5 from "os";
-import * as path11 from "path";
+import * as path12 from "path";
 function fileExists2(repoRoot, filename) {
-  return fs5.existsSync(path11.join(repoRoot, filename));
+  return fs5.existsSync(path12.join(repoRoot, filename));
 }
 function nixStrategy(opts) {
   const nixPath = opts?.nixPath ?? "/nix";
@@ -17113,20 +17151,14 @@ function nixStrategy(opts) {
     name: "nix",
     detect: async (repoRoot) => fileExists2(repoRoot, "flake.nix"),
     hostPrepare: async (ctx, _repoRoot, worktreePath) => {
-      if (!ctx.trusted) {
-        ctx.logWarning("Skipping nix build (untrusted). If derivations are already cached, the dev environment will be set up inside the container.");
-        return Ok(undefined);
-      }
-      const outputPath = path11.join(worktreePath, ".nix-dev-env.sh");
-      const result = await tryExec(`nix print-dev-env ${shellEscape(worktreePath)} > ${shellEscape(outputPath)}`, "nix print-dev-env failed", { timeout: 120000 });
+      const offline = ctx.trusted ? "" : " --offline";
+      const outputPath = path12.join(worktreePath, ".nix-dev-env.sh");
+      const result = await tryExec(`nix print-dev-env${offline} ${shellEscape(worktreePath)} > ${shellEscape(outputPath)}`, "nix print-dev-env failed", { timeout: 120000 });
       if (!result.ok)
         return Err(result.error);
       return Ok(undefined);
     },
-    containerInstall: async () => [
-      "[ -f /workspace/.nix-dev-env.sh ] || nix print-dev-env --store local --offline /workspace > /workspace/.nix-dev-env.sh"
-    ],
-    shellInit: () => ["source /workspace/.nix-dev-env.sh"],
+    shellInit: () => ["[ -f /workspace/.nix-dev-env.sh ] && source /workspace/.nix-dev-env.sh"],
     volumes: () => fs5.existsSync(nixPath) ? [{ hostPath: nixPath, containerPath: "/nix", readOnly: true }] : []
   };
 }
@@ -17170,7 +17202,7 @@ function claudeStrategy() {
     },
     volumes: () => {
       const vols = [
-        { hostPath: path11.join(hostHome, ".claude"), containerPath: "/home/agent/.claude" }
+        { hostPath: path12.join(hostHome, ".claude"), containerPath: "/home/agent/.claude" }
       ];
       const cliPath = resolveClaudeCliPathSync();
       if (cliPath != null) {
@@ -17180,7 +17212,7 @@ function claudeStrategy() {
           readOnly: true
         });
       }
-      const claudeJsonPath = path11.join(hostHome, ".claude.json");
+      const claudeJsonPath = path12.join(hostHome, ".claude.json");
       if (fs5.existsSync(claudeJsonPath)) {
         vols.push({
           hostPath: claudeJsonPath,
@@ -17269,7 +17301,7 @@ var init_strategies = __esm(() => {
 // src/lib/agent.ts
 import * as fs6 from "fs";
 import * as os6 from "os";
-import * as path12 from "path";
+import * as path13 from "path";
 function selectBackendKind(k3sAvailable) {
   return k3sAvailable ? "k3s" : "docker";
 }
@@ -17282,8 +17314,8 @@ async function logBackendFallback() {
     return;
   await logFallbackOnce();
 }
-async function createAgentContext(name, repoPath, config2) {
-  const paths = getAgentPaths(repoPath, name);
+async function createAgentContext(name, gitContext, config2) {
+  const paths = getAgentPaths(gitContext, name);
   const backend = await resolveBackend(name);
   return { name, paths, config: config2, backend };
 }
@@ -17297,14 +17329,14 @@ async function preflightVmCheck() {
     }
   }
   if (diagnosis.fixScript != null) {
-    const fixPath = path12.join(os6.tmpdir(), "agentbox-fix-vm.sh");
+    const fixPath = path13.join(os6.tmpdir(), "agentbox-fix-vm.sh");
     fs6.writeFileSync(fixPath, diagnosis.fixScript, { mode: 493 });
     Vt2(`bash ${fixPath}`, "Run the fix script to resolve:");
   }
   return Err("VM not ready — run `agentbox check-vm` for details");
 }
 function ensureClaudeBypassPermissions(hostHome) {
-  const claudeJsonPath = path12.join(hostHome, ".claude.json");
+  const claudeJsonPath = path13.join(hostHome, ".claude.json");
   try {
     if (!fs6.existsSync(claudeJsonPath))
       return;
@@ -17313,13 +17345,27 @@ function ensureClaudeBypassPermissions(hostHome) {
     const result = ClaudeJsonSchema.safeParse(parsed);
     if (!result.success)
       return;
-    if (result.data.bypassPermissionsModeAccepted === true)
-      return;
-    const updated = { ...result.data, bypassPermissionsModeAccepted: true };
-    fs6.writeFileSync(claudeJsonPath, JSON.stringify(updated, null, 2) + `
+    let needsWrite = false;
+    const data = { ...result.data };
+    if (data.bypassPermissionsModeAccepted !== true) {
+      data.bypassPermissionsModeAccepted = true;
+      needsWrite = true;
+    }
+    const projects = { ...data.projects };
+    const workspaceProject = projects["/workspace"];
+    if (workspaceProject == null || workspaceProject.hasTrustDialogAccepted !== true) {
+      projects["/workspace"] = {
+        ...workspaceProject,
+        hasTrustDialogAccepted: true
+      };
+      data.projects = projects;
+      needsWrite = true;
+    }
+    if (needsWrite) {
+      fs6.writeFileSync(claudeJsonPath, JSON.stringify(data, null, 2) + `
 `);
-  } catch {
-  }
+    }
+  } catch {}
 }
 async function readGitIdentity() {
   const gitName = (await exec("git config --global user.name", {
@@ -17459,7 +17505,11 @@ async function setupAgentTmux(ctx, mode) {
   if (!sessionResult.ok)
     return sessionResult;
   const session = sessionResult.value;
-  if (!await windowExists(session, "main")) {
+  if (await windowExists(session, "main")) {
+    const execResult = await sendKeys(`${session}:main`, buildExecCommand(backend));
+    if (!execResult.ok)
+      return execResult;
+  } else {
     const windowResult = await createWindow(session, "main");
     if (!windowResult.ok)
       return windowResult;
@@ -17536,7 +17586,7 @@ async function removeAgent(agentName, paths, presence, options) {
     warnings: [containerWarning.value, worktreeWarning.value].filter((w2) => w2 != null)
   });
 }
-var isK3sAvailable, logFallbackOnce, ClaudeJsonSchema;
+var isK3sAvailable, logFallbackOnce, ClaudeProjectSchema, ClaudeJsonSchema;
 var init_agent = __esm(() => {
   init_zod();
   init_config();
@@ -17555,12 +17605,16 @@ var init_agent = __esm(() => {
   logFallbackOnce = once(async () => {
     R3.step("k3s not found — falling back to plain Docker (less secure)");
   });
-  ClaudeJsonSchema = exports_external.object({ bypassPermissionsModeAccepted: exports_external.boolean().optional() }).passthrough();
+  ClaudeProjectSchema = exports_external.object({ hasTrustDialogAccepted: exports_external.boolean().optional() }).passthrough();
+  ClaudeJsonSchema = exports_external.object({
+    bypassPermissionsModeAccepted: exports_external.boolean().optional(),
+    projects: exports_external.record(exports_external.string(), ClaudeProjectSchema).optional()
+  }).passthrough();
 });
 
 // src/lib/loader.ts
 import * as fs7 from "fs";
-import * as path13 from "path";
+import * as path14 from "path";
 async function loadConfig(repoPath) {
   const configPath = findConfigFile(repoPath);
   if (configPath == null) {
@@ -17572,12 +17626,12 @@ Create ${CONFIG_FILENAMES[0]} in your repo root.`);
     mod = await import(configPath);
   } catch (err) {
     const message2 = errorMessage(err);
-    return Err(`Failed to load ${path13.basename(configPath)}: ${message2}`);
+    return Err(`Failed to load ${path14.basename(configPath)}: ${message2}`);
   }
   const raw = isModuleWithDefault(mod) ? mod.default : mod;
   const result = AgentboxConfigSchema.safeParse(raw);
   if (!result.success) {
-    const filename = path13.basename(configPath);
+    const filename = path14.basename(configPath);
     const issues = result.error.issues.map((i2) => `  ${i2.path.join(".")}: ${i2.message}`).join(`
 `);
     return Err(`${filename} has invalid config:
@@ -17591,7 +17645,7 @@ function isModuleWithDefault(mod) {
 }
 function findConfigFile(repoPath) {
   for (const filename of CONFIG_FILENAMES) {
-    const configPath = path13.join(repoPath, filename);
+    const configPath = path14.join(repoPath, filename);
     if (fs7.existsSync(configPath))
       return configPath;
   }
@@ -17607,6 +17661,46 @@ async function getRepoPath() {
   }
   return Err("Not inside a git repository. Run agentbox from your project root.");
 }
+async function detectGitContext() {
+  const repoPathResult = await getRepoPath();
+  if (!repoPathResult.ok)
+    return repoPathResult;
+  const root = repoPathResult.value;
+  const gitPath = path14.join(root, ".git");
+  let stat;
+  try {
+    stat = fs7.statSync(gitPath);
+  } catch {
+    return Err("Cannot stat .git in repository root.");
+  }
+  if (stat.isDirectory()) {
+    return Ok({ kind: "repo", root });
+  }
+  const commonDirResult = await exec(`git -C ${root} rev-parse --git-common-dir`, {
+    captureOutput: true,
+    rejectOnNonZeroExit: false
+  });
+  if (commonDirResult.code !== 0 || !commonDirResult.stdout.trim()) {
+    return Err("Failed to determine git common dir for worktree.");
+  }
+  const commonDir = path14.resolve(root, commonDirResult.stdout.trim());
+  const isBareResult = await exec(`git -C ${commonDir} rev-parse --is-bare-repository`, {
+    captureOutput: true,
+    rejectOnNonZeroExit: false
+  });
+  if (isBareResult.code !== 0) {
+    return Err("Failed to determine if parent repository is bare.");
+  }
+  if (isBareResult.stdout.trim() === "true") {
+    return Ok({
+      kind: "bare-worktree",
+      root,
+      bareRepo: commonDir,
+      agentsDir: path14.dirname(commonDir)
+    });
+  }
+  return Err("agentbox cannot run from a git worktree. Run from the project root instead.");
+}
 var CONFIG_FILENAMES;
 var init_loader = __esm(() => {
   init_config();
@@ -17616,18 +17710,18 @@ var init_loader = __esm(() => {
 
 // src/commands/resolve-config.ts
 async function resolveConfig() {
-  const repoPathResult = await getRepoPath();
-  if (!repoPathResult.ok) {
-    R3.error(repoPathResult.error);
+  const ctxResult = await detectGitContext();
+  if (!ctxResult.ok) {
+    R3.error(ctxResult.error);
     return null;
   }
-  const repoPath = repoPathResult.value;
-  const result = await loadConfig(repoPath);
+  const gitContext = ctxResult.value;
+  const result = await loadConfig(gitContext.root);
   if (!result.ok) {
     R3.error(result.error);
     return null;
   }
-  return { config: result.value, repoPath };
+  return { config: result.value, gitContext };
 }
 var init_resolve_config = __esm(() => {
   init_dist3();
@@ -17726,8 +17820,8 @@ function resolveMode(modeName, config2) {
   }
   return Ok(found);
 }
-async function resolveNewArgs(opts, config2, repoPath, bareRepoPath) {
-  const branchStep = await resolveBranchAndBase(opts.branch, opts.base, repoPath, bareRepoPath);
+async function resolveNewArgs(opts, config2, gitContext, bareRepoPath) {
+  const branchStep = await resolveBranchAndBase(opts.branch, opts.base, gitContext.root, bareRepoPath);
   if (branchStep.kind !== "resolved")
     return branchStep;
   const parseResult = parseAgentName(branchStep.rawAgentName);
@@ -17835,27 +17929,33 @@ var init_resolve_new = __esm(() => {
 
 // src/commands/new.ts
 import * as fs8 from "fs";
-import * as path14 from "path";
+import * as path15 from "path";
 async function cmdNew(opts) {
   const resolved = await resolveConfig();
   if (resolved == null)
     return 1;
-  const { config: config2, repoPath } = resolved;
-  const dirPaths = getAgentsDirPaths(repoPath);
+  const { config: config2, gitContext } = resolved;
+  const dirPaths = getAgentsDirPaths(gitContext);
   const bareRepoPath = fs8.existsSync(dirPaths.bareRepo) ? dirPaths.bareRepo : null;
-  const resolution = await resolveNewArgs({ branch: opts.branch, base: opts.base, mode: opts.mode, noTmux: opts.noTmux }, config2, repoPath, bareRepoPath);
+  const resolution = await resolveNewArgs({ branch: opts.branch, base: opts.base, mode: opts.mode, noTmux: opts.noTmux }, config2, gitContext, bareRepoPath);
   return M(resolution).with({ kind: "cancelled" }, () => 1).with({ kind: "error" }, (r2) => {
     R3.error(r2.message);
     return 1;
-  }).with({ kind: "resolved" }, (r2) => executeNew(r2, opts, config2, repoPath)).exhaustive();
+  }).with({ kind: "resolved" }, (r2) => executeNew(r2, opts, config2, gitContext)).exhaustive();
 }
-async function executeNew(resolved, opts, config2, repoPath) {
+async function executeNew(resolved, opts, config2, gitContext) {
   const { agentName, baseBranch, tmuxMode } = resolved;
-  const paths = getAgentPaths(repoPath, agentName);
+  const paths = getAgentPaths(gitContext, agentName);
   const inTargetSession = isInsideTmux() && await getCurrentSessionName() === sanitizeSessionName(agentName);
   if (inTargetSession) {
-    return executeInsideSession(agentName, repoPath, config2, tmuxMode);
+    return executeInsideSession(agentName, gitContext, config2, tmuxMode);
   }
+  if (gitContext.kind !== "repo") {
+    R3.error("Cannot create a new agent from inside a worktree. Run from the project root.");
+    Gt("Aborted");
+    return 1;
+  }
+  const repoPath = gitContext.root;
   Wt2(`agent · new · ${agentName}`);
   const syncSpinner = be();
   syncSpinner.start("Syncing bare repo...");
@@ -17928,7 +18028,7 @@ async function executeNew(resolved, opts, config2, repoPath) {
     return 1;
   }
   const session = sessionResult.value;
-  const selfCommand = [process.argv[0], path14.resolve(process.argv[1])];
+  const selfCommand = [process.argv[0], path15.resolve(process.argv[1])];
   const reinvokeArgs = buildReinvokeArgs(selfCommand, agentName, baseBranch, tmuxMode, opts.useLocalBranch, resolvedTrusted);
   if (isNew) {
     const keysResult = await sendKeys(`${session}:`, reinvokeArgs.join(" "));
@@ -17964,10 +18064,10 @@ async function executeNew(resolved, opts, config2, repoPath) {
   }
   return 0;
 }
-async function executeInsideSession(agentName, repoPath, config2, tmuxMode) {
+async function executeInsideSession(agentName, gitContext, config2, tmuxMode) {
   Wt2(`agent · new · ${agentName}`);
   await logBackendFallback();
-  const ctx = await createAgentContext(agentName, repoPath, config2);
+  const ctx = await createAgentContext(agentName, gitContext, config2);
   const result = await startAndSetupAgent(ctx, tmuxMode);
   if (!result.ok)
     return handleLifecycleError(result.error);
@@ -18003,8 +18103,8 @@ function agentStatusHint(agent) {
   const parts = [stateLabel, agent.hasTmuxSession ? "tmux" : null].filter(Boolean);
   return parts.length > 0 ? parts.join(", ") : agent.branch;
 }
-async function listAgentsWithState(repoPath) {
-  const paths = getAgentsDirPaths(repoPath);
+async function listAgentsWithState(gitContext) {
+  const paths = getAgentsDirPaths(gitContext);
   if (!fs9.existsSync(paths.bareRepo))
     return [];
   const worktrees = await listWorktrees(paths.bareRepo);
@@ -18047,8 +18147,8 @@ function parseAgentNames(rawNames) {
 function agentsWithValidNames(agents) {
   return agents.filter((a2) => a2.agentName != null);
 }
-async function pickAgent(repoPath, message2) {
-  const allAgents = await listAgentsWithState(repoPath);
+async function pickAgent(gitContext, message2) {
+  const allAgents = await listAgentsWithState(gitContext);
   const agents = agentsWithValidNames(allAgents);
   if (agents.length === 0)
     return Err({ kind: "no-agents" });
@@ -18062,18 +18162,18 @@ async function pickAgent(repoPath, message2) {
     return Err({ kind: "cancelled" });
   return Ok(result);
 }
-async function resolveAgentName(rawName, repoPath, promptMessage) {
+async function resolveAgentName(rawName, gitContext, promptMessage) {
   if (rawName != null) {
     const parsed = parseAgentName(rawName);
     return parsed.ok ? Ok(parsed.value) : Err({ kind: "error", message: parsed.error });
   }
-  return pickAgent(repoPath, promptMessage);
+  return pickAgent(gitContext, promptMessage);
 }
-async function resolveAgentNames(rawNames, repoPath) {
+async function resolveAgentNames(rawNames, gitContext) {
   if (rawNames.length > 0) {
     return parseAgentNames(rawNames);
   }
-  const allAgents = await listAgentsWithState(repoPath);
+  const allAgents = await listAgentsWithState(gitContext);
   const agents = agentsWithValidNames(allAgents);
   if (agents.length === 0)
     return Err({ kind: "no-agents" });
@@ -18103,36 +18203,36 @@ function handleResolveError(error48, noAgentsMessage) {
     return 1;
   }).exhaustive();
 }
-async function withRepoPath(onOk) {
-  const repoPathResult = await getRepoPath();
-  if (!repoPathResult.ok) {
-    R3.error(repoPathResult.error);
+async function withGitContext(onOk) {
+  const ctxResult = await detectGitContext();
+  if (!ctxResult.ok) {
+    R3.error(ctxResult.error);
     return 1;
   }
-  return onOk(repoPathResult.value);
+  return onOk(ctxResult.value);
 }
 async function withResolvedAgent(rawName, promptMessage, onOk, noAgentsMessage = "No agents available") {
-  const repoPathResult = await getRepoPath();
-  if (!repoPathResult.ok) {
-    R3.error(repoPathResult.error);
+  const ctxResult = await detectGitContext();
+  if (!ctxResult.ok) {
+    R3.error(ctxResult.error);
     return 1;
   }
-  const repoPath = repoPathResult.value;
-  const resolved = await resolveAgentName(rawName, repoPath, promptMessage);
+  const gitContext = ctxResult.value;
+  const resolved = await resolveAgentName(rawName, gitContext, promptMessage);
   if (resolved.ok)
-    return onOk(resolved.value, repoPath);
+    return onOk(resolved.value, gitContext);
   return handleResolveError(resolved.error, noAgentsMessage);
 }
 async function withResolvedAgentNames(rawNames, onOk, noAgentsMessage = "No agents to remove") {
-  const repoPathResult = await getRepoPath();
-  if (!repoPathResult.ok) {
-    R3.error(repoPathResult.error);
+  const ctxResult = await detectGitContext();
+  if (!ctxResult.ok) {
+    R3.error(ctxResult.error);
     return 1;
   }
-  const repoPath = repoPathResult.value;
-  const resolved = await resolveAgentNames(rawNames, repoPath);
+  const gitContext = ctxResult.value;
+  const resolved = await resolveAgentNames(rawNames, gitContext);
   if (resolved.ok)
-    return onOk(resolved.value, repoPath);
+    return onOk(resolved.value, gitContext);
   return handleResolveError(resolved.error, noAgentsMessage);
 }
 var init_resolve_agent = __esm(() => {
@@ -18162,7 +18262,7 @@ function determineAttachAction(state) {
         agentName: state.agentName,
         mode: state.modeResult.value,
         config: state.configResult,
-        repoPath: state.repoPath
+        gitContext: state.gitContext
       };
     }
     return {
@@ -18170,7 +18270,7 @@ function determineAttachAction(state) {
       agentName: state.agentName,
       mode: undefined,
       config: undefined,
-      repoPath: state.repoPath
+      gitContext: state.gitContext
     };
   }
   if (!state.worktreeExists) {
@@ -18189,19 +18289,19 @@ function determineAttachAction(state) {
     kind: "restore",
     agentName: state.agentName,
     config: state.configResult,
-    repoPath: state.repoPath,
+    gitContext: state.gitContext,
     mode: state.modeResult.value,
     trust: state.trust,
     untrusted: state.untrusted
   };
 }
 async function resolveAttachArgs(name, modeName, trust, untrusted) {
-  const repoPathResult = await getRepoPath();
-  if (!repoPathResult.ok) {
-    return { kind: "error", message: repoPathResult.error };
+  const ctxResult = await detectGitContext();
+  if (!ctxResult.ok) {
+    return { kind: "error", message: ctxResult.error };
   }
-  const repoPath = repoPathResult.value;
-  const agentResult = await resolveAgentName(name, repoPath, "Select agent to attach");
+  const gitContext = ctxResult.value;
+  const agentResult = await resolveAgentName(name, gitContext, "Select agent to attach");
   if (!agentResult.ok) {
     return M(agentResult.error).with({ kind: "no-agents" }, () => ({
       kind: "no-agents",
@@ -18211,7 +18311,7 @@ async function resolveAttachArgs(name, modeName, trust, untrusted) {
   const agentName = agentResult.value;
   const tmuxAvailable = await isTmuxInstalled();
   const hasSession = tmuxAvailable ? await sessionExists(sanitizeSessionName(agentName)) : false;
-  const paths = getAgentPaths(repoPath, agentName);
+  const paths = getAgentPaths(gitContext, agentName);
   const worktreeExists = fs10.existsSync(paths.worktree);
   const needsConfig = modeName != null || !hasSession && worktreeExists;
   const configResult = needsConfig ? (await resolveConfig())?.config ?? null : null;
@@ -18223,7 +18323,7 @@ async function resolveAttachArgs(name, modeName, trust, untrusted) {
     configResult,
     modeResult,
     agentName,
-    repoPath,
+    gitContext,
     trust,
     untrusted,
     modeName
@@ -18254,7 +18354,7 @@ async function cmdAttach(name, modeName, trust = false, untrusted = false, noFoc
   };
   return M(resolved).with({ kind: "reattach" }, async (r2) => {
     if (r2.mode != null && r2.config != null) {
-      const ctx = await createAgentContext(r2.agentName, r2.repoPath, r2.config);
+      const ctx = await createAgentContext(r2.agentName, r2.gitContext, r2.config);
       const tmuxResult = await setupAgentTmux(ctx, r2.mode);
       if (!tmuxResult.ok) {
         R3.error(tmuxResult.error);
@@ -18267,15 +18367,15 @@ async function cmdAttach(name, modeName, trust = false, untrusted = false, noFoc
     Wt2(`agent · attach · ${r2.agentName}`);
     const agentState = await getAgentState(r2.agentName);
     if (agentState.kind !== "running") {
-      const paths = getAgentPaths(r2.repoPath, r2.agentName);
-      const prepResult = await ensureHostPreparation(r2.config, r2.repoPath, paths.worktree, r2.trust, r2.untrusted);
+      const paths = getAgentPaths(r2.gitContext, r2.agentName);
+      const prepResult = await ensureHostPreparation(r2.config, r2.gitContext.root, paths.worktree, r2.trust, r2.untrusted);
       if (!prepResult.ok) {
         Gt("Aborted");
         return 1;
       }
     }
     await logBackendFallback();
-    const ctx = await createAgentContext(r2.agentName, r2.repoPath, r2.config);
+    const ctx = await createAgentContext(r2.agentName, r2.gitContext, r2.config);
     const result = await startAndSetupAgent(ctx, r2.mode);
     if (!result.ok)
       return handleLifecycleError(result.error);
@@ -18318,8 +18418,8 @@ function determineStopAction(state) {
 
 // src/commands/stop.ts
 async function cmdStop(name) {
-  return withResolvedAgent(name, "Select agent to stop", async (agentName, repoPath) => {
-    const paths = getAgentPaths(repoPath, agentName);
+  return withResolvedAgent(name, "Select agent to stop", async (agentName, gitContext) => {
+    const paths = getAgentPaths(gitContext, agentName);
     const presence = await detectAgentPresence(agentName, paths);
     const action = determineStopAction({ agentName, ...presence });
     if (action.kind === "not-found") {
@@ -18373,9 +18473,9 @@ var init_stop = __esm(() => {
 
 // src/commands/rm.ts
 async function cmdRm(names, force) {
-  return withResolvedAgentNames(names, async (agentNames, repoPath) => {
+  return withResolvedAgentNames(names, async (agentNames, gitContext) => {
     for (const agentName of agentNames) {
-      const paths = getAgentPaths(repoPath, agentName);
+      const paths = getAgentPaths(gitContext, agentName);
       const presence = await detectAgentPresence(agentName, paths);
       if (!presence.hasSession && presence.agentState.kind === "not-found" && !presence.hasWorktree) {
         R3.error(`Agent ${agentName} not found`);
@@ -18897,8 +18997,7 @@ var init_source = __esm(() => {
       }
     };
   }
-  proto = Object.defineProperties(() => {
-  }, {
+  proto = Object.defineProperties(() => {}, {
     ...styles2,
     level: {
       enumerable: true,
@@ -18918,8 +19017,8 @@ var init_source = __esm(() => {
 
 // src/commands/list.ts
 async function cmdList() {
-  return withRepoPath(async (repoPath) => {
-    const agents = await listAgentsWithState(repoPath);
+  return withGitContext(async (gitContext) => {
+    const agents = await listAgentsWithState(gitContext);
     if (agents.length === 0) {
       R3.info("No agents found");
       return 0;
@@ -18951,8 +19050,8 @@ var init_list = __esm(() => {
 // src/commands/checkout.ts
 import * as fs11 from "fs";
 async function cmdCheckout(name) {
-  return withResolvedAgent(name, "Select agent to checkout", async (agentName, repoPath) => {
-    const paths = getAgentPaths(repoPath, agentName);
+  return withResolvedAgent(name, "Select agent to checkout", async (agentName, gitContext) => {
+    const paths = getAgentPaths(gitContext, agentName);
     if (!fs11.existsSync(paths.bareRepo)) {
       R3.error("No agents directory found");
       return 1;
@@ -18960,7 +19059,7 @@ async function cmdCheckout(name) {
     Wt2(`agent · checkout · ${agentName}`);
     const fetchSpinner = be();
     fetchSpinner.start("Fetching agent branch...");
-    const result = await checkoutAgentBranch(paths.bareRepo, repoPath, agentName);
+    const result = await checkoutAgentBranch(paths.bareRepo, gitContext.root, agentName);
     if (!result.ok) {
       fetchSpinner.stop("Failed");
       return showCheckoutError(result.error);
@@ -18994,7 +19093,7 @@ var init_checkout = __esm(() => {
 // src/commands/check-vm.ts
 import * as fs12 from "fs";
 import * as os8 from "os";
-import * as path15 from "path";
+import * as path16 from "path";
 async function cmdCheckVm() {
   Wt2("agent · check-vm");
   const diagnosis = await checkVm();
@@ -19007,7 +19106,7 @@ async function cmdCheckVm() {
   }
   if (!diagnosis.allGood) {
     if (diagnosis.fixScript) {
-      const scriptPath = path15.join(os8.tmpdir(), "agentbox-setup-vm.sh");
+      const scriptPath = path16.join(os8.tmpdir(), "agentbox-setup-vm.sh");
       fs12.writeFileSync(scriptPath, diagnosis.fixScript, { mode: 493 });
       Vt2(scriptPath, "Fix script written");
       Gt("Run the fix script to resolve issues");
@@ -19040,9 +19139,9 @@ async function cmdCache() {
   const resolved = await resolveConfig();
   if (resolved == null)
     return 1;
-  const { config: config2, repoPath } = resolved;
+  const { config: config2, gitContext } = resolved;
   const { ensureImageCache: ensureImageCache2 } = await Promise.resolve().then(() => (init_cache(), exports_cache));
-  const paths = getAgentsDirPaths(repoPath);
+  const paths = getAgentsDirPaths(gitContext);
   if (!config2.cacheImages) {
     R3.info("No cache images configured");
     return 0;
@@ -22317,9 +22416,7 @@ function argument(valueParser, options = {}) {
     },
     suggest(context, prefix) {
       if (context.state != null)
-        return dispatchIterableByMode(valueParser.$mode, function* () {
-        }, async function* () {
-        });
+        return dispatchIterableByMode(valueParser.$mode, function* () {}, async function* () {});
       if (isAsync)
         return suggestArgumentAsync(valueParser, options.hidden ?? false, prefix, context.dependencyRegistry);
       return suggestArgumentSync(valueParser, options.hidden ?? false, prefix, context.dependencyRegistry);
@@ -22883,7 +22980,7 @@ ${escapedArgs ? `    set -l output (${programName} ${escapedArgs} $prev $current
             # Regular literal completion - split by tab
             set -l parts (string split \\t -- $line)
             if test (count $parts) -ge 2
-                # value\tdescription format
+                # value	description format
                 echo $parts[1]\\t$parts[2]
             else
                 # Just value
@@ -22904,12 +23001,12 @@ complete -c ${programName} -f -a '(${functionName})'
 `;
       if (suggestion.kind === "literal") {
         const description = suggestion.description == null ? "" : formatMessage(suggestion.description, { colors: false });
-        yield `${suggestion.text}\t${description}`;
+        yield `${suggestion.text}	${description}`;
       } else {
         const extensions = suggestion.extensions?.join(",") || "";
         const hidden = suggestion.includeHidden ? "1" : "0";
         const description = suggestion.description == null ? "" : formatMessage(suggestion.description, { colors: false });
-        yield `__FILE__:${suggestion.type}:${extensions}:${suggestion.pattern || ""}:${hidden}\t${description}`;
+        yield `__FILE__:${suggestion.type}:${extensions}:${suggestion.pattern || ""}:${hidden}	${description}`;
       }
       i++;
     }
@@ -23085,7 +23182,7 @@ ${escapedArgs ? `    ^${programName} ${escapedArgs} ...$final_args | complete | 
       }
     } else {
       # Regular literal completion - split by tab
-      let parts = ($line | split row "\t")
+      let parts = ($line | split row "	")
       if ($parts | length) >= 2 {
         # value\\tdescription format
         { value: ($parts | get 0), description: ($parts | get 1) }
@@ -23134,12 +23231,12 @@ ${functionName}-external
 `;
       if (suggestion.kind === "literal") {
         const description = suggestion.description == null ? "" : formatMessage(suggestion.description, { colors: false });
-        yield `${suggestion.text}\t${description}`;
+        yield `${suggestion.text}	${description}`;
       } else {
         const extensions = suggestion.extensions?.join(",") || "";
         const hidden = suggestion.includeHidden ? "1" : "0";
         const description = suggestion.description == null ? "" : formatMessage(suggestion.description, { colors: false });
-        yield `__FILE__:${suggestion.type}:${extensions}:${suggestion.pattern || ""}:${hidden}\t${description}`;
+        yield `__FILE__:${suggestion.type}:${extensions}:${suggestion.pattern || ""}:${hidden}	${description}`;
       }
       i++;
     }
@@ -23291,12 +23388,12 @@ ${escapedArgs ? `    $completionArgs += @(${escapedArgs})
 `;
       if (suggestion.kind === "literal") {
         const description = suggestion.description == null ? "" : formatMessage(suggestion.description, { colors: false });
-        yield `${suggestion.text}\t${suggestion.text}\t${description}`;
+        yield `${suggestion.text}	${suggestion.text}	${description}`;
       } else {
         const extensions = suggestion.extensions?.join(",") || "";
         const hidden = suggestion.includeHidden ? "1" : "0";
         const description = suggestion.description == null ? "" : formatMessage(suggestion.description, { colors: false });
-        yield `__FILE__:${suggestion.type}:${extensions}:${suggestion.pattern || ""}:${hidden}\t[file]\t${description}`;
+        yield `__FILE__:${suggestion.type}:${extensions}:${suggestion.pattern || ""}:${hidden}	[file]	${description}`;
       }
       i++;
     }
@@ -24102,8 +24199,7 @@ function classifyResult(result, args) {
     const hasHelpOption = args.includes("--help");
     const hasHelpCommand = args.length > 0 && args[0] === "help";
     const hasCompletionCommand = args.length > 0 && args[0] === "completion";
-    if (hasVersionOption && hasHelpOption && !hasVersionCommand && !hasHelpCommand) {
-    }
+    if (hasVersionOption && hasHelpOption && !hasVersionCommand && !hasHelpCommand) {}
     if (hasVersionCommand && hasHelpOption && parsedValue.helpFlag)
       return {
         type: "help",
@@ -24658,7 +24754,6 @@ function runImpl(parserOrProgram, options = {}) {
     }
   });
 }
-
 // src/cli.ts
 init_dist();
 // package.json
