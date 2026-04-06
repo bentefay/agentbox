@@ -22,7 +22,7 @@ export interface NixStrategyOptions {
     readonly nixPath?: string;
 }
 
-/** Detect `flake.nix` and mount the nix store. Runs `nix print-dev-env` on the host (trusted) or inside the container. */
+/** Detect `flake.nix` and mount the nix store. Runs `nix print-dev-env` on the host (trusted or untrusted with `--offline`). */
 export function nixStrategy(opts?: NixStrategyOptions): DependencyStrategy {
     const nixPath = opts?.nixPath ?? "/nix";
 
@@ -33,30 +33,19 @@ export function nixStrategy(opts?: NixStrategyOptions): DependencyStrategy {
 
         // nix daemon socket doesn't work through Kata's virtio-fs, so
         // pre-compute the dev env on the host and source it in the container.
-        // Only runs in trusted mode — evaluating a flake executes arbitrary code.
+        // Trusted mode: full eval. Untrusted mode: --offline only (safe — no
+        // shellHook execution, no fetching; requires cached derivations).
         hostPrepare: async (ctx, _repoRoot, worktreePath) => {
-            if (!ctx.trusted) {
-                ctx.logWarning(
-                    "Skipping nix build (untrusted). If derivations are already cached, the dev environment will be set up inside the container."
-                );
-                return Ok(undefined);
-            }
+            const offline = ctx.trusted ? "" : " --offline";
             const outputPath = path.join(worktreePath, ".nix-dev-env.sh");
             const result = await tryExec(
-                `nix print-dev-env ${shellEscape(worktreePath)} > ${shellEscape(outputPath)}`,
+                `nix print-dev-env${offline} ${shellEscape(worktreePath)} > ${shellEscape(outputPath)}`,
                 "nix print-dev-env failed",
                 { timeout: 120_000 }
             );
             if (!result.ok) return Err(result.error);
             return Ok(undefined);
         },
-
-        // If hostPrepare was skipped (untrusted), try to capture the env from
-        // already-built store paths. --store local bypasses the daemon socket,
-        // --offline ensures no network/build activity.
-        containerInstall: async () => [
-            "[ -f /workspace/.nix-dev-env.sh ] || nix print-dev-env --store local --offline /workspace > /workspace/.nix-dev-env.sh",
-        ],
 
         shellInit: () => ["[ -f /workspace/.nix-dev-env.sh ] && source /workspace/.nix-dev-env.sh"],
 
