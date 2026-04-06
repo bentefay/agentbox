@@ -21,7 +21,7 @@ import {
     getMainBranch,
     CANCELLED,
 } from "../lib/git";
-import type { AgentName, BareRepoPath, RepoPath } from "../lib/git";
+import type { AgentName, BareRepoPath, GitContext } from "../lib/git";
 import {
     isInsideTmux,
     isTmuxInstalled,
@@ -49,14 +49,14 @@ export async function cmdNew(opts: {
 }): Promise<number> {
     const resolved = await resolveConfig();
     if (resolved == null) return 1;
-    const { config, repoPath } = resolved;
-    const dirPaths = getAgentsDirPaths(repoPath);
+    const { config, gitContext } = resolved;
+    const dirPaths = getAgentsDirPaths(gitContext);
     const bareRepoPath = fs.existsSync(dirPaths.bareRepo) ? dirPaths.bareRepo : null;
 
     const resolution = await resolveNewArgs(
         { branch: opts.branch, base: opts.base, mode: opts.mode, noTmux: opts.noTmux },
         config,
-        repoPath,
+        gitContext,
         bareRepoPath
     );
 
@@ -66,7 +66,7 @@ export async function cmdNew(opts: {
             p.log.error(r.message);
             return 1;
         })
-        .with({ kind: "resolved" }, (r) => executeNew(r, opts, config, repoPath))
+        .with({ kind: "resolved" }, (r) => executeNew(r, opts, config, gitContext))
         .exhaustive();
 }
 
@@ -80,16 +80,26 @@ async function executeNew(
         readonly noFocus: boolean;
     },
     config: import("../lib/config").AgentboxConfig,
-    repoPath: RepoPath
+    gitContext: GitContext
 ): Promise<number> {
     const { agentName, baseBranch, tmuxMode } = resolved;
-    const paths = getAgentPaths(repoPath, agentName);
+    const paths = getAgentPaths(gitContext, agentName);
     const inTargetSession =
         isInsideTmux() && (await getCurrentSessionName()) === sanitizeSessionName(agentName);
 
     if (inTargetSession) {
-        return executeInsideSession(agentName, repoPath, config, tmuxMode);
+        return executeInsideSession(agentName, gitContext, config, tmuxMode);
     }
+
+    // Phase 1 operations (ensureBareRepo, syncBareRepo, createWorktree) assume repo context.
+    // Running from a bare-worktree would compute wrong paths.
+    if (gitContext.kind !== "repo") {
+        p.log.error("Cannot create a new agent from inside a worktree. Run from the project root.");
+        p.outro("Aborted");
+        return 1;
+    }
+
+    const repoPath = gitContext.root;
 
     p.intro(`agent \u00b7 new \u00b7 ${agentName}`);
 
@@ -230,13 +240,13 @@ async function executeNew(
 
 async function executeInsideSession(
     agentName: AgentName,
-    repoPath: RepoPath,
+    gitContext: GitContext,
     config: import("../lib/config").AgentboxConfig,
     tmuxMode: import("../lib/config").TmuxMode | undefined
 ): Promise<number> {
     p.intro(`agent \u00b7 new \u00b7 ${agentName}`);
     await logBackendFallback();
-    const ctx = await createAgentContext(agentName, repoPath, config);
+    const ctx = await createAgentContext(agentName, gitContext, config);
 
     const result = await startAndSetupAgent(ctx, tmuxMode);
     if (!result.ok) return handleLifecycleError(result.error);
