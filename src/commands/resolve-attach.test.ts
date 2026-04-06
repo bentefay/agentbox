@@ -19,7 +19,7 @@ function minimalTmuxMode(name: string): TmuxMode {
 function minimalConfig(tmuxModes: readonly TmuxMode[] = []): AgentboxConfig {
     return {
         tmuxModes: [...tmuxModes],
-        dependencyStrategies: [],
+        dependencyStrategies: []
     };
 }
 
@@ -35,7 +35,7 @@ function baseState(overrides: Partial<AttachState> = {}): AttachState {
         trust: false,
         untrusted: false,
         modeName: undefined,
-        ...overrides,
+        ...overrides
     };
 }
 
@@ -48,7 +48,7 @@ describe("determineAttachAction", () => {
         const result = determineAttachAction(baseState({ tmuxAvailable: false }));
         expect(result).toEqual({
             kind: "error",
-            message: "tmux not found. Please install tmux first.",
+            message: "tmux not found. Please install tmux first."
         });
     });
 
@@ -60,7 +60,7 @@ describe("determineAttachAction", () => {
                 agentName: testAgent,
                 mode: undefined,
                 config: undefined,
-                gitContext: testGitContext,
+                gitContext: testGitContext
             });
         });
 
@@ -72,7 +72,7 @@ describe("determineAttachAction", () => {
                     hasSession: true,
                     modeName: "core",
                     configResult: config,
-                    modeResult: { ok: true, value: mode },
+                    modeResult: { ok: true, value: mode }
                 })
             );
             expect(result).toEqual({
@@ -80,7 +80,7 @@ describe("determineAttachAction", () => {
                 agentName: testAgent,
                 mode,
                 config,
-                gitContext: testGitContext,
+                gitContext: testGitContext
             });
         });
 
@@ -89,7 +89,7 @@ describe("determineAttachAction", () => {
                 baseState({
                     hasSession: true,
                     modeName: "core",
-                    configResult: null,
+                    configResult: null
                 })
             );
             expect(result).toEqual({ kind: "error", message: "Failed to load config" });
@@ -102,12 +102,12 @@ describe("determineAttachAction", () => {
                     hasSession: true,
                     modeName: "missing",
                     configResult: config,
-                    modeResult: { ok: false, error: "Unknown tmux mode: missing. Available: core" },
+                    modeResult: { ok: false, error: "Unknown tmux mode: missing. Available: core" }
                 })
             );
             expect(result).toEqual({
                 kind: "error",
-                message: "Unknown tmux mode: missing. Available: core",
+                message: "Unknown tmux mode: missing. Available: core"
             });
         });
     });
@@ -117,12 +117,12 @@ describe("determineAttachAction", () => {
             const result = determineAttachAction(
                 baseState({
                     hasSession: false,
-                    worktreeExists: false,
+                    worktreeExists: false
                 })
             );
             expect(result).toEqual({
                 kind: "error",
-                message: `Agent ${testAgent} not found. Create with: agentbox new ${testAgent}`,
+                message: `Agent ${testAgent} not found. Create with: agentbox new ${testAgent}`
             });
         });
 
@@ -133,7 +133,7 @@ describe("determineAttachAction", () => {
                     hasSession: false,
                     worktreeExists: true,
                     configResult: config,
-                    trust: true,
+                    trust: true
                 })
             );
             expect(result).toEqual({
@@ -143,7 +143,7 @@ describe("determineAttachAction", () => {
                 gitContext: testGitContext,
                 mode: undefined,
                 trust: true,
-                untrusted: false,
+                untrusted: false
             });
         });
 
@@ -157,7 +157,7 @@ describe("determineAttachAction", () => {
                     configResult: config,
                     modeName: "full",
                     modeResult: { ok: true, value: mode },
-                    trust: false,
+                    trust: false
                 })
             );
             expect(result).toEqual({
@@ -167,7 +167,7 @@ describe("determineAttachAction", () => {
                 gitContext: testGitContext,
                 mode,
                 trust: false,
-                untrusted: false,
+                untrusted: false
             });
         });
 
@@ -176,7 +176,7 @@ describe("determineAttachAction", () => {
                 baseState({
                     hasSession: false,
                     worktreeExists: true,
-                    configResult: null,
+                    configResult: null
                 })
             );
             expect(result).toEqual({ kind: "error", message: "Failed to load config" });
@@ -190,12 +190,12 @@ describe("determineAttachAction", () => {
                     worktreeExists: true,
                     configResult: config,
                     modeName: "bad",
-                    modeResult: { ok: false, error: "Unknown tmux mode: bad. Available: core" },
+                    modeResult: { ok: false, error: "Unknown tmux mode: bad. Available: core" }
                 })
             );
             expect(result).toEqual({
                 kind: "error",
-                message: "Unknown tmux mode: bad. Available: core",
+                message: "Unknown tmux mode: bad. Available: core"
             });
         });
 
@@ -207,7 +207,7 @@ describe("determineAttachAction", () => {
                     worktreeExists: true,
                     configResult: config,
                     trust: true,
-                    untrusted: false,
+                    untrusted: false
                 })
             );
             const resultUntrusted = determineAttachAction(
@@ -216,7 +216,7 @@ describe("determineAttachAction", () => {
                     worktreeExists: true,
                     configResult: config,
                     trust: false,
-                    untrusted: true,
+                    untrusted: true
                 })
             );
             expect(resultTrusted.kind).toBe("restore");

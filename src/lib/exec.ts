@@ -29,7 +29,7 @@ export async function exec(command: string, options: ExecOptions = {}): Promise<
         const child = spawn("bash", ["-c", command], {
             cwd,
             env: mergedEnv,
-            stdio: captureOutput ? "pipe" : "inherit",
+            stdio: captureOutput ? "pipe" : "inherit"
         });
 
         let stdout = "";
@@ -64,7 +64,7 @@ export async function exec(command: string, options: ExecOptions = {}): Promise<
                 const result: ExecResult = {
                     code: null,
                     stdout,
-                    stderr: `Command timed out after ${timeout}ms: ${command}`,
+                    stderr: `Command timed out after ${timeout}ms: ${command}`
                 };
                 if (rejectOnNonZeroExit) {
                     const error = new Error(result.stderr);
@@ -99,7 +99,7 @@ export async function tryExec(
     const result = await exec(command, {
         ...options,
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (result.code !== 0) {
         return Err(`${errorContext}: ${(result.stderr ?? "").trim()}`);

@@ -25,7 +25,7 @@ function makeAgentInfo(overrides: Partial<AgentInfo> = {}): AgentInfo {
         containerState: { kind: "running" },
         hasTmuxSession: false,
         ports: [],
-        ...overrides,
+        ...overrides
     };
 }
 
@@ -108,7 +108,7 @@ describe("agentsWithValidNames", () => {
     it("returns agents that have a non-null agentName", () => {
         const agents = [
             makeAgentInfo({ name: "valid", agentName: "valid" as AgentName }),
-            makeAgentInfo({ name: "also-valid", agentName: "also-valid" as AgentName }),
+            makeAgentInfo({ name: "also-valid", agentName: "also-valid" as AgentName })
         ];
         const result = agentsWithValidNames(agents);
         expect(result).toHaveLength(2);
@@ -119,7 +119,7 @@ describe("agentsWithValidNames", () => {
     it("filters out agents with null agentName", () => {
         const agents = [
             makeAgentInfo({ name: "valid", agentName: name("valid") }),
-            makeAgentInfo({ name: "invalid-worktree", agentName: null }),
+            makeAgentInfo({ name: "invalid-worktree", agentName: null })
         ];
         const result = agentsWithValidNames(agents);
         expect(result).toHaveLength(1);
@@ -129,7 +129,7 @@ describe("agentsWithValidNames", () => {
     it("returns empty array when all agents have null agentName", () => {
         const agents = [
             makeAgentInfo({ name: "bad-1", agentName: null }),
-            makeAgentInfo({ name: "bad-2", agentName: null }),
+            makeAgentInfo({ name: "bad-2", agentName: null })
         ];
         const result = agentsWithValidNames(agents);
         expect(result).toHaveLength(0);
@@ -147,7 +147,7 @@ describe("agentsWithValidNames", () => {
             branch: "feature/cool",
             path: "/some/path",
             containerState: { kind: "stopped" },
-            hasTmuxSession: true,
+            hasTmuxSession: true
         });
         const result = agentsWithValidNames([agent]);
         expect(result).toHaveLength(1);

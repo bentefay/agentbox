@@ -23,7 +23,7 @@ export async function ensureBareRepo(repoPath: RepoPath): Promise<Result<BareRep
         `git -C ${shellEscape(bareRepo)} rev-parse --is-bare-repository`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
     if (checkResult.code === 0) return Ok(bareRepo);
@@ -72,7 +72,7 @@ export async function syncBareRepo(
     const originUrl = await getRepoOriginUrl(repoPath);
     const currentOrigin = await exec(`git -C ${shellEscape(bareRepoPath)} remote get-url origin`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (currentOrigin.stdout.trim() !== originUrl) {
         const setUrl = await tryExec(
@@ -84,7 +84,7 @@ export async function syncBareRepo(
 
     const localRemote = await exec(`git -C ${shellEscape(bareRepoPath)} remote get-url local`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (localRemote.code !== 0) {
         const addLocal = await tryExec(
@@ -105,14 +105,14 @@ export async function syncBareRepo(
         `git -C ${shellEscape(bareRepoPath)} config remote.local.fetch '+refs/heads/*:refs/remotes/local/*'`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
 
     // Fetch sequentially to avoid packed-refs.lock contention
     const originResult = await exec(`git -C ${shellEscape(bareRepoPath)} fetch origin`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
 
     const originWarnings: readonly string[] =
@@ -123,7 +123,7 @@ export async function syncBareRepo(
                           .split("\n")
                           .find((l) => l.trim() !== "")
                           ?.trim() ?? "unknown error"
-                  }`,
+                  }`
               ]
             : [];
 
@@ -131,7 +131,7 @@ export async function syncBareRepo(
         `git -C ${shellEscape(bareRepoPath)} fetch local 'refs/heads/*:refs/heads/*'`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
 
@@ -167,7 +167,7 @@ export async function setUpstreamTracking(
         `git -C ${shellEscape(bareRepoPath)} config ${shellEscape(`branch.${branch}.remote`)} origin`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
     await exec(
@@ -240,7 +240,7 @@ export interface WorktreeInfo {
 export async function listWorktrees(bareRepoPath: BareRepoPath): Promise<readonly WorktreeInfo[]> {
     const result = await exec(`git -C ${shellEscape(bareRepoPath)} worktree list --porcelain`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
 
     if (result.code !== 0 || !result.stdout.trim()) return [];

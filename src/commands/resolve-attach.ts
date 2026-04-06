@@ -73,7 +73,7 @@ export function determineAttachAction(state: AttachState): ResolvedAttachArgs {
                 agentName: state.agentName,
                 mode: state.modeResult.value,
                 config: state.configResult,
-                gitContext: state.gitContext,
+                gitContext: state.gitContext
             };
         }
         return {
@@ -81,7 +81,7 @@ export function determineAttachAction(state: AttachState): ResolvedAttachArgs {
             agentName: state.agentName,
             mode: undefined,
             config: undefined,
-            gitContext: state.gitContext,
+            gitContext: state.gitContext
         };
     }
 
@@ -89,7 +89,7 @@ export function determineAttachAction(state: AttachState): ResolvedAttachArgs {
     if (!state.worktreeExists) {
         return {
             kind: "error",
-            message: `Agent ${state.agentName} not found. Create with: agentbox new ${state.agentName}`,
+            message: `Agent ${state.agentName} not found. Create with: agentbox new ${state.agentName}`
         };
     }
 
@@ -108,7 +108,7 @@ export function determineAttachAction(state: AttachState): ResolvedAttachArgs {
         gitContext: state.gitContext,
         mode: state.modeResult.value,
         trust: state.trust,
-        untrusted: state.untrusted,
+        untrusted: state.untrusted
     };
 }
 
@@ -133,7 +133,7 @@ export async function resolveAttachArgs(
         return match(agentResult.error)
             .with({ kind: "no-agents" }, () => ({
                 kind: "no-agents" as const,
-                message: "No agents available. Create one with: agentbox new",
+                message: "No agents available. Create one with: agentbox new"
             }))
             .with({ kind: "cancelled" }, () => ({ kind: "cancelled" as const }))
             .with({ kind: "error" }, (e) => ({ kind: "error" as const, message: e.message }))
@@ -164,6 +164,6 @@ export async function resolveAttachArgs(
         gitContext,
         trust,
         untrusted,
-        modeName,
+        modeName
     });
 }

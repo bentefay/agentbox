@@ -77,7 +77,7 @@ export async function resolveNewArgs(
         kind: "resolved",
         agentName,
         baseBranch: branchStep.baseBranch,
-        tmuxMode: tmuxStep.tmuxMode,
+        tmuxMode: tmuxStep.tmuxMode
     };
 }
 
@@ -149,9 +149,9 @@ async function resolveTmuxMode(
                 ...config.tmuxModes.map((m) => ({
                     value: m.name,
                     label: m.name,
-                    hint: `${m.windows.length} window${m.windows.length === 1 ? "" : "s"}`,
-                })),
-            ],
+                    hint: `${m.windows.length} window${m.windows.length === 1 ? "" : "s"}`
+                }))
+            ]
         });
         if (p.isCancel(selection)) {
             p.outro("Aborted");
@@ -188,7 +188,7 @@ export function buildReinvokeArgs(
         ...(baseBranch ? [baseBranch] : []),
         ...(tmuxMode ? ["-m", tmuxMode.name] : []),
         ...(useLocalBranch ? ["--use-local-branch"] : []),
-        trusted ? "--trust" : "--untrusted",
+        trusted ? "--trust" : "--untrusted"
     ];
 }
 
@@ -203,7 +203,7 @@ export async function resolveTrust(trust: boolean, untrusted: boolean): Promise<
     const trustResult = await p.confirm({
         message:
             "Trust this environment? Untrusted mode skips running unsafe operations on your host computer.",
-        initialValue: true,
+        initialValue: true
     });
     if (p.isCancel(trustResult) || !trustResult) {
         return false;

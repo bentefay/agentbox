@@ -59,7 +59,7 @@ export async function listAgentsWithState(gitContext: GitContext): Promise<reado
                     : Promise.resolve(false),
                 containerState.kind === "running" && agentName != null
                     ? getAgentPorts(agentName)
-                    : Promise.resolve(NO_PORTS),
+                    : Promise.resolve(NO_PORTS)
             ]);
 
             return {
@@ -69,7 +69,7 @@ export async function listAgentsWithState(gitContext: GitContext): Promise<reado
                 path: wt.path,
                 containerState,
                 hasTmuxSession,
-                ports,
+                ports
             };
         })
     );

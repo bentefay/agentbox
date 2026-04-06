@@ -7,7 +7,7 @@ describe("AgentboxConfigSchema", () => {
     test("accepts a minimal valid config", () => {
         const config = {
             tmuxModes: [],
-            dependencyStrategies: [],
+            dependencyStrategies: []
         };
         const result = AgentboxConfigSchema.safeParse(config);
         expect(result.success).toBe(true);
@@ -21,10 +21,10 @@ describe("AgentboxConfigSchema", () => {
                     windows: [
                         {
                             name: "editor",
-                            panes: [{ command: "vim", sleepSeconds: 2 }],
-                        },
-                    ],
-                },
+                            panes: [{ command: "vim", sleepSeconds: 2 }]
+                        }
+                    ]
+                }
             ],
             dependencyStrategies: [],
             containerImage: "my-image:latest",
@@ -32,7 +32,7 @@ describe("AgentboxConfigSchema", () => {
             volumes: [{ hostPath: "/host/path", containerPath: "/container/path", readOnly: true }],
             servicePorts: [{ name: "http", port: 8080, targetPort: 3000 }],
             environmentSetup: ["echo hello"],
-            cacheImages: ["postgres:16", "redis:7-alpine"],
+            cacheImages: ["postgres:16", "redis:7-alpine"]
         };
         const result = AgentboxConfigSchema.safeParse(config);
         expect(result.success).toBe(true);
@@ -54,7 +54,7 @@ describe("AgentboxConfigSchema", () => {
         const config = {
             tmuxModes: [],
             dependencyStrategies: [],
-            resources: { memoryGi: -1 },
+            resources: { memoryGi: -1 }
         };
         const result = AgentboxConfigSchema.safeParse(config);
         expect(result.success).toBe(false);
@@ -64,7 +64,7 @@ describe("AgentboxConfigSchema", () => {
         const config = {
             tmuxModes: [],
             dependencyStrategies: [],
-            resources: { memoryGi: 0 },
+            resources: { memoryGi: 0 }
         };
         const result = AgentboxConfigSchema.safeParse(config);
         expect(result.success).toBe(false);
@@ -74,7 +74,7 @@ describe("AgentboxConfigSchema", () => {
         const config = {
             tmuxModes: [],
             dependencyStrategies: [],
-            containerImage: 42,
+            containerImage: 42
         };
         const result = AgentboxConfigSchema.safeParse(config);
         expect(result.success).toBe(false);
@@ -83,7 +83,7 @@ describe("AgentboxConfigSchema", () => {
     test("rejects tmuxMode with missing window name", () => {
         const config = {
             tmuxModes: [{ name: "test", windows: [{ panes: [] }] }],
-            dependencyStrategies: [],
+            dependencyStrategies: []
         };
         const result = AgentboxConfigSchema.safeParse(config);
         expect(result.success).toBe(false);
@@ -94,7 +94,7 @@ describe("defineConfig", () => {
     test("returns the config unchanged", () => {
         const config: AgentboxConfig = {
             tmuxModes: [],
-            dependencyStrategies: [],
+            dependencyStrategies: []
         };
         expect(defineConfig(config)).toBe(config);
     });

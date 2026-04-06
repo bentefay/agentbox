@@ -18,7 +18,7 @@ function minimalTmuxMode(name: string): TmuxMode {
 function minimalConfig(tmuxModes: readonly TmuxMode[] = []): AgentboxConfig {
     return {
         tmuxModes: [...tmuxModes],
-        dependencyStrategies: [],
+        dependencyStrategies: []
     };
 }
 
@@ -64,7 +64,7 @@ describe("buildReinvokeArgs", () => {
             "-m",
             "full",
             "--use-local-branch",
-            "--trust",
+            "--trust"
         ]);
     });
 
@@ -81,7 +81,7 @@ describe("buildReinvokeArgs", () => {
                 false
             ),
             buildReinvokeArgs(selfCommand, testAgent, undefined, undefined, true, true),
-            buildReinvokeArgs(selfCommand, testAgent, "main", minimalTmuxMode("x"), true, false),
+            buildReinvokeArgs(selfCommand, testAgent, "main", minimalTmuxMode("x"), true, false)
         ];
         for (const args of cases) {
             const last = args[args.length - 1];

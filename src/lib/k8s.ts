@@ -24,11 +24,11 @@ export function kubectl(cmd: string): string {
 export async function ensureNamespace(): Promise<void> {
     const result = await exec(kubectl(`get namespace ${NAMESPACE}`), {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (result.code !== 0) {
         await exec(`KUBECONFIG=${KUBECONFIG} kubectl create namespace ${NAMESPACE}`, {
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         });
     }
 }
@@ -45,7 +45,7 @@ export type PodState =
 export async function getPodState(name: string): Promise<PodState> {
     const result = await exec(kubectl(`get pod ${name} -o jsonpath='{.status.phase}'`), {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (result.code !== 0 || !result.stdout.trim()) return { kind: "not-found" };
     const phase = result.stdout.trim().replace(/^'|'$/g, "");
@@ -55,9 +55,9 @@ export async function getPodState(name: string): Promise<PodState> {
 export async function deletePodAndService(name: string): Promise<void> {
     await Promise.all([
         exec(kubectl(`delete pod ${name} --force --grace-period=0 --ignore-not-found`), {
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }),
-        exec(kubectl(`delete service ${name} --ignore-not-found`), { rejectOnNonZeroExit: false }),
+        exec(kubectl(`delete service ${name} --ignore-not-found`), { rejectOnNonZeroExit: false })
     ]);
 }
 
@@ -81,7 +81,7 @@ export interface PodBuildContext {
 
 export function createPodBuildContext(): PodBuildContext {
     return {
-        cpuCount: os.cpus().length,
+        cpuCount: os.cpus().length
     };
 }
 
@@ -104,7 +104,7 @@ const KNOWN_VOLUME_MAP: ReadonlyMap<string, { readonly name: string; readonly ty
         ["/usr/local/bin/claude", { name: "claude-cli", type: "File" }],
         ["/home/agent/.claude.json", { name: "claude-json", type: "File" }],
         ["/nix", { name: "nix", type: "Directory" }],
-        ["/cache", { name: "docker-image-cache", type: "Directory" }],
+        ["/cache", { name: "docker-image-cache", type: "Directory" }]
     ]);
 
 /** Sanitize a path segment into a valid k8s volume name (lowercase alphanumeric + hyphens). */
@@ -137,7 +137,7 @@ export function assignVolumeNames(volumes: readonly ContainerVolume[]): readonly
         return {
             volume: v,
             name: deriveUserVolumeName(v.containerPath),
-            type: "DirectoryOrCreate",
+            type: "DirectoryOrCreate"
         };
     });
 
@@ -152,7 +152,7 @@ export function assignVolumeNames(volumes: readonly ContainerVolume[]): readonly
             containerPath: c.volume.containerPath,
             readOnly: c.volume.readOnly,
             name,
-            type: c.type,
+            type: c.type
         };
     });
 }
@@ -171,7 +171,7 @@ function buildVolumeMounts(
             v.readOnly
                 ? { name: v.name, mountPath: v.containerPath, readOnly: true }
                 : { name: v.name, mountPath: v.containerPath }
-        ),
+        )
     ];
 }
 
@@ -180,8 +180,8 @@ function buildVolumes(namedVolumes: readonly NamedVolume[]): readonly YamlValue[
         { name: "worktree-link", emptyDir: {} },
         ...namedVolumes.map((v) => ({
             name: v.name,
-            hostPath: { path: v.hostPath, type: v.type },
-        })),
+            hostPath: { path: v.hostPath, type: v.type }
+        }))
     ];
 }
 
@@ -202,7 +202,7 @@ export function buildPodYaml(spec: PodSpec, ctx: PodBuildContext): string {
         "truncate -s 20G /tmp/docker.img && mkfs.ext4 -q /tmp/docker.img && mount -o loop /tmp/docker.img /var/lib/docker",
         ...container.environmentSetup,
         "chown -R agent:agent /home/agent/.local 2>/dev/null",
-        "exec /usr/local/bin/entrypoint.sh sleep infinity",
+        "exec /usr/local/bin/entrypoint.sh sleep infinity"
     ].join("; ");
 
     const namedVolumes = assignVolumeNames(container.volumes);
@@ -221,8 +221,8 @@ export function buildPodYaml(spec: PodSpec, ctx: PodBuildContext): string {
             name,
             labels: {
                 app: "agent",
-                "agent-name": spec.agentName,
-            },
+                "agent-name": spec.agentName
+            }
         },
         spec: {
             runtimeClassName: "kata",
@@ -235,9 +235,9 @@ export function buildPodYaml(spec: PodSpec, ctx: PodBuildContext): string {
                     securityContext: { runAsUser: 0 },
                     volumeMounts: [
                         { name: "worktree-link", mountPath: worktreeParent },
-                        { name: "workspace", mountPath: "/workspace" },
-                    ],
-                },
+                        { name: "workspace", mountPath: "/workspace" }
+                    ]
+                }
             ],
             containers: [
                 {
@@ -248,14 +248,14 @@ export function buildPodYaml(spec: PodSpec, ctx: PodBuildContext): string {
                     securityContext: { privileged: true },
                     resources: {
                         requests: { memory: `${memoryGi}Gi`, cpu: "1" },
-                        limits: { memory: `${memoryGi}Gi`, cpu: `${cpuLimit}` },
+                        limits: { memory: `${memoryGi}Gi`, cpu: `${cpuLimit}` }
                     },
                     ...(env != null ? { env } : {}),
-                    volumeMounts: allMounts,
-                },
+                    volumeMounts: allMounts
+                }
             ],
-            volumes: allVolumes,
-        },
+            volumes: allVolumes
+        }
     };
 
     const servicePorts =
@@ -263,7 +263,7 @@ export function buildPodYaml(spec: PodSpec, ctx: PodBuildContext): string {
             ? container.ports.map((p) => ({
                   name: p.name,
                   port: p.port,
-                  targetPort: p.targetPort ?? p.port,
+                  targetPort: p.targetPort ?? p.port
               }))
             : [];
 
@@ -274,8 +274,8 @@ export function buildPodYaml(spec: PodSpec, ctx: PodBuildContext): string {
         spec: {
             type: "NodePort",
             selector: { "agent-name": spec.agentName },
-            ports: servicePorts,
-        },
+            ports: servicePorts
+        }
     };
 
     return toYamlDocuments([podDoc, serviceDoc]);
@@ -305,7 +305,7 @@ export async function stopPod(agentName: AgentName): Promise<void> {
 export const AllocatedPortSchema = z.object({
     name: z.string(),
     nodePort: z.number(),
-    targetPort: z.number(),
+    targetPort: z.number()
 });
 
 export type AllocatedPort = z.infer<typeof AllocatedPortSchema>;
@@ -314,7 +314,7 @@ export async function getServicePorts(agentName: AgentName): Promise<readonly Al
     const name = podName(agentName);
     const result = await exec(kubectl(`get service ${name} -o jsonpath='{.spec.ports}'`), {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (result.code !== 0 || !result.stdout.trim()) return [];
     try {

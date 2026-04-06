@@ -20,7 +20,7 @@ const ALL_KINDS: ReadonlySet<VmCheckKind> = new Set<VmCheckKind>([
     "containerdConfig",
     "kubeconfig",
     "runtimeClass",
-    "traefikDisabled",
+    "traefikDisabled"
 ]);
 
 /** No failures — fully working. */
@@ -47,7 +47,7 @@ describe("getFixSteps", () => {
             "socketAccess",
             "kubeconfig",
             "containerdConfig",
-            "runtimeClass",
+            "runtimeClass"
         ]);
     });
 
@@ -102,7 +102,7 @@ describe("getFixSteps", () => {
             "installKata",
             "loadModules",
             "shimSymlink",
-            "configureKata",
+            "configureKata"
         ]);
     });
 });
@@ -192,7 +192,7 @@ describe("renderFixStep", () => {
             { kind: "socketAccess" },
             { kind: "kubeconfig" },
             { kind: "containerdConfig" },
-            { kind: "runtimeClass" },
+            { kind: "runtimeClass" }
         ];
         for (const step of allSteps) {
             const lines = renderFixStep(step);
@@ -210,7 +210,7 @@ describe("buildFixScript end-to-end", () => {
             "#!/usr/bin/env bash",
             "set -euo pipefail",
             "",
-            ...steps.flatMap(renderFixStep),
+            ...steps.flatMap(renderFixStep)
         ];
         return lines.join("\n");
     }

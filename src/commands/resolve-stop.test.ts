@@ -16,7 +16,7 @@ function baseState(overrides: Partial<StopState> = {}): StopState {
         agentState: { kind: "running" },
         hasSession: true,
         hasWorktree: true,
-        ...overrides,
+        ...overrides
     };
 }
 
@@ -30,7 +30,7 @@ describe("determineStopAction", () => {
             baseState({
                 agentState: { kind: "not-found" },
                 hasSession: false,
-                hasWorktree: false,
+                hasWorktree: false
             })
         );
         expect(result).toEqual({ kind: "not-found" });
@@ -42,14 +42,14 @@ describe("determineStopAction", () => {
                 baseState({
                     agentState: { kind: "running" },
                     hasSession: true,
-                    hasWorktree: true,
+                    hasWorktree: true
                 })
             );
             expect(result).toEqual({
                 kind: "stop-container",
                 agentName: testAgent,
                 hasSession: true,
-                hasWorktree: true,
+                hasWorktree: true
             });
         });
 
@@ -58,14 +58,14 @@ describe("determineStopAction", () => {
                 baseState({
                     agentState: { kind: "running" },
                     hasSession: false,
-                    hasWorktree: true,
+                    hasWorktree: true
                 })
             );
             expect(result).toEqual({
                 kind: "stop-container",
                 agentName: testAgent,
                 hasSession: false,
-                hasWorktree: true,
+                hasWorktree: true
             });
         });
 
@@ -74,14 +74,14 @@ describe("determineStopAction", () => {
                 baseState({
                     agentState: { kind: "running" },
                     hasSession: true,
-                    hasWorktree: false,
+                    hasWorktree: false
                 })
             );
             expect(result).toEqual({
                 kind: "stop-container",
                 agentName: testAgent,
                 hasSession: true,
-                hasWorktree: false,
+                hasWorktree: false
             });
         });
     });
@@ -92,14 +92,14 @@ describe("determineStopAction", () => {
                 baseState({
                     agentState: { kind: "stopped" },
                     hasSession: true,
-                    hasWorktree: true,
+                    hasWorktree: true
                 })
             );
             expect(result).toEqual({
                 kind: "already-stopped",
                 agentName: testAgent,
                 hasSession: true,
-                hasWorktree: true,
+                hasWorktree: true
             });
         });
 
@@ -108,14 +108,14 @@ describe("determineStopAction", () => {
                 baseState({
                     agentState: { kind: "stopped" },
                     hasSession: false,
-                    hasWorktree: true,
+                    hasWorktree: true
                 })
             );
             expect(result).toEqual({
                 kind: "already-stopped",
                 agentName: testAgent,
                 hasSession: false,
-                hasWorktree: true,
+                hasWorktree: true
             });
         });
     });
@@ -126,14 +126,14 @@ describe("determineStopAction", () => {
                 baseState({
                     agentState: { kind: "not-found" },
                     hasSession: true,
-                    hasWorktree: false,
+                    hasWorktree: false
                 })
             );
             expect(result).toEqual({
                 kind: "no-container",
                 agentName: testAgent,
                 hasSession: true,
-                hasWorktree: false,
+                hasWorktree: false
             });
         });
 
@@ -142,14 +142,14 @@ describe("determineStopAction", () => {
                 baseState({
                     agentState: { kind: "not-found" },
                     hasSession: false,
-                    hasWorktree: true,
+                    hasWorktree: true
                 })
             );
             expect(result).toEqual({
                 kind: "no-container",
                 agentName: testAgent,
                 hasSession: false,
-                hasWorktree: true,
+                hasWorktree: true
             });
         });
 
@@ -158,14 +158,14 @@ describe("determineStopAction", () => {
                 baseState({
                     agentState: { kind: "not-found" },
                     hasSession: true,
-                    hasWorktree: true,
+                    hasWorktree: true
                 })
             );
             expect(result).toEqual({
                 kind: "no-container",
                 agentName: testAgent,
                 hasSession: true,
-                hasWorktree: true,
+                hasWorktree: true
             });
         });
     });
@@ -175,14 +175,14 @@ describe("determineStopAction", () => {
         const result = determineStopAction(
             baseState({
                 agentName: customAgent,
-                agentState: { kind: "running" },
+                agentState: { kind: "running" }
             })
         );
         expect(result).toEqual({
             kind: "stop-container",
             agentName: customAgent,
             hasSession: true,
-            hasWorktree: true,
+            hasWorktree: true
         });
     });
 });

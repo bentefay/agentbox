@@ -30,7 +30,7 @@ describe("dedupeAndSort", () => {
     test("returns sorted unique images", () => {
         expect(dedupeAndSort(["redis:7", "postgres:16", "redis:7"])).toEqual([
             "postgres:16",
-            "redis:7",
+            "redis:7"
         ]);
     });
 

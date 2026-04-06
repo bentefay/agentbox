@@ -7,7 +7,7 @@ import {
     startAndSetupAgent,
     handleLifecycleError,
     getAgentState,
-    logBackendFallback,
+    logBackendFallback
 } from "../lib/agent";
 import { getAgentPaths } from "../lib/git";
 import { switchOrAttach, sanitizeSessionName } from "../lib/tmux";

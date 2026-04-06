@@ -47,7 +47,7 @@ async function imageExistsInContainerd(imageName: string): Promise<boolean> {
         `k3s ctr images check name==${shellEscape(`docker.io/library/${imageName}`)}`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
     return result.code === 0 && result.stdout.includes(imageName);
@@ -56,7 +56,7 @@ async function imageExistsInContainerd(imageName: string): Promise<boolean> {
 async function imageExistsInDocker(imageName: string): Promise<boolean> {
     const result = await exec(`docker image inspect ${shellEscape(imageName)}`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     return result.code === 0;
 }

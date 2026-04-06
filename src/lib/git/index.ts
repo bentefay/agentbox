@@ -5,7 +5,7 @@ export {
     type AgentPaths,
     type AgentsDirPaths,
     getAgentPaths,
-    getAgentsDirPaths,
+    getAgentsDirPaths
 } from "./paths";
 export {
     type BranchInfo,
@@ -17,7 +17,7 @@ export {
     getRepoOriginUrl,
     getMainBranch,
     branchExists,
-    fetchLatestRefs,
+    fetchLatestRefs
 } from "./branches";
 export {
     type ResolveOptions,
@@ -29,7 +29,7 @@ export {
     classifyBranchSources,
     hasUncommittedChanges,
     resolveTargetBranch,
-    groupSourcesBySha,
+    groupSourcesBySha
 } from "./resolve";
 export {
     type CheckoutError,
@@ -41,5 +41,5 @@ export {
     createWorktree,
     removeWorktree,
     listWorktrees,
-    checkoutAgentBranch,
+    checkoutAgentBranch
 } from "./worktree";

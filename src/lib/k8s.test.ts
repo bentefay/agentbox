@@ -32,18 +32,18 @@ describe("podName", () => {
 describe("buildPodYaml", () => {
     const minimalConfig: AgentboxConfig = {
         tmuxModes: [],
-        dependencyStrategies: [],
+        dependencyStrategies: []
     };
 
     const minimalSpec: PodSpec = {
         agentName: testAgentName("test-agent"),
         worktreePath: "/tmp/agents/test-agent",
         bareRepoPath: testBareRepoPath("/tmp/agents/.bare"),
-        config: minimalConfig,
+        config: minimalConfig
     };
 
     const baseCtx: PodBuildContext = {
-        cpuCount: 8,
+        cpuCount: 8
     };
 
     test("produces valid YAML with Pod and Service separated by ---", () => {
@@ -79,8 +79,8 @@ describe("buildPodYaml", () => {
         const spec: PodSpec = {
             ...minimalSpec,
             strategyVolumes: [
-                { hostPath: "/home/user/.claude", containerPath: "/home/agent/.claude" },
-            ],
+                { hostPath: "/home/user/.claude", containerPath: "/home/agent/.claude" }
+            ]
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain("mountPath: /home/agent/.claude");
@@ -101,7 +101,7 @@ describe("buildPodYaml", () => {
     test("uses configured memory", () => {
         const spec: PodSpec = {
             ...minimalSpec,
-            config: { ...minimalConfig, resources: { memoryGi: 32 } },
+            config: { ...minimalConfig, resources: { memoryGi: 32 } }
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain('memory: "32Gi"');
@@ -115,7 +115,7 @@ describe("buildPodYaml", () => {
     test("uses configured cpu limit over context cpuCount", () => {
         const spec: PodSpec = {
             ...minimalSpec,
-            config: { ...minimalConfig, resources: { memoryGi: 16, cpuLimit: 4 } },
+            config: { ...minimalConfig, resources: { memoryGi: 16, cpuLimit: 4 } }
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain('cpu: "4"');
@@ -126,8 +126,8 @@ describe("buildPodYaml", () => {
             ...minimalSpec,
             config: {
                 ...minimalConfig,
-                volumes: [{ hostPath: "/host/data", containerPath: "/data", readOnly: true }],
-            },
+                volumes: [{ hostPath: "/host/data", containerPath: "/data", readOnly: true }]
+            }
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain("mountPath: /data");
@@ -142,9 +142,9 @@ describe("buildPodYaml", () => {
                 ...minimalConfig,
                 volumes: [
                     { hostPath: "/host/a", containerPath: "/a" },
-                    { hostPath: "/host/b", containerPath: "/b", readOnly: true },
-                ],
-            },
+                    { hostPath: "/host/b", containerPath: "/b", readOnly: true }
+                ]
+            }
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain("name: user-a");
@@ -158,8 +158,8 @@ describe("buildPodYaml", () => {
             ...minimalSpec,
             config: {
                 ...minimalConfig,
-                volumes: [{ hostPath: "~/mydata", containerPath: "/data" }],
-            },
+                volumes: [{ hostPath: "~/mydata", containerPath: "/data" }]
+            }
         };
         const yaml = buildPodYaml(spec, baseCtx);
         // expandHome replaces ~ with os.homedir(), not ctx.hostHome
@@ -171,8 +171,8 @@ describe("buildPodYaml", () => {
             ...minimalSpec,
             config: {
                 ...minimalConfig,
-                servicePorts: [{ name: "http", port: 8080, targetPort: 3000 }],
-            },
+                servicePorts: [{ name: "http", port: 8080, targetPort: 3000 }]
+            }
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain("name: http");
@@ -188,7 +188,7 @@ describe("buildPodYaml", () => {
     test("includes git identity env vars when provided", () => {
         const spec: PodSpec = {
             ...minimalSpec,
-            gitUser: { name: "Test User", email: "test@example.com" },
+            gitUser: { name: "Test User", email: "test@example.com" }
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain("GIT_AUTHOR_NAME");
@@ -208,7 +208,7 @@ describe("buildPodYaml", () => {
     test("includes git name but not email when only name provided", () => {
         const spec: PodSpec = {
             ...minimalSpec,
-            gitUser: { name: "Test User", email: "" },
+            gitUser: { name: "Test User", email: "" }
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain("GIT_AUTHOR_NAME");
@@ -218,7 +218,7 @@ describe("buildPodYaml", () => {
     test("includes docker image cache volume when imageCachePath set", () => {
         const spec: PodSpec = {
             ...minimalSpec,
-            imageCachePath: "/cache/docker-images.tar",
+            imageCachePath: "/cache/docker-images.tar"
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain("mountPath: /cache");
@@ -233,7 +233,7 @@ describe("buildPodYaml", () => {
     test("includes custom container image", () => {
         const spec: PodSpec = {
             ...minimalSpec,
-            config: { ...minimalConfig, containerImage: "my-custom-image:v2" },
+            config: { ...minimalConfig, containerImage: "my-custom-image:v2" }
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain('image: "my-custom-image:v2"');
@@ -256,7 +256,7 @@ describe("buildPodYaml", () => {
     test("includes nix mount when provided as strategy volume", () => {
         const spec: PodSpec = {
             ...minimalSpec,
-            strategyVolumes: [{ hostPath: "/nix", containerPath: "/nix", readOnly: true }],
+            strategyVolumes: [{ hostPath: "/nix", containerPath: "/nix", readOnly: true }]
         };
         const yaml = buildPodYaml(spec, baseCtx);
         expect(yaml).toContain("mountPath: /nix");
@@ -279,7 +279,7 @@ describe("assignVolumeNames", () => {
 
     test("assigns 'workspace' name for /workspace container path", () => {
         const volumes: readonly ContainerVolume[] = [
-            { hostPath: "/tmp/ws", containerPath: "/workspace" },
+            { hostPath: "/tmp/ws", containerPath: "/workspace" }
         ];
         const result = assignVolumeNames(volumes);
         expect(result).toHaveLength(1);
@@ -294,7 +294,7 @@ describe("assignVolumeNames", () => {
             { hostPath: "/usr/bin/claude", containerPath: "/usr/local/bin/claude", readOnly: true },
             { hostPath: "/home/user/.claude.json", containerPath: "/home/agent/.claude.json" },
             { hostPath: "/nix", containerPath: "/nix", readOnly: true },
-            { hostPath: "/cache/imgs", containerPath: "/cache" },
+            { hostPath: "/cache/imgs", containerPath: "/cache" }
         ];
         const result = assignVolumeNames(volumes);
         expect(result.map((v) => v.name)).toEqual([
@@ -303,13 +303,13 @@ describe("assignVolumeNames", () => {
             "claude-cli",
             "claude-json",
             "nix",
-            "docker-image-cache",
+            "docker-image-cache"
         ]);
     });
 
     test("assigns 'bare-repo' when hostPath equals containerPath", () => {
         const volumes: readonly ContainerVolume[] = [
-            { hostPath: "/tmp/agents/.bare", containerPath: "/tmp/agents/.bare" },
+            { hostPath: "/tmp/agents/.bare", containerPath: "/tmp/agents/.bare" }
         ];
         const result = assignVolumeNames(volumes);
         expect(result[0].name).toBe("bare-repo");
@@ -318,7 +318,7 @@ describe("assignVolumeNames", () => {
 
     test("derives user volume name from last path segment", () => {
         const volumes: readonly ContainerVolume[] = [
-            { hostPath: "/host/data", containerPath: "/data" },
+            { hostPath: "/host/data", containerPath: "/data" }
         ];
         const result = assignVolumeNames(volumes);
         expect(result[0].name).toBe("user-data");
@@ -327,7 +327,7 @@ describe("assignVolumeNames", () => {
 
     test("derives user volume name from deep path's last segment", () => {
         const volumes: readonly ContainerVolume[] = [
-            { hostPath: "/host/yarn-cache", containerPath: "/home/agent/.cache/yarn" },
+            { hostPath: "/host/yarn-cache", containerPath: "/home/agent/.cache/yarn" }
         ];
         const result = assignVolumeNames(volumes);
         expect(result[0].name).toBe("user-yarn");
@@ -335,7 +335,7 @@ describe("assignVolumeNames", () => {
 
     test("sanitizes special characters in path segments", () => {
         const volumes: readonly ContainerVolume[] = [
-            { hostPath: "/host/foo", containerPath: "/mnt/My_Data.v2" },
+            { hostPath: "/host/foo", containerPath: "/mnt/My_Data.v2" }
         ];
         const result = assignVolumeNames(volumes);
         expect(result[0].name).toBe("user-my-data-v2");
@@ -344,7 +344,7 @@ describe("assignVolumeNames", () => {
     test("deduplicates volumes with same last segment", () => {
         const volumes: readonly ContainerVolume[] = [
             { hostPath: "/host/a/cache", containerPath: "/a/cache" },
-            { hostPath: "/host/b/cache", containerPath: "/b/cache" },
+            { hostPath: "/host/b/cache", containerPath: "/b/cache" }
         ];
         const result = assignVolumeNames(volumes);
         expect(result[0].name).toBe("user-cache");
@@ -353,7 +353,7 @@ describe("assignVolumeNames", () => {
 
     test("preserves readOnly flag on named volumes", () => {
         const volumes: readonly ContainerVolume[] = [
-            { hostPath: "/host/data", containerPath: "/data", readOnly: true },
+            { hostPath: "/host/data", containerPath: "/data", readOnly: true }
         ];
         const result = assignVolumeNames(volumes);
         expect(result[0].readOnly).toBe(true);
@@ -363,7 +363,7 @@ describe("assignVolumeNames", () => {
         const userVol: ContainerVolume = { hostPath: "/host/stuff", containerPath: "/stuff" };
         const withPrefix: readonly ContainerVolume[] = [
             { hostPath: "/tmp/ws", containerPath: "/workspace" },
-            userVol,
+            userVol
         ];
         const withoutPrefix: readonly ContainerVolume[] = [userVol];
         const resultA = assignVolumeNames(withPrefix);
@@ -377,7 +377,7 @@ describe("assignVolumeNames", () => {
             { hostPath: "/tmp/ws", containerPath: "/workspace" },
             { hostPath: "/tmp/agents/.bare", containerPath: "/tmp/agents/.bare" },
             { hostPath: "/nix", containerPath: "/nix", readOnly: true },
-            { hostPath: "/host/mydata", containerPath: "/mydata" },
+            { hostPath: "/host/mydata", containerPath: "/mydata" }
         ];
         const result = assignVolumeNames(volumes);
         expect(result.map((v) => v.name)).toEqual(["workspace", "bare-repo", "nix", "user-mydata"]);

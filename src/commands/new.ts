@@ -9,7 +9,7 @@ import {
     startAndSetupAgent,
     handleLifecycleError,
     getAgentPorts,
-    logBackendFallback,
+    logBackendFallback
 } from "../lib/agent";
 import {
     getAgentPaths,
@@ -19,7 +19,7 @@ import {
     createWorktree,
     branchExists,
     getMainBranch,
-    CANCELLED,
+    CANCELLED
 } from "../lib/git";
 import type { AgentName, BareRepoPath, GitContext } from "../lib/git";
 import {
@@ -31,7 +31,7 @@ import {
     switchOrAttach,
     createWindow,
     getCurrentSessionName,
-    sanitizeSessionName,
+    sanitizeSessionName
 } from "../lib/tmux";
 import { resolveConfig } from "./resolve-config";
 import { resolveNewArgs, buildReinvokeArgs, ensureHostPreparation } from "./resolve-new";

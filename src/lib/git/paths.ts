@@ -29,12 +29,12 @@ export function getAgentsDirPaths(ctx: GitContext): AgentsDirPaths {
             return {
                 agentsDir,
                 // This is the ONE allowed cast — the branded type smart constructor pattern
-                bareRepo: path.join(agentsDir, BARE_REPO_DIR) as BareRepoPath,
+                bareRepo: path.join(agentsDir, BARE_REPO_DIR) as BareRepoPath
             };
         })
         .with({ kind: "bare-worktree" }, ({ agentsDir, bareRepo }) => ({
             agentsDir,
-            bareRepo,
+            bareRepo
         }))
         .exhaustive();
 }
@@ -44,6 +44,6 @@ export function getAgentPaths(ctx: GitContext, agentName: AgentName): AgentPaths
     return {
         agentsDir,
         bareRepo,
-        worktree: path.join(agentsDir, agentName),
+        worktree: path.join(agentsDir, agentName)
     };
 }

@@ -17,7 +17,7 @@ function makeAgent(overrides: Partial<AgentInfo> = {}): AgentInfo {
         containerState: { kind: "not-found" },
         hasTmuxSession: false,
         ports: [],
-        ...overrides,
+        ...overrides
     };
 }
 
@@ -50,7 +50,7 @@ describe("agentStatusHint", () => {
         const agent = makeAgent({
             containerState: { kind: "not-found" },
             hasTmuxSession: false,
-            branch: "my-branch",
+            branch: "my-branch"
         });
         expect(agentStatusHint(agent)).toBe("my-branch");
     });

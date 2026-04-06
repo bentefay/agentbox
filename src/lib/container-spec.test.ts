@@ -13,14 +13,14 @@ function testBareRepoPath(raw: string): BareRepoPath {
 describe("buildContainerSpec", () => {
     const minimalConfig: AgentboxConfig = {
         tmuxModes: [],
-        dependencyStrategies: [],
+        dependencyStrategies: []
     };
 
     const minimalInput: ContainerSpecInput = {
         agentName: "test-agent",
         worktreePath: "/tmp/agents/test-agent",
         bareRepoPath: testBareRepoPath("/tmp/agents/.bare"),
-        config: minimalConfig,
+        config: minimalConfig
     };
 
     // --- Environment variables ---
@@ -42,7 +42,7 @@ describe("buildContainerSpec", () => {
     test("includes git identity env vars when provided", () => {
         const input: ContainerSpecInput = {
             ...minimalInput,
-            gitUser: { name: "Test User", email: "test@example.com" },
+            gitUser: { name: "Test User", email: "test@example.com" }
         };
         const spec = buildContainerSpec(input);
         expect(spec.env.find((e) => e.name === "GIT_AUTHOR_NAME")?.value).toBe("Test User");
@@ -62,7 +62,7 @@ describe("buildContainerSpec", () => {
     test("includes git name but not email when only name provided", () => {
         const input: ContainerSpecInput = {
             ...minimalInput,
-            gitUser: { name: "Test User", email: "" },
+            gitUser: { name: "Test User", email: "" }
         };
         const spec = buildContainerSpec(input);
         expect(spec.env.find((e) => e.name === "GIT_AUTHOR_NAME")?.value).toBe("Test User");
@@ -93,9 +93,9 @@ describe("buildContainerSpec", () => {
                 {
                     hostPath: "/usr/bin/claude",
                     containerPath: "/usr/local/bin/claude",
-                    readOnly: true,
-                },
-            ],
+                    readOnly: true
+                }
+            ]
         };
         const spec = buildContainerSpec(input);
         const nix = spec.volumes.find((v) => v.containerPath === "/nix");
@@ -117,8 +117,8 @@ describe("buildContainerSpec", () => {
             ...minimalInput,
             config: {
                 ...minimalConfig,
-                volumes: [{ hostPath: "/host/data", containerPath: "/data", readOnly: true }],
-            },
+                volumes: [{ hostPath: "/host/data", containerPath: "/data", readOnly: true }]
+            }
         };
         const spec = buildContainerSpec(input);
         const vol = spec.volumes.find((v) => v.containerPath === "/data");
@@ -130,7 +130,7 @@ describe("buildContainerSpec", () => {
     test("includes docker image cache volume when imageCachePath set", () => {
         const input: ContainerSpecInput = {
             ...minimalInput,
-            imageCachePath: "/cache/docker-images.tar",
+            imageCachePath: "/cache/docker-images.tar"
         };
         const spec = buildContainerSpec(input);
         const cache = spec.volumes.find((v) => v.containerPath === "/cache");
@@ -150,7 +150,7 @@ describe("buildContainerSpec", () => {
         const spec = buildContainerSpec(minimalInput);
         expect(spec.environmentSetup).toEqual([
             "echo '127.0.0.1 host.docker.internal' >> /etc/hosts",
-            "sysctl -w fs.inotify.max_user_watches=524288",
+            "sysctl -w fs.inotify.max_user_watches=524288"
         ]);
     });
 
@@ -159,8 +159,8 @@ describe("buildContainerSpec", () => {
             ...minimalInput,
             config: {
                 ...minimalConfig,
-                environmentSetup: ["custom-setup-command"],
-            },
+                environmentSetup: ["custom-setup-command"]
+            }
         };
         const spec = buildContainerSpec(input);
         expect(spec.environmentSetup).toEqual(["custom-setup-command"]);
@@ -175,14 +175,14 @@ describe("buildContainerSpec", () => {
                 ...minimalConfig,
                 servicePorts: [
                     { name: "http", port: 8080, targetPort: 3000 },
-                    { name: "debug", port: 9229 },
-                ],
-            },
+                    { name: "debug", port: 9229 }
+                ]
+            }
         };
         const spec = buildContainerSpec(input);
         expect(spec.ports).toEqual([
             { name: "http", port: 8080, targetPort: 3000 },
-            { name: "debug", port: 9229 },
+            { name: "debug", port: 9229 }
         ]);
     });
 
@@ -196,12 +196,12 @@ describe("buildContainerSpec", () => {
     test("produces same env vars regardless of strategy volumes", () => {
         const input: ContainerSpecInput = {
             ...minimalInput,
-            gitUser: { name: "Test", email: "test@test.com" },
+            gitUser: { name: "Test", email: "test@test.com" }
         };
         const spec1 = buildContainerSpec(input);
         const spec2 = buildContainerSpec({
             ...input,
-            strategyVolumes: [{ hostPath: "/nix", containerPath: "/nix", readOnly: true }],
+            strategyVolumes: [{ hostPath: "/nix", containerPath: "/nix", readOnly: true }]
         });
         expect(spec1.env).toEqual(spec2.env);
     });

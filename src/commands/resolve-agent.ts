@@ -44,7 +44,7 @@ export async function pickAgent(gitContext: GitContext, message: string): Promis
     const options = agents.map((a) => ({
         value: a.agentName,
         label: a.name,
-        hint: agentStatusHint(a),
+        hint: agentStatusHint(a)
     }));
 
     const result = await p.select({ message, options });
@@ -87,12 +87,12 @@ export async function resolveAgentNames(
     const options = agents.map((a) => ({
         value: a.agentName,
         label: a.name,
-        hint: agentStatusHint(a),
+        hint: agentStatusHint(a)
     }));
     const selected = await p.multiselect({
         message: "Select agents to remove",
         options,
-        required: true,
+        required: true
     });
     if (p.isCancel(selected)) return Err({ kind: "cancelled" });
 

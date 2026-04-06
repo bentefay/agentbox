@@ -14,15 +14,15 @@ export async function fetchLatestRefs(
         if (!bareRepoPath) return;
         await exec(`git -C ${shellEscape(bareRepoPath)} fetch --quiet origin`, {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         });
     };
     await Promise.all([
         exec(`git -C ${shellEscape(repoPath)} fetch --quiet`, {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }),
-        fetchBareRepo(),
+        fetchBareRepo()
     ]);
 }
 
@@ -55,7 +55,7 @@ export async function listLocalBranches(repoPath: RepoPath): Promise<readonly Br
         `git -C ${shellEscape(repoPath)} branch --list --sort=-committerdate ${BRANCH_FORMAT}`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
     if (result.code !== 0 || !result.stdout.trim()) return [];
@@ -76,7 +76,7 @@ export async function listRemoteBranches(repoPath: RepoPath): Promise<readonly B
         `git -C ${shellEscape(repoPath)} branch -r --sort=-committerdate ${BRANCH_FORMAT}`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
     if (result.code !== 0 || !result.stdout.trim()) return [];
@@ -111,8 +111,8 @@ export function mergeBranches(
     const allBareNames = [
         ...new Set([
             ...local.map((b) => b.name),
-            ...remote.map((b) => b.name.replace(/^origin\//, "")),
-        ]),
+            ...remote.map((b) => b.name.replace(/^origin\//, ""))
+        ])
     ];
 
     return allBareNames
@@ -125,7 +125,7 @@ export function mergeBranches(
                     ? [{ ...l, location: "local + remote" }]
                     : [
                           { ...l, location: "local" },
-                          { ...r, location: "remote" },
+                          { ...r, location: "remote" }
                       ];
             }
             if (l) return [{ ...l, location: "local" }];
@@ -142,7 +142,7 @@ export function branchHint(b: AnnotatedBranch): string {
 
 export async function getRepoOriginUrl(repoPath: RepoPath): Promise<string> {
     const result = await exec(`git -C ${shellEscape(repoPath)} remote get-url origin`, {
-        captureOutput: true,
+        captureOutput: true
     });
     return result.stdout.trim();
 }
@@ -153,7 +153,7 @@ export async function getMainBranch(repoPath: RepoPath | BareRepoPath): Promise<
             `git -C ${shellEscape(repoPath)} rev-parse --verify refs/heads/${candidate}`,
             {
                 captureOutput: true,
-                rejectOnNonZeroExit: false,
+                rejectOnNonZeroExit: false
             }
         );
         if (result.code === 0) return candidate;

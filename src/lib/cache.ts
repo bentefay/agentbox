@@ -16,7 +16,7 @@ export function getCachePaths(agentsDir: string): CachePaths {
     return {
         cacheDir,
         tarball: path.join(cacheDir, "docker-images.tar"),
-        manifest: path.join(cacheDir, "docker-images.manifest"),
+        manifest: path.join(cacheDir, "docker-images.manifest")
     };
 }
 
@@ -83,7 +83,7 @@ export async function ensureImageCache(
             .filter((image) => stripDigest(image) !== image)
             .map((image) =>
                 exec(`docker tag ${shellEscape(image)} ${shellEscape(stripDigest(image))}`, {
-                    rejectOnNonZeroExit: false,
+                    rejectOnNonZeroExit: false
                 })
             )
     );

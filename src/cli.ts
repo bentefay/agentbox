@@ -18,34 +18,34 @@ const newCmd = command(
         cmd: constant("new" as const),
         branch: optional(
             argument(string({ metavar: "BRANCH" }), {
-                description: message`Branch name or existing branch`,
+                description: message`Branch name or existing branch`
             })
         ),
         base: optional(
             argument(string({ metavar: "BASE" }), {
-                description: message`Base branch to create from`,
+                description: message`Base branch to create from`
             })
         ),
         mode: optional(
             option("-m", "--mode", string({ metavar: "MODE" }), {
-                description: message`tmux mode to launch`,
+                description: message`tmux mode to launch`
             })
         ),
         noTmux: option("--no-tmux", {
-            description: message`Create worktree without starting tmux`,
+            description: message`Create worktree without starting tmux`
         }),
         trust: option("--trust", {
-            description: message`Trust environment (run host-side operations)`,
+            description: message`Trust environment (run host-side operations)`
         }),
         untrusted: option("--untrusted", {
-            description: message`Skip host-side operations like direnv`,
+            description: message`Skip host-side operations like direnv`
         }),
         useLocalBranch: option("--use-local-branch", {
-            description: message`Auto-select local branch version when versions differ`,
+            description: message`Auto-select local branch version when versions differ`
         }),
         noFocus: option("--no-focus", {
-            description: message`Don't switch tmux session after setup`,
-        }),
+            description: message`Don't switch tmux session after setup`
+        })
     }),
     { description: message`Create a new agent (worktree + container + tmux)` }
 );
@@ -57,18 +57,18 @@ const attachCmd = command(
         name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
         mode: optional(
             option("-m", "--mode", string({ metavar: "MODE" }), {
-                description: message`tmux mode to launch`,
+                description: message`tmux mode to launch`
             })
         ),
         trust: option("--trust", {
-            description: message`Trust environment (run host-side operations)`,
+            description: message`Trust environment (run host-side operations)`
         }),
         untrusted: option("--untrusted", {
-            description: message`Skip host-side operations like direnv`,
+            description: message`Skip host-side operations like direnv`
         }),
         noFocus: option("--no-focus", {
-            description: message`Don't switch tmux session after setup`,
-        }),
+            description: message`Don't switch tmux session after setup`
+        })
     }),
     { description: message`Attach to an existing agent's tmux session` }
 );
@@ -77,7 +77,7 @@ const stopCmd = command(
     "stop",
     object({
         cmd: constant("stop" as const),
-        name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
+        name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` }))
     }),
     { description: message`Stop agent container, preserve worktree` }
 );
@@ -89,7 +89,7 @@ const rmCmd = command(
         names: multiple(
             argument(string({ metavar: "NAME" }), { description: message`Agent name(s)` })
         ),
-        force: option("-f", "--force", { description: message`Skip confirmation` }),
+        force: option("-f", "--force", { description: message`Skip confirmation` })
     }),
     { description: message`Remove agent entirely (container + worktree)` }
 );
@@ -97,7 +97,7 @@ const rmCmd = command(
 const listCmd = command(
     "list",
     object({
-        cmd: constant("list" as const),
+        cmd: constant("list" as const)
     }),
     { description: message`List all agents with status` }
 );
@@ -106,7 +106,7 @@ const checkoutCmd = command(
     "checkout",
     object({
         cmd: constant("checkout" as const),
-        name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
+        name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` }))
     }),
     { description: message`Fetch agent's branch into main repo` }
 );
@@ -114,7 +114,7 @@ const checkoutCmd = command(
 const checkVmCmd = command(
     "check-vm",
     object({
-        cmd: constant("check-vm" as const),
+        cmd: constant("check-vm" as const)
     }),
     { description: message`Verify k3s/Kata/Cloud Hypervisor setup` }
 );
@@ -122,7 +122,7 @@ const checkVmCmd = command(
 const cacheCmd = command(
     "cache",
     object({
-        cmd: constant("cache" as const),
+        cmd: constant("cache" as const)
     }),
     { description: message`Pre-cache docker images for fast startup` }
 );
@@ -133,7 +133,7 @@ const logsCmd = command(
         cmd: constant("logs" as const),
         name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
         follow: option("-f", "--follow", { description: message`Follow log output` }),
-        init: option("--init", { description: message`Show init container logs (k3s only)` }),
+        init: option("--init", { description: message`Show init container logs (k3s only)` })
     }),
     { description: message`Display agent container logs` }
 );
@@ -145,9 +145,9 @@ const execCmd = command(
         name: optional(argument(string({ metavar: "NAME" }), { description: message`Agent name` })),
         command: multiple(
             argument(string({ metavar: "CMD" }), {
-                description: message`Command to run (after --)`,
+                description: message`Command to run (after --)`
             })
-        ),
+        )
     }),
     { description: message`Execute a command inside an agent container` }
 );
@@ -170,14 +170,14 @@ const program = defineProgram({
     metadata: {
         name: "agentbox",
         version: VERSION,
-        brief: message`Secure, isolated development environments for AI coding agents`,
-    },
+        brief: message`Secure, isolated development environments for AI coding agents`
+    }
 });
 
 async function dispatch(): Promise<number> {
     const result = run(program, {
         help: { mode: "both" },
-        version: { mode: "both", value: VERSION },
+        version: { mode: "both", value: VERSION }
     });
     const cmd = await import("./commands/index");
 
@@ -191,7 +191,7 @@ async function dispatch(): Promise<number> {
                 trust: r.trust,
                 untrusted: r.untrusted,
                 useLocalBranch: r.useLocalBranch,
-                noFocus: r.noFocus,
+                noFocus: r.noFocus
             })
         )
         .with({ cmd: "attach" }, (r) =>

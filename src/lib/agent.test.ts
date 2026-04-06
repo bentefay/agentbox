@@ -52,8 +52,8 @@ describe("ensureClaudeBypassPermissions", () => {
         const existing = {
             bypassPermissionsModeAccepted: true,
             projects: {
-                "/some/other/path": { hasTrustDialogAccepted: true, allowedTools: ["bash"] },
-            },
+                "/some/other/path": { hasTrustDialogAccepted: true, allowedTools: ["bash"] }
+            }
         };
         fs.writeFileSync(path.join(home, ".claude.json"), JSON.stringify(existing));
 
@@ -68,8 +68,8 @@ describe("ensureClaudeBypassPermissions", () => {
         const home = tmpHome();
         const existing = {
             projects: {
-                "/workspace": { allowedTools: ["Read"], mcpServers: {} },
-            },
+                "/workspace": { allowedTools: ["Read"], mcpServers: {} }
+            }
         };
         fs.writeFileSync(path.join(home, ".claude.json"), JSON.stringify(existing));
 
@@ -85,8 +85,8 @@ describe("ensureClaudeBypassPermissions", () => {
         const existing = {
             bypassPermissionsModeAccepted: true,
             projects: {
-                "/workspace": { hasTrustDialogAccepted: true },
-            },
+                "/workspace": { hasTrustDialogAccepted: true }
+            }
         };
         const content = JSON.stringify(existing, null, 2) + "\n";
         fs.writeFileSync(path.join(home, ".claude.json"), content);

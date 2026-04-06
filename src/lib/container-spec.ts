@@ -56,15 +56,15 @@ export function buildContainerSpec(spec: ContainerSpecInput): ContainerSpec {
         ...(spec.gitUser?.name
             ? [
                   { name: "GIT_AUTHOR_NAME", value: spec.gitUser.name },
-                  { name: "GIT_COMMITTER_NAME", value: spec.gitUser.name },
+                  { name: "GIT_COMMITTER_NAME", value: spec.gitUser.name }
               ]
             : []),
         ...(spec.gitUser?.email
             ? [
                   { name: "GIT_AUTHOR_EMAIL", value: spec.gitUser.email },
-                  { name: "GIT_COMMITTER_EMAIL", value: spec.gitUser.email },
+                  { name: "GIT_COMMITTER_EMAIL", value: spec.gitUser.email }
               ]
-            : []),
+            : [])
     ];
 
     const volumes: readonly ContainerVolume[] = [
@@ -74,22 +74,22 @@ export function buildContainerSpec(spec: ContainerSpecInput): ContainerSpec {
         ...userVolumes.map((m) => ({
             hostPath: expandHome(m.hostPath),
             containerPath: m.containerPath,
-            readOnly: m.readOnly,
+            readOnly: m.readOnly
         })),
         ...(spec.imageCachePath
             ? [
                   {
                       hostPath: path.dirname(spec.imageCachePath),
                       containerPath: "/cache",
-                      readOnly: true,
-                  },
+                      readOnly: true
+                  }
               ]
-            : []),
+            : [])
     ];
 
     const environmentSetup: readonly string[] = spec.config.environmentSetup ?? [
         "echo '127.0.0.1 host.docker.internal' >> /etc/hosts",
-        "sysctl -w fs.inotify.max_user_watches=524288",
+        "sysctl -w fs.inotify.max_user_watches=524288"
     ];
 
     const ports: readonly ServicePort[] = spec.config.servicePorts ?? [];

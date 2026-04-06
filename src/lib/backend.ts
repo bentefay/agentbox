@@ -14,7 +14,7 @@ import {
     kubectlExecCommand,
     getServicePorts,
     deletePodAndService,
-    createPodBuildContext,
+    createPodBuildContext
 } from "./k8s";
 import type { Result } from "./result";
 import { Ok, Err } from "./result";
@@ -55,7 +55,7 @@ export function createBackend(agentName: AgentName, kind: "k3s" | "docker"): Con
         .with("docker", () => ({
             kind: "docker" as const,
             containerName: dockerContainerName(agentName),
-            agentName,
+            agentName
         }))
         .exhaustive();
 }
@@ -94,7 +94,7 @@ export async function startBackend(
                     config: { ...spec.config, containerImage: spec.imageName },
                     imageCachePath: spec.imageCachePath,
                     gitUser: spec.gitUser,
-                    strategyVolumes: spec.strategyVolumes,
+                    strategyVolumes: spec.strategyVolumes
                 },
                 createPodBuildContext()
             );
@@ -102,7 +102,7 @@ export async function startBackend(
         .with({ kind: "docker" }, async (b) => {
             await exec(`docker rm -f ${b.containerName}`, {
                 captureOutput: true,
-                rejectOnNonZeroExit: false,
+                rejectOnNonZeroExit: false
             });
 
             const container = buildContainerSpec(spec);
@@ -115,7 +115,7 @@ export async function startBackend(
 
             for (const cmd of container.environmentSetup) {
                 await exec(`docker exec ${b.containerName} bash -c ${shellEscape(cmd)}`, {
-                    rejectOnNonZeroExit: false,
+                    rejectOnNonZeroExit: false
                 });
             }
 
@@ -133,7 +133,7 @@ export async function stopBackend(backend: ContainerBackend): Promise<Result<voi
         .with({ kind: "docker" }, async (b) => {
             await exec(`docker rm -f ${b.containerName}`, {
                 captureOutput: true,
-                rejectOnNonZeroExit: false,
+                rejectOnNonZeroExit: false
             });
             return Ok(undefined);
         })
@@ -196,7 +196,7 @@ export async function getBackendLogs(
     const { follow = false } = options;
     const result = await exec(cmdResult.value, {
         captureOutput: !follow,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (follow) return Ok("");
     if (result.code !== 0) return Err(`Failed to get logs: ${result.stderr.trim()}`);
@@ -223,7 +223,7 @@ function dockerContainerName(agentName: AgentName): string {
 async function getDockerContainerState(containerName: string): Promise<AgentState> {
     const result = await exec(`docker inspect --format='{{.State.Status}}' ${containerName}`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (result.code !== 0) return { kind: "not-found" };
     const status = result.stdout.trim();
@@ -250,7 +250,7 @@ async function queryDockerPortsLabel(containerName: string): Promise<readonly Al
         `docker inspect --format='{{index .Config.Labels "agentbox.ports"}}' ${containerName}`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
     if (result.code !== 0) return [];
@@ -280,7 +280,7 @@ export function buildDockerRunCommand(
     const ports: readonly AllocatedPort[] = container.ports.map((p) => ({
         name: p.name,
         nodePort: p.port,
-        targetPort: p.targetPort ?? p.port,
+        targetPort: p.targetPort ?? p.port
     }));
 
     const portsLabel = `--label agentbox.ports=${shellEscape(JSON.stringify(ports))}`;

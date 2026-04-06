@@ -18,7 +18,7 @@ export interface TmuxPane {
 /** @internal */
 export const TmuxPaneSchema: z.ZodType<TmuxPane> = z.object({
     command: z.string(),
-    sleepSeconds: z.number().optional(),
+    sleepSeconds: z.number().optional()
 });
 
 /**
@@ -35,7 +35,7 @@ export interface TmuxWindow {
 /** @internal */
 export const TmuxWindowSchema: z.ZodType<TmuxWindow> = z.object({
     name: z.string(),
-    panes: z.array(TmuxPaneSchema).readonly(),
+    panes: z.array(TmuxPaneSchema).readonly()
 });
 
 /**
@@ -52,7 +52,7 @@ export interface TmuxMode {
 /** @internal */
 export const TmuxModeSchema: z.ZodType<TmuxMode> = z.object({
     name: z.string(),
-    windows: z.array(TmuxWindowSchema).readonly(),
+    windows: z.array(TmuxWindowSchema).readonly()
 });
 
 /**
@@ -72,7 +72,7 @@ export interface VolumeMount {
 export const VolumeMountSchema: z.ZodType<VolumeMount> = z.object({
     hostPath: z.string(),
     containerPath: z.string(),
-    readOnly: z.boolean().optional(),
+    readOnly: z.boolean().optional()
 });
 
 /**
@@ -92,7 +92,7 @@ export interface ServicePort {
 export const ServicePortSchema: z.ZodType<ServicePort> = z.object({
     name: z.string(),
     port: z.number(),
-    targetPort: z.number().optional(),
+    targetPort: z.number().optional()
 });
 
 /**
@@ -108,7 +108,7 @@ export interface ResourceLimits {
 /** @internal */
 export const ResourceLimitsSchema: z.ZodType<ResourceLimits> = z.object({
     memoryGi: z.number().positive(),
-    cpuLimit: z.number().optional(),
+    cpuLimit: z.number().optional()
 });
 
 /**
@@ -211,7 +211,7 @@ export const AgentboxConfigSchema: z.ZodType<AgentboxConfig> = z.object({
     volumes: z.array(VolumeMountSchema).readonly().optional(),
     servicePorts: z.array(ServicePortSchema).readonly().optional(),
     environmentSetup: z.array(z.string()).readonly().optional(),
-    cacheImages: z.custom<CacheImages>().optional(),
+    cacheImages: z.custom<CacheImages>().optional()
 });
 
 /** Resolve {@link CacheImages} to a concrete list of image references. */

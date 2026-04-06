@@ -131,7 +131,7 @@ describe("exec timeout", () => {
         const result = await exec("sleep 30", {
             captureOutput: true,
             rejectOnNonZeroExit: false,
-            timeout: 200,
+            timeout: 200
         });
 
         expect(result.code).toBeNull();
@@ -143,7 +143,7 @@ describe("exec timeout", () => {
             exec("sleep 30", {
                 captureOutput: true,
                 rejectOnNonZeroExit: true,
-                timeout: 200,
+                timeout: 200
             })
         ).rejects.toThrow("timed out after 200ms");
     });
@@ -151,7 +151,7 @@ describe("exec timeout", () => {
     test("does not interfere when command completes before timeout", async () => {
         const result = await exec("echo hello", {
             captureOutput: true,
-            timeout: 5000,
+            timeout: 5000
         });
 
         expect(result.code).toBe(0);

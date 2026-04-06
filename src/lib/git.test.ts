@@ -7,7 +7,7 @@ import {
     mergeBranches,
     branchHint,
     groupSourcesBySha,
-    classifyBranchSources,
+    classifyBranchSources
 } from "./git";
 import type {
     AgentName,
@@ -15,7 +15,7 @@ import type {
     GitContext,
     BranchInfo,
     AnnotatedBranch,
-    BranchSource,
+    BranchSource
 } from "./git";
 import type { BareRepoPath } from "./git/paths";
 
@@ -152,7 +152,7 @@ describe("getAgentsDirPaths", () => {
             kind: "bare-worktree",
             root: "/tmp/agents/my-agent" as RepoPath,
             bareRepo: "/tmp/agents/.bare" as BareRepoPath,
-            agentsDir: "/tmp/agents",
+            agentsDir: "/tmp/agents"
         };
         const paths = getAgentsDirPaths(ctx);
         expect(paths.agentsDir).toBe("/tmp/agents");
@@ -166,7 +166,7 @@ describe("mergeBranches", () => {
         sha,
         author: "Test",
         lastEdit: "1 day ago",
-        lastEditUnix: unix,
+        lastEditUnix: unix
     });
 
     test("merges local-only branch as local", () => {
@@ -236,7 +236,7 @@ describe("branchHint", () => {
             author: "Alice",
             lastEdit: "2 days ago",
             lastEditUnix: 100,
-            location: "local + remote",
+            location: "local + remote"
         };
         expect(branchHint(branch)).toBe("local + remote, Alice, 2 days ago");
     });
@@ -248,7 +248,7 @@ describe("branchHint", () => {
             author: "Bob",
             lastEdit: "just now",
             lastEditUnix: 200,
-            location: "local",
+            location: "local"
         };
         expect(branchHint(branch)).toBe("local, Bob, just now");
     });
@@ -264,7 +264,7 @@ describe("groupSourcesBySha", () => {
     test("two sources with same SHA produce one group with merged labels", () => {
         const sources: readonly BranchSource[] = [
             { label: "Local", sha: "abc123" },
-            { label: "GitHub", sha: "abc123" },
+            { label: "GitHub", sha: "abc123" }
         ];
         const result = groupSourcesBySha(sources);
         expect(result).toHaveLength(1);
@@ -276,7 +276,7 @@ describe("groupSourcesBySha", () => {
         const sources: readonly BranchSource[] = [
             { label: "Local", sha: "aaa" },
             { label: "GitHub", sha: "bbb" },
-            { label: "Bare repo", sha: "ccc" },
+            { label: "Bare repo", sha: "ccc" }
         ];
         const result = groupSourcesBySha(sources);
         expect(result).toHaveLength(3);

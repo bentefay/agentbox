@@ -68,7 +68,7 @@ function findConfigFile(repoPath: RepoPath): string | null {
 export async function getRepoPath(): Promise<Result<RepoPath, string>> {
     const result = await exec("git rev-parse --show-toplevel", {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (result.code === 0 && result.stdout.trim()) {
         // This is the ONE allowed cast — the branded type smart constructor pattern
@@ -97,7 +97,7 @@ export async function detectGitContext(): Promise<Result<GitContext, string>> {
     // .git is a file → this is a worktree
     const commonDirResult = await exec(`git -C ${root} rev-parse --git-common-dir`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (commonDirResult.code !== 0 || !commonDirResult.stdout.trim()) {
         return Err("Failed to determine git common dir for worktree.");
@@ -106,7 +106,7 @@ export async function detectGitContext(): Promise<Result<GitContext, string>> {
 
     const isBareResult = await exec(`git -C ${commonDir} rev-parse --is-bare-repository`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     if (isBareResult.code !== 0) {
         return Err("Failed to determine if parent repository is bare.");
@@ -117,7 +117,7 @@ export async function detectGitContext(): Promise<Result<GitContext, string>> {
             kind: "bare-worktree",
             root,
             bareRepo: commonDir as BareRepoPath,
-            agentsDir: path.dirname(commonDir),
+            agentsDir: path.dirname(commonDir)
         });
     }
 

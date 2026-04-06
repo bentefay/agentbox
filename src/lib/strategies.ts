@@ -52,7 +52,7 @@ export function nixStrategy(opts?: NixStrategyOptions): DependencyStrategy {
         volumes: () =>
             fs.existsSync(nixPath)
                 ? [{ hostPath: nixPath, containerPath: "/nix", readOnly: true }]
-                : [],
+                : []
     };
 }
 
@@ -75,7 +75,7 @@ export function direnvStrategy(): DependencyStrategy {
             );
             if (!result.ok) return Err(result.error);
             return Ok(undefined);
-        },
+        }
     };
 }
 
@@ -116,7 +116,7 @@ export function claudeStrategy(): DependencyStrategy {
 
         volumes: () => {
             const vols: VolumeMount[] = [
-                { hostPath: path.join(hostHome, ".claude"), containerPath: "/home/agent/.claude" },
+                { hostPath: path.join(hostHome, ".claude"), containerPath: "/home/agent/.claude" }
             ];
 
             // CLI binary — resolve eagerly if not yet cached
@@ -125,7 +125,7 @@ export function claudeStrategy(): DependencyStrategy {
                 vols.push({
                     hostPath: cliPath,
                     containerPath: "/usr/local/bin/claude",
-                    readOnly: true,
+                    readOnly: true
                 });
             }
 
@@ -134,12 +134,12 @@ export function claudeStrategy(): DependencyStrategy {
             if (fs.existsSync(claudeJsonPath)) {
                 vols.push({
                     hostPath: claudeJsonPath,
-                    containerPath: "/home/agent/.claude.json",
+                    containerPath: "/home/agent/.claude.json"
                 });
             }
 
             return vols;
-        },
+        }
     };
 }
 
@@ -165,9 +165,9 @@ export function bunStrategy(opts?: BunStrategyOptions): DependencyStrategy {
 
         ...(opts?.cachePath && {
             volumes: () => [
-                { hostPath: opts.cachePath!, containerPath: "/home/agent/.bun/install/cache" },
-            ],
-        }),
+                { hostPath: opts.cachePath!, containerPath: "/home/agent/.bun/install/cache" }
+            ]
+        })
     };
 }
 
@@ -187,8 +187,8 @@ export function yarnStrategy(opts?: YarnStrategyOptions): DependencyStrategy {
         containerInstall: async () => ["yarn install --frozen-lockfile"],
 
         ...(opts?.cachePath && {
-            volumes: () => [{ hostPath: opts.cachePath!, containerPath: "/home/agent/.yarn" }],
-        }),
+            volumes: () => [{ hostPath: opts.cachePath!, containerPath: "/home/agent/.yarn" }]
+        })
     };
 }
 
@@ -209,9 +209,9 @@ export function pnpmStrategy(opts?: PnpmStrategyOptions): DependencyStrategy {
 
         ...(opts?.storePath && {
             volumes: () => [
-                { hostPath: opts.storePath!, containerPath: "/home/agent/.local/share/pnpm/store" },
-            ],
-        }),
+                { hostPath: opts.storePath!, containerPath: "/home/agent/.local/share/pnpm/store" }
+            ]
+        })
     };
 }
 
@@ -231,8 +231,8 @@ export function npmStrategy(opts?: NpmStrategyOptions): DependencyStrategy {
         containerInstall: async () => ["npm ci"],
 
         ...(opts?.cachePath && {
-            volumes: () => [{ hostPath: opts.cachePath!, containerPath: "/home/agent/.npm" }],
-        }),
+            volumes: () => [{ hostPath: opts.cachePath!, containerPath: "/home/agent/.npm" }]
+        })
     };
 }
 
@@ -251,7 +251,7 @@ export const builtInStrategies: readonly DependencyStrategy[] = [
     bunStrategy(),
     yarnStrategy(),
     pnpmStrategy(),
-    npmStrategy(),
+    npmStrategy()
 ];
 
 export async function detectStrategies(

@@ -48,41 +48,41 @@ const VM_CHECKS: readonly VmCheck[] = [
     {
         kind: "modules",
         name: "Kernel modules loaded (vhost_vsock, vhost)",
-        detect: () => modulesAreLoaded(),
+        detect: () => modulesAreLoaded()
     },
     {
         kind: "shimSymlink",
         name: "Kata shim symlinked for containerd",
-        detect: () => isShimSymlinked(),
+        detect: () => isShimSymlinked()
     },
     {
         kind: "kataConfig",
         name: "Kata configured for Cloud Hypervisor",
-        detect: () => isKataConfigured(),
+        detect: () => isKataConfigured()
     },
     { kind: "k3sInstall", name: "k3s installed", detect: () => commandExists("k3s") },
     { kind: "k3sRunning", name: "k3s running", detect: () => systemdActive("k3s") },
     {
         kind: "containerdSocketAccess",
         name: "k3s containerd socket accessible",
-        detect: () => isSocketAccessible(),
+        detect: () => isSocketAccessible()
     },
     {
         kind: "containerdConfig",
         name: "k3s containerd configured for Kata",
-        detect: () => isContainerdConfigured(),
+        detect: () => isContainerdConfigured()
     },
     {
         kind: "kubeconfig",
         name: "Kubeconfig accessible",
-        detect: () => isFileReadable(KUBECONFIG_PATH),
+        detect: () => isFileReadable(KUBECONFIG_PATH)
     },
     { kind: "runtimeClass", name: "Kata RuntimeClass created", detect: () => runtimeClassExists() },
     {
         kind: "traefikDisabled",
         name: "Traefik disabled (ports 80/443 free)",
-        detect: () => isTraefikDisabled(),
-    },
+        detect: () => isTraefikDisabled()
+    }
 ];
 
 // --- Public types ---
@@ -107,7 +107,7 @@ async function diagnose(): Promise<readonly VmCheckResult[]> {
             async (check): Promise<VmCheckResult> => ({
                 kind: check.kind,
                 name: check.name,
-                ok: await check.detect(),
+                ok: await check.detect()
             })
         )
     );
@@ -136,7 +136,7 @@ async function commandExists(cmd: string): Promise<boolean> {
 async function systemdActive(service: string): Promise<boolean> {
     const result = await exec(`systemctl is-active ${service}`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     return result.stdout.trim() === "active";
 }
@@ -206,7 +206,7 @@ async function runtimeClassExists(): Promise<boolean> {
         `KUBECONFIG=${KUBECONFIG_PATH} kubectl get runtimeclass kata -o name`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
     return result.code === 0;
@@ -243,7 +243,7 @@ const SMOKE_TEST_POD_SPEC = {
     apiVersion: "v1",
     kind: "Pod",
     metadata: {
-        name: SMOKE_TEST_POD_NAME,
+        name: SMOKE_TEST_POD_NAME
     },
     spec: {
         runtimeClassName: "kata",
@@ -252,10 +252,10 @@ const SMOKE_TEST_POD_SPEC = {
             {
                 name: "test",
                 image: "alpine",
-                command: ["sh", "-c", "echo ok"],
-            },
-        ],
-    },
+                command: ["sh", "-c", "echo ok"]
+            }
+        ]
+    }
 } as const;
 
 export async function smokeTest(): Promise<Result<void, string>> {
@@ -264,14 +264,14 @@ export async function smokeTest(): Promise<Result<void, string>> {
     // Clean up any previous smoke test pod
     await exec(kubectl(`delete pod ${SMOKE_TEST_POD_NAME} --ignore-not-found`), {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
 
     // Create the pod
     const podYaml = toYaml(SMOKE_TEST_POD_SPEC);
     const apply = await exec(`cat <<'K8S_EOF' | ${kubectl("apply -f -")}\n${podYaml}\nK8S_EOF`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
 
     if (apply.code !== 0) {
@@ -289,13 +289,13 @@ export async function smokeTest(): Promise<Result<void, string>> {
     // Get logs
     const logs = await exec(kubectl(`logs ${SMOKE_TEST_POD_NAME}`), {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
 
     // Clean up
     await exec(kubectl(`delete pod ${SMOKE_TEST_POD_NAME} --ignore-not-found`), {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
 
     if (logs.code === 0 && logs.stdout.trim() === "ok") {
@@ -366,7 +366,7 @@ export function getFixSteps(failing: ReadonlySet<VmCheckKind>): readonly FixStep
         ...(has("containerdConfig") || has("k3sInstall")
             ? [{ kind: "containerdConfig" } as const]
             : []),
-        ...(has("runtimeClass") || has("k3sInstall") ? [{ kind: "runtimeClass" } as const] : []),
+        ...(has("runtimeClass") || has("k3sInstall") ? [{ kind: "runtimeClass" } as const] : [])
     ];
 }
 
@@ -382,19 +382,19 @@ export function renderFixStep(step: FixStep): readonly string[] {
                 `sudo tar --use-compress-program=unzstd -xf /tmp/${tarball} --strip-components=3 -C ${KATA_INSTALL_DIR} ./opt/kata`,
                 `sudo chmod 755 ${KATA_INSTALL_DIR}/bin/cloud-hypervisor`,
                 `rm /tmp/${tarball}`,
-                "",
+                ""
             ];
         })
         .with({ kind: "loadModules" }, () => [
             "# Load kernel modules for Kata",
             ...REQUIRED_MODULES.map((m) => `sudo modprobe ${m}`),
             `printf '%s\\n' ${REQUIRED_MODULES.join(" ")} | sudo tee ${MODULES_LOAD_PATH}`,
-            "",
+            ""
         ])
         .with({ kind: "shimSymlink" }, () => [
             "# Symlink Kata shim for containerd discovery",
             `sudo ln -sf ${KATA_SHIM_PATH} ${SHIM_SYMLINK_PATH}`,
-            "",
+            ""
         ])
         .with({ kind: "configureKata" }, () => {
             const clhTemplate = `${KATA_INSTALL_DIR}/share/defaults/kata-containers/configuration-clh.toml`;
@@ -405,13 +405,13 @@ export function renderFixStep(step: FixStep): readonly string[] {
                 `  -e 's|^virtio_fs_cache =.*|virtio_fs_cache = "auto"|' \\`,
                 `  ${clhTemplate} | sudo tee ${KATA_CONFIG_PATH} > /dev/null`,
                 `sudo sed -i '/^default_memory = /a enable_virtio_mem = true' ${KATA_CONFIG_PATH}`,
-                "",
+                ""
             ];
         })
         .with({ kind: "installK3s" }, () => [
             "# Install k3s (Traefik disabled)",
             'curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --disable traefik" sudo -E sh -',
-            "",
+            ""
         ])
         .with({ kind: "startK3s" }, () => ["# Start k3s", "sudo systemctl start k3s", ""])
         .with({ kind: "disableTraefik" }, () => [
@@ -420,7 +420,7 @@ export function renderFixStep(step: FixStep): readonly string[] {
             "sudo mkdir -p /etc/rancher/k3s",
             "sudo tee /etc/rancher/k3s/config.yaml <<'EOF'\ndisable:\n  - traefik\nEOF",
             "sudo systemctl restart k3s",
-            "",
+            ""
         ])
         .with({ kind: "socketAccess" }, () => [
             "# Grant user access to k3s containerd socket",
@@ -433,14 +433,14 @@ export function renderFixStep(step: FixStep): readonly string[] {
             "EOF",
             "sudo systemctl daemon-reload",
             "sudo systemctl restart k3s",
-            "",
+            ""
         ])
         .with({ kind: "kubeconfig" }, () => [
             "# Set up kubeconfig",
             "mkdir -p ~/.kube",
             "sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config",
             "sudo chown $(id -u):$(id -g) ~/.kube/config",
-            "",
+            ""
         ])
         .with({ kind: "containerdConfig" }, () => [
             "# Configure k3s containerd with Kata runtime",
@@ -448,14 +448,14 @@ export function renderFixStep(step: FixStep): readonly string[] {
             buildContainerdTemplate().trimEnd(),
             "CONTAINERD_EOF",
             "sudo systemctl restart k3s",
-            "",
+            ""
         ])
         .with({ kind: "runtimeClass" }, () => [
             "# Create Kata RuntimeClass",
             "KUBECONFIG=~/.kube/config kubectl apply -f - <<'EOF'",
             "apiVersion: node.k8s.io/v1\nkind: RuntimeClass\nmetadata:\n  name: kata\nhandler: kata",
             "EOF",
-            "",
+            ""
         ])
         .exhaustive();
 }

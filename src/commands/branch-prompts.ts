@@ -9,7 +9,7 @@ import {
     listRemoteBranches,
     mergeBranches,
     getMainBranch,
-    branchHint,
+    branchHint
 } from "../lib/git";
 
 export interface BranchSelection {
@@ -37,7 +37,7 @@ export async function promptForAgentBranch(
     const [localBranches, remoteBranches, existingWorktrees] = await Promise.all([
         listLocalBranches(repoPath),
         listRemoteBranches(repoPath),
-        bareRepoPath ? listWorktrees(bareRepoPath) : Promise.resolve([]),
+        bareRepoPath ? listWorktrees(bareRepoPath) : Promise.resolve([])
     ]);
 
     const allBranches = mergeBranches(localBranches, remoteBranches);
@@ -64,7 +64,7 @@ export async function promptForAgentBranch(
             agentState != null ? `agent: ${agentState}` : null,
             b.location,
             b.author,
-            b.lastEdit,
+            b.lastEdit
         ]
             .filter(Boolean)
             .join(", ");
@@ -89,7 +89,7 @@ export async function promptForAgentBranch(
             const input = this.userInput;
             const base: readonly PromptOption[] = entries.map((e) => ({
                 value: e.value,
-                label: e.label,
+                label: e.label
             }));
             const custom: readonly PromptOption[] =
                 input && !nameSet.has(input) && !agentSet.has(input)
@@ -97,7 +97,7 @@ export async function promptForAgentBranch(
                     : [];
 
             return [...base, ...custom];
-        },
+        }
     });
 
     if (p.isCancel(result)) return result;
@@ -114,7 +114,7 @@ export async function promptForBaseBranch(repoPath: RepoPath): Promise<string | 
     const [localBranches, remoteBranches, mainBranch] = await Promise.all([
         listLocalBranches(repoPath),
         listRemoteBranches(repoPath),
-        getMainBranch(repoPath),
+        getMainBranch(repoPath)
     ]);
 
     const allBranches = mergeBranches(localBranches, remoteBranches);
@@ -127,7 +127,7 @@ export async function promptForBaseBranch(repoPath: RepoPath): Promise<string | 
         prioritize.length > 0
             ? [
                   ...allBranches.filter((b) => prioritySet.has(b.name)),
-                  ...allBranches.filter((b) => !prioritySet.has(b.name)),
+                  ...allBranches.filter((b) => !prioritySet.has(b.name))
               ]
             : allBranches;
 
@@ -141,7 +141,7 @@ export async function promptForBaseBranch(repoPath: RepoPath): Promise<string | 
         validate: (value: string | readonly string[] | undefined) =>
             typeof value !== "string" || !nameSet.has(value)
                 ? "Select an existing branch"
-                : undefined,
+                : undefined
     });
 
     if (p.isCancel(result)) return null;

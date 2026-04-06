@@ -9,7 +9,7 @@ export type {
     TmuxPane,
     VolumeMount,
     ServicePort,
-    ResourceLimits,
+    ResourceLimits
 } from "./lib/config";
 export {
     nixStrategy,
@@ -19,12 +19,12 @@ export {
     yarnStrategy,
     pnpmStrategy,
     npmStrategy,
-    builtInStrategies,
+    builtInStrategies
 } from "./lib/strategies";
 export type {
     NixStrategyOptions,
     BunStrategyOptions,
     YarnStrategyOptions,
     PnpmStrategyOptions,
-    NpmStrategyOptions,
+    NpmStrategyOptions
 } from "./lib/strategies";

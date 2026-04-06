@@ -5,7 +5,7 @@ import {
     buildDockerRunCommand,
     buildExecCommand,
     buildLogsCommand,
-    createBackend,
+    createBackend
 } from "./backend";
 import type { ContainerSpec } from "./container-spec";
 import type { AgentName } from "./git";
@@ -19,7 +19,7 @@ function minimalContainerSpec(overrides: Partial<ContainerSpec> = {}): Container
         env: overrides.env ?? [],
         volumes: overrides.volumes ?? [],
         ports: overrides.ports ?? [],
-        environmentSetup: overrides.environmentSetup ?? [],
+        environmentSetup: overrides.environmentSetup ?? []
     };
 }
 
@@ -31,12 +31,12 @@ describe("parsePortsLabel", () => {
     it("parses a valid JSON array into AllocatedPort[]", () => {
         const input = JSON.stringify([
             { name: "http", nodePort: 30080, targetPort: 8080 },
-            { name: "https", nodePort: 30443, targetPort: 8443 },
+            { name: "https", nodePort: 30443, targetPort: 8443 }
         ]);
         const result = parsePortsLabel(input);
         expect(result).toEqual([
             { name: "http", nodePort: 30080, targetPort: 8080 },
-            { name: "https", nodePort: 30443, targetPort: 8443 },
+            { name: "https", nodePort: 30443, targetPort: 8443 }
         ]);
     });
 
@@ -62,7 +62,7 @@ describe("parsePortsLabel", () => {
         const input = JSON.stringify([
             { name: "http", nodePort: 80 }, // missing targetPort
             { nodePort: 80, targetPort: 80 }, // missing name
-            { name: "http", targetPort: 80 }, // missing nodePort
+            { name: "http", targetPort: 80 } // missing nodePort
         ]);
         expect(parsePortsLabel(input)).toEqual([]);
     });
@@ -72,12 +72,12 @@ describe("parsePortsLabel", () => {
             { name: "http", nodePort: 30080, targetPort: 8080 },
             { name: "bad" }, // invalid
             null,
-            { name: "https", nodePort: 30443, targetPort: 8443 },
+            { name: "https", nodePort: 30443, targetPort: 8443 }
         ]);
         const result = parsePortsLabel(input);
         expect(result).toEqual([
             { name: "http", nodePort: 30080, targetPort: 8080 },
-            { name: "https", nodePort: 30443, targetPort: 8443 },
+            { name: "https", nodePort: 30443, targetPort: 8443 }
         ]);
     });
 });
@@ -106,8 +106,8 @@ describe("buildDockerRunCommand", () => {
             minimalContainerSpec({
                 volumes: [
                     { hostPath: "/host/src", containerPath: "/workspace" },
-                    { hostPath: "/host/cache", containerPath: "/cache", readOnly: true },
-                ],
+                    { hostPath: "/host/cache", containerPath: "/cache", readOnly: true }
+                ]
             })
         );
 
@@ -122,8 +122,8 @@ describe("buildDockerRunCommand", () => {
             minimalContainerSpec({
                 env: [
                     { name: "FOO", value: "bar" },
-                    { name: "BAZ", value: "qux" },
-                ],
+                    { name: "BAZ", value: "qux" }
+                ]
             })
         );
 
@@ -138,8 +138,8 @@ describe("buildDockerRunCommand", () => {
             minimalContainerSpec({
                 ports: [
                     { name: "http", port: 8080 },
-                    { name: "debug", port: 9229, targetPort: 9230 },
-                ],
+                    { name: "debug", port: 9229, targetPort: 9230 }
+                ]
             })
         );
 
@@ -152,7 +152,7 @@ describe("buildDockerRunCommand", () => {
             "ctr",
             "img",
             minimalContainerSpec({
-                ports: [{ name: "http", port: 8080, targetPort: 3000 }],
+                ports: [{ name: "http", port: 8080, targetPort: 3000 }]
             })
         );
 
@@ -254,7 +254,7 @@ describe("buildLogsCommand", () => {
             const result = buildLogsCommand(backend, { follow: true });
             expect(result).toEqual({
                 ok: true,
-                value: "kubectl logs agent-test-agent -c agent -f",
+                value: "kubectl logs agent-test-agent -c agent -f"
             });
         });
     });

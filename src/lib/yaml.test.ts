@@ -31,8 +31,8 @@ describe("toYaml", () => {
         const result = toYaml({
             metadata: {
                 name: "my-pod",
-                labels: { app: "agent" },
-            },
+                labels: { app: "agent" }
+            }
         });
         expect(result).toBe("metadata:\n  name: my-pod\n  labels:\n    app: agent");
     });
@@ -54,8 +54,8 @@ describe("toYaml", () => {
         const result = toYaml({
             env: [
                 { name: "FOO", value: "bar" },
-                { name: "BAZ", value: "qux" },
-            ],
+                { name: "BAZ", value: "qux" }
+            ]
         });
         expect(result).toBe("env:\n  - name: FOO\n    value: bar\n  - name: BAZ\n    value: qux");
     });
@@ -65,9 +65,9 @@ describe("toYaml", () => {
             volumes: [
                 {
                     name: "workspace",
-                    hostPath: { path: "/data", type: "Directory" },
-                },
-            ],
+                    hostPath: { path: "/data", type: "Directory" }
+                }
+            ]
         });
         expect(result).toBe(
             "volumes:\n  - name: workspace\n    hostPath:\n      path: /data\n      type: Directory"
@@ -76,7 +76,7 @@ describe("toYaml", () => {
 
     test("quotes JSON-encoded strings correctly", () => {
         const result = toYaml({
-            command: ["bash", "-c", "echo hello && sleep infinity"],
+            command: ["bash", "-c", "echo hello && sleep infinity"]
         });
         expect(result).toContain('"echo hello && sleep infinity"');
     });
@@ -96,7 +96,7 @@ describe("toYamlDocuments", () => {
     test("separates multiple documents with ---", () => {
         const result = toYamlDocuments([
             { apiVersion: "v1", kind: "Pod" },
-            { apiVersion: "v1", kind: "Service" },
+            { apiVersion: "v1", kind: "Service" }
         ]);
         expect(result).toContain("kind: Pod");
         expect(result).toContain("---");

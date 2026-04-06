@@ -30,7 +30,7 @@ export async function cmdRm(names: readonly string[], force: boolean): Promise<n
 
                 const confirmed = await p.confirm({
                     message: `Remove agent ${agentName}?`,
-                    initialValue: true,
+                    initialValue: true
                 });
                 if (p.isCancel(confirmed) || !confirmed) {
                     p.outro("Aborted");

@@ -79,14 +79,14 @@ export async function hasUncommittedChanges(repoPath: RepoPath, branch: string):
         `git -C ${shellEscape(repoPath)} rev-parse --abbrev-ref HEAD`,
         {
             captureOutput: true,
-            rejectOnNonZeroExit: false,
+            rejectOnNonZeroExit: false
         }
     );
     if (currentBranchResult.code !== 0 || currentBranchResult.stdout.trim() !== branch)
         return false;
     const statusResult = await exec(`git -C ${shellEscape(repoPath)} status --porcelain`, {
         captureOutput: true,
-        rejectOnNonZeroExit: false,
+        rejectOnNonZeroExit: false
     });
     return statusResult.stdout.trim().length > 0;
 }
@@ -102,7 +102,7 @@ async function warnUncommittedChanges(
     if (!(await hasUncommittedChanges(repoPath, branch))) return Ok(undefined);
     const confirmed = await p.confirm({
         message: `Main repo has uncommitted changes on '${branch}' that won't be in the agent worktree. Continue?`,
-        initialValue: true,
+        initialValue: true
     });
     if (p.isCancel(confirmed) || !confirmed) return Err(CANCELLED);
     return Ok(undefined);
@@ -129,7 +129,7 @@ export async function resolveTargetBranch(
             `git -C ${shellEscape(repo)} rev-parse --verify --quiet ${shellEscape(ref)}`,
             {
                 captureOutput: true,
-                rejectOnNonZeroExit: false,
+                rejectOnNonZeroExit: false
             }
         );
         return result.code === 0 ? result.stdout.trim() : null;
@@ -157,7 +157,7 @@ export async function resolveTargetBranch(
     const [originSha, localSha, bareSha] = await Promise.all([
         revParse(bareRepoPath, `refs/remotes/origin/${branch}`),
         revParse(repoPath, `refs/heads/${branch}`),
-        revParse(bareRepoPath, `refs/heads/${branch}`),
+        revParse(bareRepoPath, `refs/heads/${branch}`)
     ]);
 
     const outcome = classifyBranchSources({ originSha, localSha, bareSha });
@@ -178,7 +178,7 @@ export async function resolveTargetBranch(
                 ...(originSha != null ? [{ label: "GitHub", sha: originSha }] : []),
                 ...(bareSha != null
                     ? [{ label: `Bare repo (${agentsDirName}/.bare)`, sha: bareSha }]
-                    : []),
+                    : [])
             ];
 
             const rawGroups = groupSourcesBySha(sources);
@@ -217,14 +217,14 @@ export async function resolveTargetBranch(
                     ...groups.map((g) => ({
                         value: g.sha,
                         label: `${g.labels.join(" + ")} (${g.sha.slice(0, 7)})`,
-                        hint: g.date,
+                        hint: g.date
                     })),
-                    { value: "__cancel__", label: "Cancel", hint: undefined },
+                    { value: "__cancel__", label: "Cancel", hint: undefined }
                 ];
 
                 const selected = await p.select({
                     message: "Which version should the agent use?",
-                    options: selectOptions,
+                    options: selectOptions
                 });
 
                 if (p.isCancel(selected) || selected === "__cancel__") return Err(CANCELLED);
@@ -247,13 +247,13 @@ export async function resolveTargetBranch(
                 `git -C ${shellEscape(bareRepoPath)} cat-file -e ${shellEscape(sha)}`,
                 {
                     captureOutput: true,
-                    rejectOnNonZeroExit: false,
+                    rejectOnNonZeroExit: false
                 }
             );
             if (commitExists.code !== 0) {
                 await exec(`git -C ${shellEscape(bareRepoPath)} fetch local`, {
                     captureOutput: true,
-                    rejectOnNonZeroExit: false,
+                    rejectOnNonZeroExit: false
                 });
             }
 
